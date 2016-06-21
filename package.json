@@ -1,0 +1,13 @@
+{
+  "name": "angular-material-tools",
+  "version": "0.0.1",
+  "description": "Build tools for Angular Material",
+  "main": "index.js",
+  "license": "MIT",
+  "dependencies": {
+    "angular": "^1.5.7",
+    "angular-animate": "^1.5.7",
+    "angular-aria": "^1.5.7",
+    "angular-material": "^1.1.0-rc.5"
+  }
+}
