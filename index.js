@@ -1,2 +1,2 @@
-var getDependencies = require('./include/dependencies');
+var getDependencies = require('./lib/dependencies');
 console.log(getDependencies(['datepicker']));

@@ -1,2 +1,5 @@
 # material-tools
-tools and 
+Build tools for Angular Material
+
+### Installation
+- `npm install angular-material-tools`

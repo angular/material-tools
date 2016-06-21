@@ -1,1 +1,5 @@
-/node_modules
+# Node Environment
+node_modules/
+
+# Jetbrains IDE
+.idea/
