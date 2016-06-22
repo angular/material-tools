@@ -4,8 +4,16 @@ import * as path from 'path';
 
 var NodeModule = require('module');
 
+/** Global cache for all required modules */
 var cache = {};
 
+/**
+ * Creates a require function, which runs the required files inside of a new Virtual Machine,
+ * which supports the Node Environment inside of the new VM, without accessing the main VM.
+ * @param filePath File path of the current used module
+ * @param globals Globals which will be applied to the context
+ * @returns {Function(<String>)}
+ */
 export function createSandboxRequire(filePath, globals?) {
 
   let _parentModule = new NodeModule(filePath);
@@ -31,8 +39,10 @@ export function createSandboxRequire(filePath, globals?) {
         ${fileSource}
       });`;
 
+    // Adds the default Node global variables to the custom globals, specified by the developer.
     updateGlobals();
 
+    // Runs the loaded file source inside of a new context with the given globals.
     var runFn = vm.runInNewContext(fileSource, globals, fileName);
 
     let _localValues = [];
