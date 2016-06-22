@@ -1,5 +1,5 @@
-import {LocalResolver} from './lib/resolvers/local-resolver';
+import {DependencyResolver} from './lib/dependency/dependency-resolver';
 
-new LocalResolver().resolve().then(path => {
-  console.log(`Path: ${path}`);
-});
+let resolver = new DependencyResolver();
+
+console.log(resolver.resolve(['datepicker']));
