@@ -10,19 +10,22 @@ export class DependencyResolver {
     // Execute our dependency resolve script in the virtual context, to completely
     // isolate the window modification from our node environment.
     var dependencyMap = virtualContext.run(__dirname + '/isolated_browser_resolver.js');
-
     var resultMap = {
       _flat: []
     };
 
-    for (let component in dependencyMap) {
-      if (dependencyMap.hasOwnProperty(component)) {
-        if (modules.indexOf(component) !== -1) {
-          resultMap[component] = dependencyMap[component];
-          resultMap['_flat'] = resultMap['_flat'].concat(dependencyMap[component]);
+    modules.forEach(function addDependencies(component) {
+      if (!resultMap.hasOwnProperty(component)) {
+        let dependencies = dependencyMap[component];
+
+        resultMap[component] = dependencies;
+        resultMap._flat.push(component);
+
+        if (dependencies.length) {
+          dependencies.forEach(addDependencies);
         }
       }
-    }
+    });
 
     return resultMap;
   }
