@@ -1,15 +1,40 @@
 import {Resolver} from './resolver';
-import * as request from 'request';
 import * as fs from 'fs';
+import * as path from 'path';
+import * as zlib from 'zlib';
+
+let request = require('request');
+let tar = require('tar-fs');
 
 export class RemoteResolver implements Resolver {
 
   private _baseUrl: string;
   private _extension: string;
+  private _cacheRoot: string;
 
   constructor() {
     this._baseUrl = 'https://github.com/angular/bower-material/archive/v';
-    this._baseUrl = '.tar.gz';
+    this._extension = '.tar.gz';
+    this._cacheRoot = './.material-cache/';
+  }
+
+  /**
+   * Checks whether a version is cached.
+   * @param {String} version Version to be checked.
+   * @returns {Promise.<String>} Resolves if cached. Returns the path.
+   */
+  private isCached(version: string): Promise<string> {
+    return new Promise((resolve, reject) => {
+      let destination = path.join(this._cacheRoot, version);
+
+      fs.access(destination, fs.R_OK | fs.W_OK, doesNotExist => {
+        if (doesNotExist) {
+          reject(destination);
+        } else {
+          resolve(destination);
+        }
+      });
+    });
   }
 
   /**
@@ -20,22 +45,24 @@ export class RemoteResolver implements Resolver {
   resolve(version: string): Promise<string> {
     if (!version) throw new Error('You have to specify a version.');
 
-    var filename = version + this._extension;
-    var self = this;
+    return new Promise((resolve, reject) => {
+      this.isCached(version).then(resolve, destination => {
+        let rejectPromise = error => {
+          console.error(error);
+          reject(error);
+        };
 
-    request(self._baseUrl + filename, function(error, response) {
-      var status = response.statusCode;
-
-      if (!error && status > 0 && 200 <= status && status < 300) {
-        // TODO: still needs to unpack the file
-        fs.writeFile('./' + filename, response.body);
-      } else {
-        console.error(error || status);
-      }
+        // TODO(crisbeto): does not handle http errors
+        request(this._baseUrl + version + this._extension)
+          .on('error', rejectPromise)
+          .pipe(zlib.createGunzip())
+          .pipe(tar.extract(destination))
+          .on('error', rejectPromise)
+          .on('finish', () => {
+            resolve(destination);
+          });
+      });
     });
-
-    // TODO: return the real promise
-    return Promise.resolve('TODO');
   }
 
 }

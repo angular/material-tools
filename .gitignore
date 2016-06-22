@@ -6,3 +6,6 @@ node_modules/
 
 # TypeScript
 typings/
+
+# Cached module downloads
+.material-cache/
