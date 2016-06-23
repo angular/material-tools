@@ -58,7 +58,12 @@ export class RemoteResolver implements Resolver {
             if (response.statusCode === 200) {
               stream
                 .pipe(zlib.createGunzip())
-                .pipe(tar.extract(destination))
+                .pipe(tar.extract(destination, {
+                  map: header => {
+                    header.name = header.name.substring(header.name.indexOf('/'));
+                    return header;
+                  }
+                }))
                 .on('error', rejectPromise)
                 .on('finish', () => {
                   resolve(destination);
