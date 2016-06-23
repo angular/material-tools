@@ -52,17 +52,24 @@ export class RemoteResolver implements Resolver {
           reject(error);
         };
 
-        // TODO(crisbeto): does not handle http errors
-        request(this._baseUrl + version + this._extension)
+        let stream = request(this._baseUrl + version + this._extension)
           .on('error', rejectPromise)
-          .pipe(zlib.createGunzip())
-          .pipe(tar.extract(destination))
-          .on('error', rejectPromise)
-          .on('finish', () => {
-            resolve(destination);
+          .on('response', response => {
+            if (response.statusCode === 200) {
+              stream
+                .pipe(zlib.createGunzip())
+                .pipe(tar.extract(destination))
+                .on('error', rejectPromise)
+                .on('finish', () => {
+                  resolve(destination);
+                  stream.destroy();
+                });
+            } else {
+              rejectPromise(`Failed to download ${version}. Status code: ${response.statusCode}.`);
+              stream.destroy();
+            }
           });
       });
     });
   }
-
 }
