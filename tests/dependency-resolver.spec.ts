@@ -1,4 +1,4 @@
-import {DependencyResolver} from '../lib/dependency/dependency-resolver';
+import {DependencyResolver} from '../lib/dependency/DependencyResolver';
 import * as path from 'path';
 
 let NodeModule = require('module');

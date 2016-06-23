@@ -1,5 +1,2 @@
-import {DependencyResolver} from './lib/dependency/dependency-resolver';
-
-let resolver = new DependencyResolver();
-
-console.log(resolver.resolve(['datepicker']));
+import {DependencyResolver} from './lib/dependency/DependencyResolver';
+import {RemoteResolver} from './lib/resolvers/RemoteResolver';
