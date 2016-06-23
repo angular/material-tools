@@ -9,7 +9,7 @@ export class LocalResolver implements Resolver {
    */
   resolve(): Promise<string> {
     try {
-      var entryFile = require.resolve("angular-material");
+      let entryFile = require.resolve("angular-material");
       return Promise.resolve(path.dirname(entryFile));
     } catch(e) {
       return Promise.reject(e);

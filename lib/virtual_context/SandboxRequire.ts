@@ -2,10 +2,12 @@ import * as fs from 'fs';
 import * as vm from 'vm';
 import * as path from 'path';
 
-var NodeModule = require('module');
+let NodeModule = require('module');
 
-/** Global cache for all required modules */
-var cache = {};
+/**
+ * Global cache for all required modules with the associated module exports
+ */
+export let CACHE = {};
 
 /**
  * Creates a require function, which runs the required files inside of a new Virtual Machine,
@@ -23,8 +25,8 @@ export function createSandboxRequire(filePath, globals?) {
   function SandboxRequire(file) {
     let fileName = resolve(file);
 
-    if (cache[fileName]) {
-      return cache[fileName];
+    if (CACHE[fileName]) {
+      return CACHE[fileName];
     }
 
     let fileSource = fs.readFileSync(fileName, 'utf8');
@@ -43,7 +45,7 @@ export function createSandboxRequire(filePath, globals?) {
     updateGlobals();
 
     // Runs the loaded file source inside of a new context with the given globals.
-    var runFn = vm.runInNewContext(fileSource, globals, fileName);
+    let runFn = vm.runInNewContext(fileSource, globals, fileName);
 
     let _localValues = [];
     for (let key in locals) {
@@ -56,13 +58,13 @@ export function createSandboxRequire(filePath, globals?) {
     runFn.apply(currentModule.exports, [globals].concat(_localValues));
 
     // Cache the new exports
-    cache[fileName] = currentModule.exports;
+    CACHE[fileName] = currentModule.exports;
 
     return currentModule.exports;
   }
 
   function updateGlobals() {
-    for (var globalKey in global) {
+    for (let globalKey in global) {
       if (!globals.hasOwnProperty(globalKey)) {
         globals[globalKey] = global[globalKey];
       }
@@ -71,8 +73,8 @@ export function createSandboxRequire(filePath, globals?) {
 
   function getLocals(module: NodeModule, requireFn: Function): any {
     return {
-      __filename: filePath,
-      __dirname: path.dirname(filePath),
+      __filename: module.filename,
+      __dirname: path.dirname(module.filename),
       module: module,
       exports: module.exports,
       require: requireFn
@@ -80,7 +82,7 @@ export function createSandboxRequire(filePath, globals?) {
   }
 
   function resolve(moduleName) {
-    var resolved = NodeModule._resolveFilename(moduleName, _parentModule);
+    let resolved = NodeModule._resolveFilename(moduleName, _parentModule);
     return (resolved instanceof Array) ? resolved[1] : resolved;
   }
 

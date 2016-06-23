@@ -41,7 +41,7 @@ export class VirtualContext {
       createElement: _createNoop(_node),
     };
 
-    var globals = {
+    let globals = {
       addEventListener: _createNoop(),
       document: _document,
       Node: _node,
