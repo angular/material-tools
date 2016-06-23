@@ -7,7 +7,7 @@ let NodeModule = require('module');
 /**
  * Global cache for all required modules with the associated module exports
  */
-export let CACHE = {};
+export let EXPORTS_CACHE = {};
 
 /**
  * Creates a require function, which runs the required files inside of a new Virtual Machine,
@@ -25,8 +25,8 @@ export function createSandboxRequire(filePath, globals?) {
   function SandboxRequire(file) {
     let fileName = resolve(file);
 
-    if (CACHE[fileName]) {
-      return CACHE[fileName];
+    if (EXPORTS_CACHE[fileName]) {
+      return EXPORTS_CACHE[fileName];
     }
 
     let fileSource = fs.readFileSync(fileName, 'utf8');
@@ -58,7 +58,7 @@ export function createSandboxRequire(filePath, globals?) {
     runFn.apply(currentModule.exports, [globals].concat(_localValues));
 
     // Cache the new exports
-    CACHE[fileName] = currentModule.exports;
+    EXPORTS_CACHE[fileName] = currentModule.exports;
 
     return currentModule.exports;
   }
@@ -90,4 +90,12 @@ export function createSandboxRequire(filePath, globals?) {
 
   return SandboxRequire;
 
+}
+
+/**
+ * Overwrites the cache object for all Sandbox require calls.
+ * @param cache Cache Object for the Sandbox Require
+ */
+export function setSandboxRequireCache(cache: any) {
+  EXPORTS_CACHE = cache;
 }
