@@ -1,4 +1,3 @@
-import {Resolver} from './Resolver';
 import * as fs from 'fs';
 import * as path from 'path';
 import * as zlib from 'zlib';
@@ -6,7 +5,7 @@ import * as zlib from 'zlib';
 let request = require('request');
 let tar = require('tar-fs');
 
-export class RemoteResolver implements Resolver {
+export class RemoteResolver {
 
   private _baseUrl: string;
   private _extension: string;
