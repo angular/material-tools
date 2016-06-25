@@ -20,8 +20,7 @@ export class LocalResolver {
     return new Promise((resolve, reject) => {
       glob(this._pattern + extension, { root: this._root }, (error, files) => {
         if (error || !files || !files.length) {
-          console.error(error || `Could not find .${extension} files in ${this._root}.`);
-          reject(error);
+          reject(error || `Could not find .${extension} files in ${this._root}.`);
         } else {
           resolve(files);
         }
@@ -31,9 +30,9 @@ export class LocalResolver {
 
   /**
    * Resolves JS and CSS files.
-   * @returns {Promise.<Object>} Contains the paths to the JS and CSS files.
+   * @returns {Promise.<any>} Contains the paths to the JS and CSS files.
    */
-  resolve(): Promise<Object> {
+  resolve(): Promise<any> {
     return new Promise((resolve, reject) => {
       Promise.all([
         this.resolveExtension('js'),
