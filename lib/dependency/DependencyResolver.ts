@@ -9,7 +9,7 @@ export class DependencyResolver {
 
     // Execute our dependency resolve script in the virtual context, to completely
     // isolate the window modification from our node environment.
-    let dependencyMap = virtualContext.run(__dirname + '/isolated_browser_resolver.js');
+    let dependencyMap = virtualContext.run(__dirname + '/isolated_browser_resolver.js', true);
 
     let resultMap = {
       _flat: []

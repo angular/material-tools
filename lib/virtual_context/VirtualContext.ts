@@ -55,13 +55,14 @@ export class VirtualContext {
   }
 
   /**
-   * Runs the specified file inside of the Virtual Context and returns the syncronized module exports from
+   * Runs the specified file inside of the Virtual Context and returns the synchronized module exports from
    * the second V8 instance.
    * @param fileName File which will be run inside of the Virtual Context.
+   * @param useStrict Automatically enables Strict Mode in the specified file.
    * @returns {Object} Module Exports of the given file
    */
-  run(fileName: string): any {
-    return createSandboxRequire(__filename, this._globals)(fileName);
+  run(fileName: string, useStrict = false): any {
+    return createSandboxRequire(__filename, this._globals, useStrict)(fileName);
   }
 
 }

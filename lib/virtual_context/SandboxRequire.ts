@@ -14,9 +14,10 @@ export let EXPORTS_CACHE = {};
  * which supports the Node Environment inside of the new VM, without accessing the main VM.
  * @param filePath File path of the current used module
  * @param globals Globals which will be applied to the context
+ * @param useStrict Automatically enables Strict Mode in the required files
  * @returns {Function(<String>)}
  */
-export function createSandboxRequire(filePath, globals?) {
+export function createSandboxRequire(filePath, globals?, useStrict = false) {
 
   let _parentModule = new NodeModule(filePath);
   _parentModule.filename = filePath;
@@ -38,6 +39,7 @@ export function createSandboxRequire(filePath, globals?) {
 
     fileSource =
       `(function(global, ${ Object.keys(locals).join(', ') }) {
+        ${useStrict ? '"use strict";' : ''}
         ${fileSource}
       });`;
 
