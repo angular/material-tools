@@ -5,7 +5,7 @@ describe('sandbox require', () => {
   it('should properly require a file in the new virtual machine', () => {
     let require = createSandboxRequire(__filename, {});
 
-    let exports = require('./fixtures/fake-virtual-context-external');
+    let exports = require('./fixtures/virtual-context/fake-virtual-context-exports');
 
     expect(exports.length).toBe(50);
   });
@@ -13,7 +13,7 @@ describe('sandbox require', () => {
   it('should not compile the require file twice', () => {
     let require = createSandboxRequire(__filename, {});
 
-    let exports = require('./fixtures/fake-virtual-context-external');
+    let exports = require('./fixtures/virtual-context/fake-virtual-context-exports');
 
     expect(exports.length).toBe(50);
 
@@ -21,7 +21,7 @@ describe('sandbox require', () => {
     // are using the same reference.
     exports.push(51);
 
-    let secondExports = require('./fixtures/fake-virtual-context-external');
+    let secondExports = require('./fixtures/virtual-context/fake-virtual-context-exports');
 
     expect(secondExports.length).toBe(51);
 
@@ -32,7 +32,7 @@ describe('sandbox require', () => {
   it('should probably clear the cache', () => {
     let require = createSandboxRequire(__filename, {});
 
-    let exports = require('./fixtures/fake-virtual-context-external');
+    let exports = require('./fixtures/virtual-context/fake-virtual-context-exports');
 
     expect(exports.length).toBe(50);
 
@@ -43,7 +43,7 @@ describe('sandbox require', () => {
     // Clear the cache to avoid, that the previous changed exports are used for the new require.
     setSandboxRequireCache({});
 
-    let secondExports = require('./fixtures/fake-virtual-context-external');
+    let secondExports = require('./fixtures/virtual-context/fake-virtual-context-exports');
 
     expect(secondExports.length).toBe(50);
   });

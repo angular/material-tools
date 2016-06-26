@@ -3,7 +3,7 @@
  * inside of a new Virtual Machine
  */
 
-var result = require('./fake-virtual-context-external.js');
+var result = require('./fake-virtual-context-exports.js');
 
 module.exports = {
   module: module,

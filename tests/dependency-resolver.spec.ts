@@ -16,7 +16,7 @@ describe('Dependency Resolver', () => {
     // versions.
     NodeModule._resolveFilename = function(moduleName, parentModule) {
       if (moduleName === 'angular-material') {
-        return path.normalize(`${__dirname}/fixtures/fake-angular-module.js`);
+        return path.normalize(`${__dirname}/fixtures/dependency/fake-angular-module.js`);
       }
 
       // Once it's not the Angular Material module, we fallback to the default resolveFilename
