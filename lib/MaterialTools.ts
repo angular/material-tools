@@ -1,4 +1,4 @@
-import {DependencyResolver} from './dependency/DependencyResolver';
+import {DependencyResolver} from './resolvers/DependencyResolver';
 import {PackageResolver} from './resolvers/PackageResolver';
 import {LocalResolver} from './resolvers/LocalResolver';
 import * as path from 'path';

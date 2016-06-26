@@ -7,3 +7,17 @@ new MaterialTools({
 .getFiles()
 .then(files => console.log(files))
 .catch(error => console.error(error));
+
+/** Test Environment **/
+import {ThemingBuilder} from './lib/theming/ThemingBuilder';
+
+let themeBuilder = new ThemingBuilder({
+  primaryPalette: 'red',
+  accentPalette: 'blue',
+  warnPalette: 'orange',
+  backgroundPalette: 'grey'
+});
+
+
+let themeCSS = themeBuilder.build();
+// -- console.log(themeCSS);
