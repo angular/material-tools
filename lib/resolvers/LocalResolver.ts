@@ -28,16 +28,15 @@ export class LocalResolver {
    * @returns {Promise.<any>} Contains the paths to the JS and CSS files.
    */
   resolve(modules: string[], directory: string): Promise<any> {
-    return new Promise((resolve, reject) => {
-      Promise.all([
-        this.resolveExtension(modules, 'js', directory),
-        this.resolveExtension(modules, 'css', directory)
-      ]).then(results => {
-        resolve({
-          js: results[0],
-          css: results[1]
-        });
-      }, reject);
+    return Promise.all([
+      this.resolveExtension(modules, 'js', directory),
+      this.resolveExtension(modules, 'css', directory)
+    ])
+    .then(results => {
+      return {
+        js: results[0],
+        css: results[1]
+      };
     });
   }
 
