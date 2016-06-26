@@ -49,7 +49,7 @@ export class MaterialTools {
           dependencies: this.dependencyResolver.resolve(
             options.modules,
             path.join(root, options.mainFilename)
-          );
+          )
         };
       })
       .then(data => {
