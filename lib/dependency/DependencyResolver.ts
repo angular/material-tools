@@ -2,10 +2,19 @@ import {VirtualContext} from '../virtual_context/VirtualContext';
 
 export class DependencyResolver {
 
-  resolve(modules: string[]): any {
+  /**
+   * Determines the dependencies and parent dependencies of the specified
+   * Angular `modules` within a `file`.
+   * @param  {string[]} modules The modules whose dependencies need to be determined.
+   * @param  {string} file File to be executed.
+   * @return {Object} Contains a map of the dependencies, as well as a flat list of all of them.
+   */
+  resolve(modules: string[], file: string): any {
     // Create a virtual context, to isolate the script which modifies the globals
     // to be able to mock a Browser Environment.
-    let virtualContext = new VirtualContext();
+    let virtualContext = new VirtualContext({
+      $$moduleName: file
+    });
 
     // Execute our dependency resolve script in the virtual context, to completely
     // isolate the window modification from our node environment.
