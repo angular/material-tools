@@ -46,15 +46,15 @@ export class MaterialTools {
       .then(root => {
         return {
           root: root,
-          flatDependencies: this.dependencyResolver.resolve(
+          dependencies: this.dependencyResolver.resolve(
             options.modules,
             path.join(root, options.mainFilename)
-          )._flat
+          );
         };
       })
       .then(data => {
         return this.localResolver.resolve(
-          data.flatDependencies,
+          data.dependencies._flat,
           path.join(data.root, 'modules', 'js')
         );
       });

@@ -5,4 +5,5 @@ new MaterialTools({
   modules: ['datepicker']
 })
 .getFiles()
-.then(files => console.log(files));
+.then(files => console.log(files))
+.catch(error => console.error(error));
