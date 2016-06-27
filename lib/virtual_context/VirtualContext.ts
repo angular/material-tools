@@ -1,8 +1,9 @@
 import {createSandboxRequire} from './SandboxRequire';
+import {BrowserWindow} from './BrowserMock';
 
 export class VirtualContext {
 
-  private _globals: any;
+  globals: BrowserWindow;
 
   /**
    * Creates a virtual context, which allows developers to run files inside of a new V8
@@ -11,47 +12,16 @@ export class VirtualContext {
    * @param globals Custom global variables to be applied to the Virtual Context.
    */
   constructor(globals?: any) {
-    this._globals = this._defaultGlobals;
+    this.globals = new BrowserWindow();
 
     // Apply the custom globals from the developer to the default globals
     // without modifying the globals reference, because otherwise we would
     // lose the circular references.
     for (let _key in globals) {
       if (globals.hasOwnProperty(_key)) {
-        this._globals[_key] = globals[_key];
+        this.globals[_key] = globals[_key];
       }
     }
-  }
-
-  private get _defaultGlobals(): any {
-    let _createNoop = (returnVal?) => () => returnVal;
-
-    let _node = {
-      pathname: '',
-      setAttribute: _createNoop(),
-      getAttribute: () => '',
-      prototype: {
-        contains: _createNoop()
-      }
-    };
-
-    let _document = {
-      addEventListener: _createNoop(),
-      querySelector: _createNoop(_node),
-      createElement: _createNoop(_node),
-    };
-
-    let globals = {
-      addEventListener: _createNoop(),
-      document: _document,
-      Node: _node,
-      location: {},
-      console: console
-    };
-
-    globals['window'] = globals;
-
-    return globals;
   }
 
   /**
@@ -62,7 +32,7 @@ export class VirtualContext {
    * @returns {Object} Module Exports of the given file
    */
   run(fileName: string, useStrict = false): any {
-    return createSandboxRequire(__filename, this._globals, useStrict)(fileName);
+    return createSandboxRequire(__filename, this.globals, useStrict)(fileName);
   }
 
 }
