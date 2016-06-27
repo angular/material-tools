@@ -17,7 +17,7 @@ tools.getFiles()
 ```
 
 ### Options
-* `modules: string[]` - The modules that should be part of the build.
+* `modules?: string[]` - The modules that should be part of the build.
 * `version: string = 'local'` - Version of Angular Material. If set to `local`, the current
 Material version from the `package.json` will be loaded, otherwise it will be downloaded.
 * `cache: string = './.material-cache/'` - Directory for caching downloads.

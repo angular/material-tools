@@ -9,22 +9,27 @@ describe('Dependency Resolver', () => {
   });
 
   it('should properly resolve flat dependencies', () => {
-    let dependencies = this.resolver.resolve(['list'], filename);
+    let dependencies = this.resolver.resolve(filename, ['list']);
 
     expect(dependencies._flat).toEqual(['list', 'core', 'theming']);
   });
 
   it('should properly resolve single dependencies', () => {
-    let dependencies = this.resolver.resolve(['list'], filename);
+    let dependencies = this.resolver.resolve(filename, ['list']);
 
     expect(dependencies.list).toContain('core');
   });
 
   it('should properly resolve nested dependencies', () => {
-    let dependencies = this.resolver.resolve(['list'], filename);
+    let dependencies = this.resolver.resolve(filename, ['list']);
 
     expect(dependencies.list).toContain('core');
     expect(dependencies.core).toContain('theming');
   });
 
+  it('should be able to get all modules', () => {
+    let dependencies = this.resolver.resolve(filename)._flat;
+
+    expect(dependencies).toEqual(['core', 'list', 'autocomplete', 'theming']);
+  });
 });

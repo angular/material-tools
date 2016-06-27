@@ -10,7 +10,7 @@ const DEFAULTS = {
 }
 
 export interface MaterialToolsOptions {
-  modules: string[];
+  modules?: string[];
   version?: string;
   mainFilename?: string;
   cache?: string;
@@ -22,10 +22,6 @@ export class MaterialTools {
   private localResolver: LocalResolver;
 
   constructor(private options: MaterialToolsOptions) {
-    if (!options.modules || !options.modules.length) {
-      throw new Error('You have to specify an array of modules.');
-    }
-
     Object.keys(DEFAULTS).forEach(key => {
       if (typeof options[key] === 'undefined') {
         options[key] = DEFAULTS[key];
@@ -51,8 +47,8 @@ export class MaterialTools {
         return {
           root: root,
           dependencies: this.dependencyResolver.resolve(
-            options.modules,
-            path.join(root, options.mainFilename)
+            path.join(root, options.mainFilename),
+            options.modules
           )
         };
       })
