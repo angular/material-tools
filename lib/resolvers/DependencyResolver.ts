@@ -31,7 +31,7 @@ export class DependencyResolver {
         resultMap[component] = dependencies;
         resultMap._flat.push(component);
 
-        if (dependencies.length) {
+        if (dependencies && dependencies.length) {
           dependencies.forEach(addDependencies);
         }
       }
