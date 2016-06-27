@@ -6,7 +6,7 @@ export class PackageResolver {
 
   private _cache: string;
 
-  constructor(cache = './.material-cache/') {
+  constructor(cache: string) {
     this._cache = path.resolve(cache);
   }
 

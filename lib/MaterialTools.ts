@@ -3,32 +3,36 @@ import {PackageResolver} from './resolvers/PackageResolver';
 import {LocalResolver} from './resolvers/LocalResolver';
 import * as path from 'path';
 
-export class MaterialTools {
+const DEFAULTS = {
+  version: 'local',
+  mainFilename: 'angular-material.js',
+  cache: './.material-cache/'
+}
 
-  private _options: any;
+export interface MaterialToolsOptions {
+  modules: string[];
+  version?: string;
+  mainFilename?: string;
+  cache?: string;
+}
+
+export class MaterialTools {
   private packageResolver: PackageResolver;
   private dependencyResolver: DependencyResolver;
   private localResolver: LocalResolver;
 
-  private _defaults = {
-    version: 'local',
-    mainFilename: 'angular-material.js'
-  };
-
-  constructor(options: any) {
+  constructor(private options: MaterialToolsOptions) {
     if (!options.modules || !options.modules.length) {
       throw new Error('You have to specify an array of modules.');
     }
 
-    this._options = this._defaults;
-
-    Object.keys(options).forEach(key => {
-      if (options.hasOwnProperty(key)) {
-        this._options[key] = options[key];
+    Object.keys(DEFAULTS).forEach(key => {
+      if (typeof options[key] === 'undefined') {
+        options[key] = DEFAULTS[key];
       }
     });
 
-    this.packageResolver = new PackageResolver(this._options.cache);
+    this.packageResolver = new PackageResolver(this.options.cache);
     this.dependencyResolver = new DependencyResolver();
     this.localResolver = new LocalResolver();
   }
@@ -39,7 +43,7 @@ export class MaterialTools {
    * JS and CSS files.
    */
   getFiles(): Promise<any> {
-    const options = this._options;
+    const options = this.options;
 
     return this.packageResolver
       .resolve(options.version)
