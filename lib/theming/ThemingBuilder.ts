@@ -23,18 +23,14 @@ export class ThemingBuilder {
     // Create a virtual context, to isolate the script which modifies the globals
     // to be able to mock a Browser Environment.
     this._virtualContext = new VirtualContext({
-      $$moduleName: 'angular-material',
-      resolveTheme: true,
+      $$interception: {
+        run: this._onAngularRunFn.bind(this)
+      }
     });
 
     // Execute our isolated browser resolve script in the virtual context, to completely
     // isolate the window modification from our node environment.
-    let exports = this._virtualContext.run(__dirname + '/../resolvers/isolated_browser_resolver.js', true);
-
-    // Export the retrieved `_generateThemes` function, which runs in the new virtual context.
-    this._generateThemes = exports['generateThemes'];
-
-    let injector = exports['injector'];
+    let injector = this._virtualContext.run(__dirname + '/../resolvers/isolated_browser_resolver.js', true)['injector'];
 
     // Default Color Palettes for Angular Material.
     let _colorPalettes = injector['$mdColorPalette'];
@@ -80,6 +76,17 @@ export class ThemingBuilder {
       .map(element => element.children[0]['data'])
       .reduce((styleSheet, part) => styleSheet + part);
 
+  }
+
+  /**
+   * Function will be used to intercept Angular's Run Phase.
+   * @param runFn Angular Run Function
+   * @private
+   */
+  private _onAngularRunFn(runFn) {
+    if (runFn.name === 'generateAllThemes') {
+      this._generateThemes = runFn;
+    }
   }
 
 }
