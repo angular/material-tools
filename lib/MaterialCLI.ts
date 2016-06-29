@@ -24,6 +24,6 @@ if (!options.hasOwnProperty('version')) {
 const tools = new MaterialTools(options);
 
 tools
-  .getFiles()
+  ._getData()
   .then(result => console.log(result))
   .catch(error => console.error(error));

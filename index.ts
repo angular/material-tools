@@ -1,5 +1,7 @@
 import {MaterialTools} from './lib/MaterialTools';
 
+import * as fs from 'fs';
+
 let tools = new MaterialTools({
   version: '1.1.0-rc.5',
   modules: ['datepicker'],
@@ -13,8 +15,13 @@ let tools = new MaterialTools({
 
 /** Retrieve the basic build files for the modules */
 tools
-  .getFiles()
-  .then(files => {
-    require('fs').writeFileSync('theme-static.css', tools.buildStaticTheme(files));
+  ._getData()
+  .then(data => {
+    let js = tools.buildJS(data, 'angular-material.min.js.map');
+
+    fs.writeFileSync('angular-material.js', js.source);
+    fs.writeFileSync('angular-material.min.js', js.compressed);
+    fs.writeFileSync('angular-material.min.js.map', js.map);
+    fs.writeFileSync('theme-static.css', tools.buildStaticTheme(data.files));
   })
   .catch(error => console.error(error));

@@ -6,6 +6,7 @@ import * as path from 'path';
 import * as fs from 'fs';
 
 const sass = require('node-sass');
+const uglify = require('uglify-js');
 
 const DEFAULTS = {
   version: 'local',
@@ -19,6 +20,11 @@ export interface MaterialToolsOptions {
   theme?: MdTheme;
   mainFilename?: string;
   cache?: string;
+}
+
+export interface MaterialToolsData {
+  files: LocalBuildFiles,
+  dependencies: any
 }
 
 export class MaterialTools {
@@ -63,11 +69,40 @@ export class MaterialTools {
   }
 
   /**
-   * Figures out all the necessary files for a build, based on the options.
+   * Generates the minified and non-minified JS, as well as a source map, based on the options.
+   */
+  buildJS(data: MaterialToolsData, filename: string): { source: string, compressed: string, map: string } {
+    let mainModule = data.dependencies._mainModule;
+    let dependencyString = mainModule.dependencies.map(name => `'${name}'`).join(', ');
+    let raw = data.files.js.map(path => fs.readFileSync(path).toString()).join('\n');
+    let source =
+    `
+      (function() {
+        "use strict";
+        angular.module('${mainModule.rawName}', [${dependencyString}]);
+      })();
+
+      ${raw}
+    `;
+
+    let compressed = uglify.minify(source, {
+      fromString: true,
+      outSourceMap: filename
+    });
+
+    return {
+      source: source,
+      compressed: compressed.code,
+      map: compressed.map
+    }
+  }
+
+  /**
+   * Figures out all the dependencies and necessary files for a build, based on the options.
    * @return {Promise<any>} Resolves with a map, containing the necessary
    * JS and CSS files.
    */
-  getFiles(): Promise<LocalBuildFiles> {
+  _getData(): Promise<MaterialToolsData> {
     const options = this.options;
 
     return this.packageResolver
@@ -85,7 +120,12 @@ export class MaterialTools {
         return this.localResolver.resolve(
           data.dependencies._flat,
           data.versionRoot
-        );
+        ).then(files => {
+          return {
+            files: files,
+            dependencies: data.dependencies
+          }
+        });
       });
   }
 

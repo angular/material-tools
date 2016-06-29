@@ -30,6 +30,9 @@ describe('Dependency Resolver', () => {
   it('should be able to get all modules', () => {
     let dependencies = this.resolver.resolve(filename)._flat;
 
-    expect(dependencies).toEqual(['core', 'list', 'autocomplete', 'theming']);
+    expect(dependencies).toContain('core');
+    expect(dependencies).toContain('theming');
+    expect(dependencies).toContain('list');
+    expect(dependencies).toContain('autocomplete');
   });
 });
