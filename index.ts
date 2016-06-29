@@ -1,23 +1,20 @@
 import {MaterialTools} from './lib/MaterialTools';
 
-new MaterialTools({
+let tools = new MaterialTools({
   version: '1.1.0-rc.5',
-  modules: ['datepicker']
-})
-.getFiles()
-.then(files => console.log(files))
-.catch(error => console.error(error));
-
-/** Test Environment **/
-import {ThemingBuilder} from './lib/theming/ThemingBuilder';
-
-let themeBuilder = new ThemingBuilder({
-  primaryPalette: 'red',
-  accentPalette: 'blue',
-  warnPalette: 'orange',
-  backgroundPalette: 'grey'
+  modules: ['datepicker'],
+  theme: {
+    primaryPalette: 'indigo',
+    accentPalette: 'purple',
+    warnPalette: 'deep-orange',
+    backgroundPalette: 'grey'
+  }
 });
 
-
-let themeCSS = themeBuilder.build();
-// -- console.log(themeCSS);
+/** Retrieve the basic build files for the modules */
+tools
+  .getFiles()
+  .then(files => {
+    require('fs').writeFileSync('theme-static.css', tools.buildStaticTheme(files));
+  })
+  .catch(error => console.error(error));

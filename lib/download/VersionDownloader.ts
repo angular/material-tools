@@ -5,27 +5,24 @@ let tar = require('tar-fs');
 
 export class VersionDownloader {
 
-  private _baseUrl: string;
+  private _moduleRepo: string;
+  private _sourceRepo: string;
   private _extension: string;
 
   constructor() {
-    this._baseUrl = 'https://github.com/angular/bower-material/archive/v';
+    this._moduleRepo = 'https://github.com/angular/bower-material/archive/v';
+    this._sourceRepo = 'https://github.com/angular/material/archive/v';
     this._extension = '.tar.gz';
   }
 
-  /**
-   * Fetches the specified version from the Angular Material Repository and
-   * stores it inside of a cache.
-   * @returns {Promise.<String>} Path of the downloaded Angular Material version.
-   */
-  get(version: string, destination: string): Promise<string> {
+  private _downloadFile(url: string, destination: string) {
     return new Promise((resolve, reject) => {
       let rejectPromise = error => {
         console.error(error);
         reject(error);
       };
 
-      let stream = request(this._baseUrl + version + this._extension)
+      let stream = request(url)
         .on('error', rejectPromise)
         .on('response', response => {
           if (response.statusCode === 200) {
@@ -43,10 +40,29 @@ export class VersionDownloader {
                 stream.destroy();
               });
           } else {
-            rejectPromise(`Failed to download ${version}. Status code: ${response.statusCode}.`);
+            rejectPromise(`Failed to download ${url}. Status code: ${response.statusCode}.`);
             stream.destroy();
           }
         });
     });
   }
+
+  /**
+   * Fetches the specified version from the Bower Material Repository and stores
+   * it in the specified destination.
+   * @returns {Promise.<String>} Path of the downloaded Bower Material version.
+   */
+  getModuleVersion(version: string, destination: string): Promise<string> {
+    return this._downloadFile(this._moduleRepo + version + this._extension, destination);
+  }
+
+  /**
+   * Fetches the specified version from the Angular Material Repository and
+   * stores it in the specified destination.
+   * @returns {Promise.<String>} Path of the downloaded Angular Material version.
+   */
+  getSourceVersion(version: string, destination: string): Promise<string> {
+    return this._downloadFile(this._sourceRepo + version + this._extension, destination);
+  }
+
 }

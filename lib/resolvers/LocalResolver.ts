@@ -1,4 +1,6 @@
-let glob = require('glob');
+import * as path from 'path';
+
+const glob = require('glob');
 
 export class LocalResolver {
 
@@ -37,29 +39,59 @@ export class LocalResolver {
    * @param {string[]} modules The modules to be looked up.
    */
   private resolveThemes(modules: string[], ...rest) {
-    let pattern = `/*(${modules.join('|')})/**/*-theme.css`;
+    let pattern = `/*(${modules.join('|')})/**/*-theme.scss`;
     return this.resolvePattern.call(this, pattern, ...rest, false);
+  }
+
+  /**
+   * Looks up for all SCSS files, related to the specified modules.
+   * @param modules Modules to be looked up
+   * @param sourceDirectory Angular Material Source directory
+   * @returns {Promise.<Array>} Promise which resolves with an array of paths to the SCSS files.
+   */
+  private resolveSCSS(modules: string[], sourceDirectory: string) {
+    return Promise.all([
+      this.resolveExtension(modules, 'scss', path.join(sourceDirectory, 'components')),
+      this.resolvePattern('/*.scss', path.join(sourceDirectory, 'core', 'style'))
+    ]).then(data => {
+      return data[0].concat(data[1]);
+    });
   }
 
   /**
    * Resolves JS and CSS files within a directory.
    * @param {string[]} modules Modules to be resolved.
-   * @param {string} directory The directory to be looked up.
+   * @param {Object} versionDirectory The directory of the stored version files.
    * @returns {Promise.<any>} Contains the paths to the JS and CSS files.
    */
-  resolve(modules: string[], directory: string): Promise<any> {
+  resolve(modules: string[], versionDirectory: string): Promise<LocalBuildFiles> {
+    let jsModules = path.join(versionDirectory, 'module', 'modules', 'js');
+    let sourceRoot = path.join(versionDirectory, 'source', 'src');
+
     return Promise.all([
-      this.resolveExtension(modules, 'js', directory),
-      this.resolveExtension(modules, 'css', directory, false),
-      this.resolveThemes(modules, directory)
+      this.resolveExtension(modules, 'js', jsModules),
+      this.resolveExtension(modules, 'css', jsModules, false),
+      this.resolveSCSS(modules, sourceRoot),
+      this.resolveThemes(modules, path.join(sourceRoot, 'components'))
     ])
     .then(results => {
       return {
+        root: versionDirectory,
         js: results[0],
         css: results[1],
-        themes: results[2]
+        scss: results[2],
+        themes: results[3]
       };
     });
   }
 
+}
+
+/** Interface for the output object of the local resolver. */
+export interface LocalBuildFiles {
+  root: string;
+  js: string[];
+  css: string[];
+  scss: string[];
+  themes: string[];
 }

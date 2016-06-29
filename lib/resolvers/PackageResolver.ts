@@ -5,9 +5,11 @@ import * as fs from 'fs';
 export class PackageResolver {
 
   private _cache: string;
+  private _versionDownloader: VersionDownloader;
 
   constructor(cache: string) {
     this._cache = path.resolve(cache);
+    this._versionDownloader = new VersionDownloader();
   }
 
   /**
@@ -32,24 +34,37 @@ export class PackageResolver {
   }
 
   /**
-   * Resolves the directory for a version. The directory either gets taken
+   * Resolves the directories for a version. The version either gets taken
    * from the cache, or is downloaded via the VersionDownloader.
    * @param  {string} version Angular Material version
-   * @return {Promise<string>} Resolves with the path to the directory.
+   * @return {Promise<{Object>} Resolves with an object, containing the paths to the
+   * source version and module version.
    */
-  resolve(version: string): Promise<string> {
-    if (version === 'local') return Promise.resolve(
-      path.dirname(require.resolve('angular-material'))
-    );
+  resolve(version: string): Promise<{ source: string, module: string }> {
+    if (version === 'local') {
+      let packageFile = path.join(path.dirname(require.resolve('angular-material')), 'package.json');
+      // Load the version from the local installed Angular Material dependency.
+      version = require(packageFile)['version'];
+    }
 
-    return new Promise((resolve, reject) => {
-      this.isCached(version).then(resolve,
-        downloadDestination => {
-          new VersionDownloader()
-            .get(version, downloadDestination)
-            .then(resolve, reject);
+    return this.isCached(version)
+      .then(cacheDirectory => {
+        return {
+          module: path.join(cacheDirectory, 'module'),
+          source: path.join(cacheDirectory, 'source')
+        }
+      })
+      .catch(cacheDirectory => {
+        return Promise.all([
+          this._versionDownloader.getModuleVersion(version, path.join(cacheDirectory, 'module')),
+          this._versionDownloader.getSourceVersion(version, path.join(cacheDirectory, 'source'))
+        ]).then(directories => {
+          return {
+            module: directories[0],
+            source: directories[1]
+          };
         });
-    });
+      });
   }
 
 }

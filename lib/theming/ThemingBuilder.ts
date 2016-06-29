@@ -18,7 +18,7 @@ export class ThemingBuilder {
    * Generates a static theme file from the specified theme.
    * @param theme Angular Material Theme
    */
-  constructor(private theme: MdTheme) {
+  constructor(theme: MdTheme) {
 
     // Create a virtual context, to isolate the script which modifies the globals
     // to be able to mock a Browser Environment.

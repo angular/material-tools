@@ -1,25 +1,32 @@
 import {DependencyResolver} from './resolvers/DependencyResolver';
 import {PackageResolver} from './resolvers/PackageResolver';
-import {LocalResolver} from './resolvers/LocalResolver';
+import {LocalResolver, LocalBuildFiles} from './resolvers/LocalResolver';
+import {ThemingBuilder, MdTheme} from './theming/ThemingBuilder';
 import * as path from 'path';
+import * as fs from 'fs';
+
+const sass = require('node-sass');
 
 const DEFAULTS = {
   version: 'local',
   mainFilename: 'angular-material.js',
   cache: './.material-cache/'
-}
+};
 
 export interface MaterialToolsOptions {
   modules?: string[];
   version?: string;
+  theme?: MdTheme;
   mainFilename?: string;
   cache?: string;
 }
 
 export class MaterialTools {
+
   private packageResolver: PackageResolver;
   private dependencyResolver: DependencyResolver;
   private localResolver: LocalResolver;
+  private themeBuilder: ThemingBuilder;
 
   constructor(private options: MaterialToolsOptions) {
     Object.keys(DEFAULTS).forEach(key => {
@@ -31,6 +38,28 @@ export class MaterialTools {
     this.packageResolver = new PackageResolver(this.options.cache);
     this.dependencyResolver = new DependencyResolver();
     this.localResolver = new LocalResolver();
+
+    if (this.options.theme) {
+      this.themeBuilder = new ThemingBuilder(this.options.theme)
+    }
+  }
+
+  /**
+   * Builds a static theme stylesheet, based on the specified options.
+   * @param buildFiles Build files to be used to generate the static theme.
+   * @returns {string} Generated theme stylesheet
+   */
+  buildStaticTheme(buildFiles: LocalBuildFiles): string {
+    if (!this.themeBuilder) {
+      return;
+    }
+
+    let themeCSS = buildFiles.themes
+      .map(themeFile => fs.readFileSync(themeFile).toString())
+      .map(themeSCSS => this._buildThemeStylesheet(buildFiles.scss, themeSCSS))
+      .reduce((styleSheet, part) => styleSheet + part);
+
+   return this.themeBuilder.build(themeCSS);
   }
 
   /**
@@ -38,16 +67,16 @@ export class MaterialTools {
    * @return {Promise<any>} Resolves with a map, containing the necessary
    * JS and CSS files.
    */
-  getFiles(): Promise<any> {
+  getFiles(): Promise<LocalBuildFiles> {
     const options = this.options;
 
     return this.packageResolver
       .resolve(options.version)
-      .then(root => {
+      .then(versionData => {
         return {
-          root: root,
+          versionRoot: path.resolve(versionData.module, '../'),
           dependencies: this.dependencyResolver.resolve(
-            path.join(root, options.mainFilename),
+            path.join(versionData.module, options.mainFilename),
             options.modules
           )
         };
@@ -55,8 +84,35 @@ export class MaterialTools {
       .then(data => {
         return this.localResolver.resolve(
           data.dependencies._flat,
-          path.join(data.root, 'modules', 'js')
+          data.versionRoot
         );
       });
+  }
+
+  /**
+   * Builds the specified stylesheet and includes the required SCSS base files, to access
+   * the mixins and variables.
+   */
+  private _buildThemeStylesheet(scssFiles: string[], styleContent: string): string {
+
+    // Those are the base SCSS files from the Angular Material Build Process.
+    // It is important for the files to have a specific order, otherwise the variables
+    // can't be resolved in the stylesheet.
+    let baseSCSSFiles = [
+      'variables.scss',
+      'mixins.scss'
+    ];
+
+    scssFiles = scssFiles.filter(file => baseSCSSFiles.indexOf(path.basename(file)) !== -1);
+
+    // Load the base SCSS files, to be able to prepend them to the style content.
+    let scssBaseContent = scssFiles
+      .map(scssFile => fs.readFileSync(scssFile).toString())
+      .join('');
+
+    return sass.renderSync({
+      data: scssBaseContent + styleContent,
+      outputStyle: 'compressed'
+    }).css.toString();
   }
 }
