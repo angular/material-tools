@@ -20,9 +20,9 @@ export class PackageResolver {
    * cache directory will be passed to the promise.
    */
   private isCached(version: string): Promise<string> {
-    return new Promise((resolve, reject) => {
-      let destination = path.join(this._cache, version);
+    let destination = path.join(this._cache, version);
 
+    return new Promise((resolve, reject) => {
       fs.access(destination, fs.R_OK | fs.W_OK, doesNotExist => {
         if (doesNotExist) {
           reject(destination);
