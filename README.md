@@ -11,14 +11,16 @@ import {MaterialTools} from './lib/MaterialTools';
 
 let tools = new MaterialTools(options);
 
-tools.getFiles()
+tools
+  .build()
   .then(files => console.log(files))
   .catch(error => console.error(error));
 ```
 
 ### Options
-* `modules?: string[]` - The modules that should be part of the build.
-* `version: string = 'local'` - Version of Angular Material. If set to `local`, the current
+* `destination: string` - Target location for the Material build.
+* `modules?: string[]` - Modules that should be part of the build.
+* `version: string = 'node'` - Version of Angular Material. If set to `node`, the current
 Material version from the `package.json` will be loaded, otherwise it will be downloaded.
 * `cache: string = './.material-cache/'` - Directory for caching downloads.
 * `mainFilename: string = 'angular-material.js'` - Name of the file that will be loaded to

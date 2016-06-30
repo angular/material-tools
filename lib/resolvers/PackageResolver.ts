@@ -41,7 +41,7 @@ export class PackageResolver {
    * source version and module version.
    */
   resolve(version: string): Promise<{ source: string, module: string }> {
-    if (version === 'local') {
+    if (version === 'node') {
       let packageFile = path.join(path.dirname(require.resolve('angular-material')), 'package.json');
       // Load the version from the local installed Angular Material dependency.
       version = require(packageFile)['version'];

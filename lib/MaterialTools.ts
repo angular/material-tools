@@ -24,18 +24,20 @@ export class MaterialTools {
       }
     });
 
-    if (options.destination) {
-      options.destination = path.resolve(options.destination);
+    let {destination, cache, theme} = this.options;
+
+    if (destination) {
+      this.options.destination = path.resolve(destination);
     } else {
       throw new Error('You have to specify a destination.');
     }
 
-    this.packageResolver = new PackageResolver(this.options.cache);
+    this.packageResolver = new PackageResolver(cache);
     this.dependencyResolver = new DependencyResolver();
     this.localResolver = new LocalResolver();
 
-    if (this.options.theme) {
-      this.themeBuilder = new ThemingBuilder(this.options.theme)
+    if (theme) {
+      this.themeBuilder = new ThemingBuilder(theme)
     }
   }
 
@@ -43,32 +45,35 @@ export class MaterialTools {
    * Builds all of the files.
    */
   build(): Promise<MaterialToolsData> {
-    return Promise.all([
-      this._getData(),
-      this._makeDirectory(this.options.destination)
-    ]).then(buildData => {
-      let data = buildData[0];
-      let base = path.join(buildData[1], this.options.destinationFilename);
 
-      let minifiedJSName = `${base}.min.js`;
-      let js = this._buildJS(data, minifiedJSName);
-      let css = this._buildCSS(data);
+    return this._getData()
+      .then(buildData => {
+        // Create the destination path.
+        return this._makeDirectory(this.options.destination).then(() => {
+          return buildData;
+        })
+      })
+      .then(buildData => {
+        let base = path.join(this.options.destination, this.options.destinationFilename);
+        let minifiedJSName = `${base}.min.js`;
+        let js = this._buildJS(buildData, minifiedJSName);
+        let css = this._buildCSS(buildData);
 
-      // JS files
-      fs.writeFileSync(`${base}.js`, js.source);
-      fs.writeFileSync(minifiedJSName, js.compressed);
-      fs.writeFileSync(`${minifiedJSName}.map`, js.map);
+        // JS files
+        fs.writeFileSync(`${base}.js`, js.source);
+        fs.writeFileSync(minifiedJSName, js.compressed);
+        fs.writeFileSync(`${minifiedJSName}.map`, js.map);
 
-      // CSS files
-      fs.writeFileSync(`${base}.css`, css.source);
-      fs.writeFileSync(`${base}.min.css`, css.compressed);
+        // CSS files
+        fs.writeFileSync(`${base}.css`, css.source);
+        fs.writeFileSync(`${base}.min.css`, css.compressed);
 
-      if (this.options.theme) {
-        fs.writeFileSync(`${base}-theme.css`, this._buildStaticTheme(data.files));
-      }
+        if (this.options.theme) {
+          fs.writeFileSync(`${base}-theme.css`, this._buildStaticTheme(buildData.files));
+        }
 
-      return data;
-    });
+        return buildData;
+      });
   }
 
   /**
@@ -198,10 +203,11 @@ export class MaterialTools {
       mkdirp(path, error => error ? reject(error) : resolve(path));
     });
   };
+
 }
 
 const DEFAULTS: MaterialToolsOptions = {
-  version: 'local',
+  version: 'node',
   mainFilename: 'angular-material.js',
   destinationFilename: 'angular-material',
   cache: './.material-cache/'
