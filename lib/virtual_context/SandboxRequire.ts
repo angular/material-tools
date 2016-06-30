@@ -2,31 +2,36 @@ import * as fs from 'fs';
 import * as vm from 'vm';
 import * as path from 'path';
 
-let NodeModule = require('module');
+const NodeModule = require('module');
+const merge = require('merge');
 
-/**
- * Global cache for all required modules with the associated module exports
- */
-export let EXPORTS_CACHE = {};
+/** Default Options for the Sandbox Require */
+const DEFAULT_OPTIONS: SandboxRequireOptions = {
+  caching: true,
+  strictMode: false
+};
 
 /**
  * Creates a require function, which runs the required files inside of a new Virtual Machine,
  * which supports the Node Environment inside of the new VM, without accessing the main VM.
  * @param filePath File path of the current used module
  * @param globals Globals which will be applied to the context
- * @param useStrict Automatically enables Strict Mode in the required files
+ * @param options Options for the Sandboxed Require
+ * @param EXPORTS_CACHE Cache Object for the sandboxed require.
  * @returns {Function(<String>)}
  */
-export function createSandboxRequire(filePath, globals?, useStrict = false) {
+export function createSandboxRequire(filePath, globals?, options?: SandboxRequireOptions, EXPORTS_CACHE = {}) {
+
+  options = merge(DEFAULT_OPTIONS, options);
 
   let _parentModule = new NodeModule(filePath);
   _parentModule.filename = filePath;
   _parentModule.paths = NodeModule._nodeModulePaths(path.dirname(filePath));
 
-  function SandboxRequire(file) {
+   function SandboxRequire(file: string): any {
     let fileName = resolve(file);
 
-    if (EXPORTS_CACHE[fileName]) {
+    if (EXPORTS_CACHE[fileName] && options.caching) {
       return EXPORTS_CACHE[fileName];
     }
 
@@ -35,11 +40,13 @@ export function createSandboxRequire(filePath, globals?, useStrict = false) {
     let currentModule = new NodeModule(fileName, _parentModule);
     currentModule.filename = fileName;
 
-    let locals = getLocals(currentModule, createSandboxRequire(fileName, globals));
+    let childSandboxRequire = createSandboxRequire(fileName, globals, options, EXPORTS_CACHE);
+
+    let locals = getLocals(currentModule, childSandboxRequire);
 
     fileSource =
       `(function(global, ${ Object.keys(locals).join(', ') }) {
-        ${useStrict ? '"use strict";' : ''}
+        ${options.strictMode ? '"use strict";' : ''}
         ${fileSource}
       });`;
 
@@ -59,8 +66,9 @@ export function createSandboxRequire(filePath, globals?, useStrict = false) {
     // Run our Function inside of the new context.
     runFn.apply(currentModule.exports, [globals].concat(_localValues));
 
-    // Cache the new exports
-    EXPORTS_CACHE[fileName] = currentModule.exports;
+    if (options.caching) {
+      EXPORTS_CACHE[fileName] = currentModule.exports;
+    }
 
     return currentModule.exports;
   }
@@ -90,14 +98,21 @@ export function createSandboxRequire(filePath, globals?, useStrict = false) {
 
   SandboxRequire['resolve'] = resolve;
 
-  return SandboxRequire;
+  return <SandboxRequireFunction> SandboxRequire;
 
 }
 
-/**
- * Overwrites the cache object for all Sandbox require calls.
- * @param cache Cache Object for the Sandbox Require
- */
-export function setSandboxRequireCache(cache: any) {
-  EXPORTS_CACHE = cache;
+/** Definition for the Sandbox Require Function */
+export interface SandboxRequireFunction {
+  (file: string): any;
+  resolve: (moduleName) => string;
+}
+
+/** Options for the Sandbox Require Generation */
+export interface SandboxRequireOptions {
+  /** Whether required files should run in Strict Mode */
+  strictMode?: boolean;
+
+  /** Whether the created require function should cache the exports */
+  caching?: boolean
 }

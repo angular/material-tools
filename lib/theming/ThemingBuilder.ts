@@ -30,7 +30,9 @@ export class ThemingBuilder {
 
     // Execute our isolated browser resolve script in the virtual context, to completely
     // isolate the window modification from our node environment.
-    let injector = this._virtualContext.run(__dirname + '/../resolvers/isolated_browser_resolver.js', true)['injector'];
+    let injector = this._virtualContext.run(__dirname + '/../resolvers/isolated_browser_resolver.js', {
+      strictMode: true
+    })['injector'];
 
     // Default Color Palettes for Angular Material.
     let _colorPalettes = injector['$mdColorPalette'];

@@ -1,4 +1,4 @@
-import {createSandboxRequire} from './SandboxRequire';
+import {createSandboxRequire, SandboxRequireOptions} from './SandboxRequire';
 import {BrowserWindow} from './BrowserMock';
 
 export class VirtualContext {
@@ -28,11 +28,11 @@ export class VirtualContext {
    * Runs the specified file inside of the Virtual Context and returns the synchronized module exports from
    * the second V8 instance.
    * @param fileName File which will be run inside of the Virtual Context.
-   * @param useStrict Automatically enables Strict Mode in the specified file.
+   * @param options Options for the Sandboxed Require
    * @returns {Object} Module Exports of the given file
    */
-  run(fileName: string, useStrict = false): any {
-    return createSandboxRequire(__filename, this.globals, useStrict)(fileName);
+  run(fileName: string, options?: SandboxRequireOptions): any {
+    return createSandboxRequire(__filename, this.globals, options)(fileName);
   }
 
 }
