@@ -51,8 +51,8 @@ export class LocalResolver {
    */
   private resolveSCSS(modules: string[], sourceDirectory: string) {
     return Promise.all([
-      this.resolveExtension(modules, 'scss', path.join(sourceDirectory, 'components')),
-      this.resolvePattern('/*.scss', path.join(sourceDirectory, 'core', 'style'))
+      this.resolveExtension(modules, 'scss', path.join(sourceDirectory, 'components'), false),
+      this.resolvePattern('/*.scss', path.join(sourceDirectory, 'core', 'style'), false)
     ]).then(data => {
       return data[0].concat(data[1]);
     });
@@ -67,6 +67,7 @@ export class LocalResolver {
   resolve(modules: string[], versionDirectory: string): Promise<LocalBuildFiles> {
     let jsModules = path.join(versionDirectory, 'module', 'modules', 'js');
     let sourceRoot = path.join(versionDirectory, 'source', 'src');
+
 
     return Promise.all([
       this.resolveExtension(modules, 'js', jsModules),

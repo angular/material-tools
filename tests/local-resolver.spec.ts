@@ -35,7 +35,7 @@ describe('Local Resolver', () => {
     this.resolver.resolve(tooltip, directory).then(files => {
       reduceToFilenames(files);
 
-      expect(files.themes).toContain('tooltip-default-theme.css');
+      expect(files.themes).toContain('tooltip-default-theme.scss');
 
       done();
     }, done.fail);
@@ -75,9 +75,12 @@ describe('Local Resolver', () => {
 
   // Util that strips the directories so they're easier to match
   function reduceToFilenames(input: any): void {
-    Object.keys(input).forEach(key => {
-      input[key] = input[key].map(current => path.basename(current));
-    });
+    Object
+      .keys(input)
+      .filter(key => Array.isArray(input[key]))
+      .forEach(key => {
+        input[key] = input[key].map(current => path.basename(current));
+      });
   }
 
 });

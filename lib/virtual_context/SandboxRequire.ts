@@ -22,7 +22,7 @@ const DEFAULT_OPTIONS: SandboxRequireOptions = {
  */
 export function createSandboxRequire(filePath, globals?, options?: SandboxRequireOptions, EXPORTS_CACHE = {}) {
 
-  options = merge(DEFAULT_OPTIONS, options);
+  options = merge({}, DEFAULT_OPTIONS, options || {});
 
   let _parentModule = new NodeModule(filePath);
   _parentModule.filename = filePath;

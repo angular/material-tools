@@ -1,4 +1,4 @@
-import {createSandboxRequire, setSandboxRequireCache} from '../lib/virtual_context/SandboxRequire';
+import {createSandboxRequire} from '../lib/virtual_context/SandboxRequire';
 
 describe('sandbox require', () => {
 
@@ -24,13 +24,12 @@ describe('sandbox require', () => {
     let secondExports = require('./fixtures/virtual-context/fake-virtual-context-exports');
 
     expect(secondExports.length).toBe(51);
-
-    // Reset the cache, because we don't want to have the changed exports in other test suites.
-    setSandboxRequireCache({});
   });
 
-  it('should probably clear the cache', () => {
-    let require = createSandboxRequire(__filename, {});
+  it('should not use the cache if disabled', () => {
+    let require = createSandboxRequire(__filename, {}, {
+      caching: false
+    });
 
     let exports = require('./fixtures/virtual-context/fake-virtual-context-exports');
 
@@ -39,9 +38,6 @@ describe('sandbox require', () => {
     // Modify the current exports reference to validate that that the *new* exports
     // are using the same reference.
     exports.push(51);
-
-    // Clear the cache to avoid, that the previous changed exports are used for the new require.
-    setSandboxRequireCache({});
 
     let secondExports = require('./fixtures/virtual-context/fake-virtual-context-exports');
 
