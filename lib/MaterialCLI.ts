@@ -6,9 +6,11 @@ let options = require('commander');
 
 options
   .option('-v, --version [version]', 'Angular Material version.')
+  .option('-d, --destination [path]', 'Target location for the Material build.')
   .option('-m, --modules <list>', 'Comma-separated list of modules to be included in the build.', list => list.split(','))
   .option('--cache [directory]', 'Directory to be used as a cache for downloaded versions.')
   .option('--main-filename [name]', 'File to be used to figure out the dependencies between modules.')
+  .option('--destination-filename [name]', 'Base for the output filenames.')
   .parse(process.argv);
 
 // `commander` has a `version` method on it's prototype. This means that if no `version`
@@ -23,7 +25,4 @@ if (!options.hasOwnProperty('version')) {
 
 const tools = new MaterialTools(options);
 
-tools
-  ._getData()
-  .then(result => console.log(result))
-  .catch(error => console.error(error));
+tools.build().catch(error => console.error(error));
