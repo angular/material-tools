@@ -5,6 +5,7 @@ import {MaterialTools} from './MaterialTools';
 let options = require('commander');
 
 options
+  .option('-c, --config [path]', 'JSON config file to be loaded.')
   .option('-v, --version [version]', 'Angular Material version.')
   .option('-d, --destination [path]', 'Target location for the Material build.')
   .option('-m, --modules <list>', 'Comma-separated list of modules to be included in the build.', list => list.split(','))
@@ -23,6 +24,6 @@ if (!options.hasOwnProperty('version')) {
   });
 }
 
-const tools = new MaterialTools(options);
+const tools = new MaterialTools(options.config || options);
 
 tools.build().catch(error => console.error(error));

@@ -16,11 +16,14 @@ export class MaterialTools {
   private dependencyResolver: DependencyResolver;
   private localResolver: LocalResolver;
   private themeBuilder: ThemingBuilder;
+  private options: MaterialToolsOptions;
 
-  constructor(private options: MaterialToolsOptions) {
+  constructor(_options: MaterialToolsOptions | string) {
+    this.options = typeof _options === 'string' ? require(path.resolve(_options)) : _options;
+
     Object.keys(DEFAULTS).forEach(key => {
-      if (typeof options[key] === 'undefined') {
-        options[key] = DEFAULTS[key];
+      if (typeof this.options[key] === 'undefined') {
+        this.options[key] = DEFAULTS[key];
       }
     });
 
