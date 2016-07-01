@@ -10,7 +10,7 @@ export class DependencyResolver {
    * @param  {string=} mainModule Name of the main wrapper module.
    * @return {Object} Contains a map of the dependencies, as well as a flat list of all of them.
    */
-  resolve(file: string, modules?: string[], mainModule?: string): { _flat: string[], _mainModule: any } {
+  static resolve(file: string, modules?: string[], mainModule?: string): any {
     // Create a virtual context, to isolate the script which modifies the globals
     // to be able to mock a Browser Environment.
     let virtualContext = new VirtualContext({

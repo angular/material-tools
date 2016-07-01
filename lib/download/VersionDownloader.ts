@@ -3,19 +3,13 @@ import * as zlib from 'zlib';
 let request = require('request');
 let tar = require('tar-fs');
 
+const MODULE_REPO = 'https://github.com/angular/bower-material/archive/v';
+const SOURCE_REPO = 'https://github.com/angular/material/archive/v';
+const EXTENSION = '.tar.gz';
+
 export class VersionDownloader {
 
-  private _moduleRepo: string;
-  private _sourceRepo: string;
-  private _extension: string;
-
-  constructor() {
-    this._moduleRepo = 'https://github.com/angular/bower-material/archive/v';
-    this._sourceRepo = 'https://github.com/angular/material/archive/v';
-    this._extension = '.tar.gz';
-  }
-
-  private _downloadFile(url: string, destination: string) {
+  private static _downloadFile(url: string, destination: string) {
     return new Promise((resolve, reject) => {
       let rejectPromise = error => {
         console.error(error);
@@ -52,8 +46,8 @@ export class VersionDownloader {
    * it in the specified destination.
    * @returns {Promise.<String>} Path of the downloaded Bower Material version.
    */
-  getModuleVersion(version: string, destination: string): Promise<string> {
-    return this._downloadFile(this._moduleRepo + version + this._extension, destination);
+  static getModuleVersion(version: string, destination: string): Promise<string> {
+    return this._downloadFile(MODULE_REPO + version + EXTENSION, destination);
   }
 
   /**
@@ -61,8 +55,8 @@ export class VersionDownloader {
    * stores it in the specified destination.
    * @returns {Promise.<String>} Path of the downloaded Angular Material version.
    */
-  getSourceVersion(version: string, destination: string): Promise<string> {
-    return this._downloadFile(this._sourceRepo + version + this._extension, destination);
+  static getSourceVersion(version: string, destination: string): Promise<string> {
+    return this._downloadFile(SOURCE_REPO + version + EXTENSION, destination);
   }
 
 }

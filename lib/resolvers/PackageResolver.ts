@@ -3,31 +3,20 @@ import * as path from 'path';
 import * as fs from 'fs';
 
 export class PackageResolver {
-
-  private _cache: string;
-  private _versionDownloader: VersionDownloader;
-
-  constructor(cache: string) {
-    this._cache = path.resolve(cache);
-    this._versionDownloader = new VersionDownloader();
-  }
-
   /**
    * Checks whether a version is cached.
-   * @param  {string} version The version to be checked.
+   * @param  {string} path Path to be checked.
    * @return {Promise<string>} Gets resolved if the version is
    * cached, or rejected if it is not. In both cases the
    * cache directory will be passed to the promise.
    */
-  private isCached(version: string): Promise<string> {
-    let destination = path.join(this._cache, version);
-
+  private static isCached(path: string): Promise<string> {
     return new Promise((resolve, reject) => {
-      fs.access(destination, fs.R_OK | fs.W_OK, doesNotExist => {
+      fs.access(path, fs.R_OK | fs.W_OK, doesNotExist => {
         if (doesNotExist) {
-          reject(destination);
+          reject(path);
         } else {
-          resolve(destination);
+          resolve(path);
         }
       });
     });
@@ -36,18 +25,21 @@ export class PackageResolver {
   /**
    * Resolves the directories for a version. The version either gets taken
    * from the cache, or is downloaded via the VersionDownloader.
-   * @param  {string} version Angular Material version
+   * @param  {string} version Angular Material version.
+   * @param  {string} cache Root directory for the cache.
    * @return {Promise<{Object>} Resolves with an object, containing the paths to the
    * source version and module version.
    */
-  resolve(version: string): Promise<{ source: string, module: string }> {
+  static resolve(version: string, cache: string): Promise<{ source: string, module: string }> {
     if (version === 'node') {
       let packageFile = path.join(path.dirname(require.resolve('angular-material')), 'package.json');
       // Load the version from the local installed Angular Material dependency.
       version = require(packageFile)['version'];
     }
 
-    return this.isCached(version)
+    let cacheDirectory = path.join(path.resolve(cache), version);
+
+    return this.isCached(cacheDirectory)
       .then(cacheDirectory => {
         return {
           module: path.join(cacheDirectory, 'module'),
@@ -56,8 +48,8 @@ export class PackageResolver {
       })
       .catch(cacheDirectory => {
         return Promise.all([
-          this._versionDownloader.getModuleVersion(version, path.join(cacheDirectory, 'module')),
-          this._versionDownloader.getSourceVersion(version, path.join(cacheDirectory, 'source'))
+          VersionDownloader.getModuleVersion(version, path.join(cacheDirectory, 'module')),
+          VersionDownloader.getSourceVersion(version, path.join(cacheDirectory, 'source'))
         ]).then(directories => {
           return {
             module: directories[0],

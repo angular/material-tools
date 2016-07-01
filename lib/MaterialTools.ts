@@ -12,9 +12,6 @@ const mkdirp = require('mkdirp');
 
 export class MaterialTools {
 
-  private packageResolver: PackageResolver;
-  private dependencyResolver: DependencyResolver;
-  private localResolver: LocalResolver;
   private themeBuilder: ThemingBuilder;
   private options: MaterialToolsOptions;
 
@@ -27,20 +24,14 @@ export class MaterialTools {
       }
     });
 
-    let {destination, cache, theme} = this.options;
-
-    if (destination) {
-      this.options.destination = path.resolve(destination);
+    if (this.options.destination) {
+      this.options.destination = path.resolve(this.options.destination);
     } else {
       throw new Error('You have to specify a destination.');
     }
 
-    this.packageResolver = new PackageResolver(cache);
-    this.dependencyResolver = new DependencyResolver();
-    this.localResolver = new LocalResolver();
-
-    if (theme) {
-      this.themeBuilder = new ThemingBuilder(theme)
+    if (this.options.theme) {
+      this.themeBuilder = new ThemingBuilder(this.options.theme)
     }
   }
 
@@ -147,19 +138,19 @@ export class MaterialTools {
   _getData(): Promise<MaterialToolsData> {
     const options = this.options;
 
-    return this.packageResolver
-      .resolve(options.version)
+    return PackageResolver
+      .resolve(options.version, options.cache)
       .then(versionData => {
         return {
           versionRoot: path.resolve(versionData.module, '../'),
-          dependencies: this.dependencyResolver.resolve(
+          dependencies: DependencyResolver.resolve(
             path.join(versionData.module, options.mainFilename),
             options.modules
           )
         };
       })
       .then(data => {
-        return this.localResolver.resolve(
+        return LocalResolver.resolve(
           data.dependencies._flat,
           data.versionRoot
         ).then(files => {
