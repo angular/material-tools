@@ -6,7 +6,8 @@
   "license": "MIT",
   "scripts": {
     "postinstall": "typings install",
-    "test": "node scripts/run-tests.js"
+    "test": "node scripts/run-tests.js",
+    "build": "node scripts/build-release.js"
   },
   "dependencies": {
     "angular": "^1.5.7",
@@ -15,9 +16,9 @@
     "angular-material": "^1.1.0-rc.5",
     "clean-css": "^3.4.18",
     "commander": "^2.9.0",
+    "fs-extra": "^0.30.0",
     "glob": "^7.0.5",
     "merge": "^1.2.0",
-    "mkdirp": "^0.5.1",
     "node-sass": "^3.8.0",
     "request": "^2.72.0",
     "tar-fs": "^1.13.0",

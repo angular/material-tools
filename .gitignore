@@ -7,5 +7,6 @@ node_modules/
 # TypeScript
 typings/
 
-# Cached module downloads
+# Material Tools specific files / directories
 .material-cache/
+dist/

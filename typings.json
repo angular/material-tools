@@ -5,6 +5,7 @@
     "clean-css": "registry:dt/clean-css#3.4.9+20160316155526",
     "commander": "registry:dt/commander#2.3.0+20160317120654",
     "es6-promise": "registry:dt/es6-promise#0.0.0+20160614011821",
+    "fs-extra": "registry:dt/fs-extra#0.0.0+20160517121359",
     "mkdirp": "registry:dt/mkdirp#0.3.0+20160317120654",
     "node": "registry:dt/node#6.0.0+20160621231320",
     "source-map": "registry:dt/source-map#0.0.0+20160317120654",

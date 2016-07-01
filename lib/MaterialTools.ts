@@ -8,7 +8,7 @@ import * as fs from 'fs';
 const sass = require('node-sass');
 const uglify = require('uglify-js');
 const cleanCSS = require('clean-css');
-const mkdirp = require('mkdirp');
+const fse = require('fs-extra');
 
 export class MaterialTools {
 
@@ -194,7 +194,7 @@ export class MaterialTools {
    */
   _makeDirectory(path: string): Promise<string> {
     return new Promise((resolve, reject) => {
-      mkdirp(path, error => error ? reject(error) : resolve(path));
+      fse.mkdirp(path, error => error ? reject(error) : resolve(path));
     });
   };
 
