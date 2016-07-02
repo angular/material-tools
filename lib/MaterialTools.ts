@@ -77,7 +77,11 @@ export class MaterialTools {
         this._writeFile(`${base}.min.css`, css.compressed, license);
 
         if (this.options.theme) {
-          this._writeFile(`${base}-theme.css`, this._buildStaticTheme(buildData.files), license);
+          let compiledCSS = this._buildStaticTheme(buildData.files);
+          let themeStylesheet = CSSBuilder._buildStylesheet(compiledCSS);
+
+          this._writeFile(`${base}-theme.min.css`, themeStylesheet.compressed, license);
+          this._writeFile(`${base}-theme.css`, themeStylesheet.source, license);
         }
 
         return buildData;
@@ -99,7 +103,7 @@ export class MaterialTools {
       .map(themeSCSS => this._buildThemeStylesheet(buildFiles.scss, themeSCSS))
       .reduce((styleSheet, part) => styleSheet + part);
 
-   return this.themeBuilder.build(themeCSS);
+    return this.themeBuilder.build(themeCSS);
   }
 
   /**
