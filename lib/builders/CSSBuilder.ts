@@ -3,6 +3,7 @@ import {MaterialToolsData, MaterialToolsOutput} from '../MaterialTools';
 const cleanCSS = require('clean-css');
 const fse = require('fs-extra');
 const formatCSS = require('cssbeautify');
+const sass = require('node-sass');
 
 export class CSSBuilder {
 
@@ -37,6 +38,15 @@ export class CSSBuilder {
       indent: '  ',
       autosemicolon: true
     });
+  }
 
+  /**
+   * Compiles SCSS to CSS.
+   */
+  static _compileSCSS(styles: string): string {
+    return sass.renderSync({
+      data: styles,
+      outputStyle: 'compressed'
+    }).css.toString();
   }
 }

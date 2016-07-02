@@ -8,7 +8,6 @@ import {CSSBuilder} from './builders/CSSBuilder';
 
 import * as path from 'path';
 
-const sass = require('node-sass');
 const fse = require('fs-extra');
 
 export class MaterialTools {
@@ -89,24 +88,6 @@ export class MaterialTools {
   }
 
   /**
-   * Builds a static theme stylesheet, based on the specified options.
-   * @param buildFiles Build files to be used to generate the static theme.
-   * @returns {string} Generated theme stylesheet
-   */
-  _buildStaticTheme(buildFiles: LocalBuildFiles): string {
-    if (!this.themeBuilder) {
-      return;
-    }
-
-    let themeCSS = buildFiles.themes
-      .map(themeFile => fse.readFileSync(themeFile).toString())
-      .map(themeSCSS => this._buildThemeStylesheet(buildFiles.scss, themeSCSS))
-      .reduce((styleSheet, part) => styleSheet + part);
-
-    return this.themeBuilder.build(themeCSS);
-  }
-
-  /**
    * Figures out all the dependencies and necessary files for a build, based on the options.
    * @return {Promise<any>} Resolves with a map, containing the necessary
    * JS and CSS files.
@@ -142,30 +123,32 @@ export class MaterialTools {
   }
 
   /**
-   * Builds the specified stylesheet and includes the required SCSS base files, to access
-   * the mixins and variables.
+   * Builds a static theme stylesheet, based on the specified options.
+   * @param buildFiles Build files to be used to generate the static theme.
+   * @returns {string} Generated theme stylesheet
    */
-  private _buildThemeStylesheet(scssFiles: string[], styleContent: string): string {
+  _buildStaticTheme(buildFiles: LocalBuildFiles): string {
+    if (!this.themeBuilder) {
+      return;
+    }
 
-    // Those are the base SCSS files from the Angular Material Build Process.
-    // It is important for the files to have a specific order, otherwise the variables
-    // can't be resolved in the stylesheet.
     let baseSCSSFiles = [
       'variables.scss',
       'mixins.scss'
-    ];
+    ]
 
-    scssFiles = scssFiles.filter(file => baseSCSSFiles.indexOf(path.basename(file)) !== -1);
+    let scssFiles = buildFiles.scss.filter(file => baseSCSSFiles.indexOf(path.basename(file)) !== -1);
 
-    // Load the base SCSS files, to be able to prepend them to the style content.
     let scssBaseContent = scssFiles
       .map(scssFile => fse.readFileSync(scssFile).toString())
       .join('');
 
-    return sass.renderSync({
-      data: scssBaseContent + styleContent,
-      outputStyle: 'compressed'
-    }).css.toString();
+    let themeCSS = buildFiles.themes
+      .map(themeFile => fse.readFileSync(themeFile).toString())
+      .map(themeSCSS => CSSBuilder._compileSCSS(scssBaseContent + themeSCSS))
+      .reduce((styleSheet, part) => styleSheet + part);
+
+    return this.themeBuilder.build(themeCSS);
   }
 
   /**

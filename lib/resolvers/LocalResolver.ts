@@ -10,7 +10,7 @@ export class LocalResolver {
    * @param {string} directory Root directory for the pattern.
    * @param {boolean=true} required Whether to reject if no files are found.
    */
-  private static resolvePattern(pattern: string, directory: string, required = true) {
+  private static resolvePattern(pattern: string, directory: string, required = true): Promise<string[]> {
     return new Promise((resolve, reject) => {
       glob(pattern, { root: directory, nocase: true }, (error, files) => {
         if (error || (required && (!files || !files.length))) {
@@ -29,7 +29,7 @@ export class LocalResolver {
    * @param {string} extension Extension of the files to be looked up.
    * @returns {Promise.<Array>} Contains the paths to the relevant files.
    */
-  private static resolveExtension(modules: string[], extension: string, ...rest) {
+  private static resolveExtension(modules: string[], extension: string, ...rest): Promise<string[]> {
     let pattern = `/*(${modules.join('|')})/**/!(*.min|*-theme).${extension}`;
     return this.resolvePattern.call(this, pattern, ...rest);
   }
@@ -38,7 +38,7 @@ export class LocalResolver {
    * Looks up the theme files for an array of modules.
    * @param {string[]} modules The modules to be looked up.
    */
-  private static resolveThemes(modules: string[], ...rest) {
+  private static resolveThemes(modules: string[], ...rest): Promise<string[]> {
     let pattern = `/*(${modules.join('|')})/**/*-theme.scss`;
     return this.resolvePattern.call(this, pattern, ...rest, false);
   }
@@ -49,7 +49,7 @@ export class LocalResolver {
    * @param sourceDirectory Angular Material Source directory
    * @returns {Promise.<Array>} Promise which resolves with an array of paths to the SCSS files.
    */
-  private static resolveSCSS(modules: string[], sourceDirectory: string) {
+  private static resolveSCSS(modules: string[], sourceDirectory: string): Promise<string[]> {
     return Promise.all([
       this.resolveExtension(modules, 'scss', path.join(sourceDirectory, 'components'), false),
       this.resolvePattern('/*.scss', path.join(sourceDirectory, 'core', 'style'), false)
@@ -67,7 +67,6 @@ export class LocalResolver {
   static resolve(modules: string[], versionDirectory: string): Promise<LocalBuildFiles> {
     let jsModules = path.join(versionDirectory, 'module', 'modules', 'js');
     let sourceRoot = path.join(versionDirectory, 'source', 'src');
-
 
     return Promise.all([
       this.resolveExtension(modules, 'js', jsModules),
