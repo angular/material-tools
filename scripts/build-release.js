@@ -12,13 +12,16 @@ const TSC_BIN = './node_modules/typescript/bin/tsc';
 fse.mkdirpSync(`${__dirname}/../dist`);
 
 // Copy all current source files over to the distribution folder.
-fse.copySync(`${__dirname}/../lib/`,  `${__dirname}/../dist`);
+fse.copySync(`${__dirname}/../lib/`,  `${__dirname}/../dist/lib`);
+
+// Copy the package.json file to the distribution folder, so we can easily deploy the NPM module.
+fse.copySync(`${__dirname}/../package.json`, `${__dirname}/../dist/package.json`);
 
 // Retrieve all source files.
 let sourceFiles = glob(`${__dirname}/../lib/**/*.ts`);
 
 try {
-  exec(`node ${TSC_BIN} --declaration ${sourceFiles.join(' ') } ./typings/index.d.ts --outDir ./dist`, {
+  exec(`node ${TSC_BIN} --declaration ${sourceFiles.join(' ') } ./typings/index.d.ts --outDir ./dist/lib`, {
     cwd: `${__dirname}/..`
   });
 
