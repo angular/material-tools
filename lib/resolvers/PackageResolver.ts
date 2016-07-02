@@ -30,7 +30,7 @@ export class PackageResolver {
    * @return {Promise<{Object>} Resolves with an object, containing the paths to the
    * source version and module version.
    */
-  static resolve(version: string, cache: string): Promise<{ source: string, module: string }> {
+  static resolve(version: string, cache: string): Promise<{ source: string, module: string, version: string }> {
     if (version === 'node') {
       let packageFile = path.join(path.dirname(require.resolve('angular-material')), 'package.json');
       // Load the version from the local installed Angular Material dependency.
@@ -43,7 +43,8 @@ export class PackageResolver {
       .then(cacheDirectory => {
         return {
           module: path.join(cacheDirectory, 'module'),
-          source: path.join(cacheDirectory, 'source')
+          source: path.join(cacheDirectory, 'source'),
+          version: version
         }
       })
       .catch(cacheDirectory => {
@@ -53,7 +54,8 @@ export class PackageResolver {
         ]).then(directories => {
           return {
             module: directories[0],
-            source: directories[1]
+            source: directories[1],
+            version: version
           };
         });
       });

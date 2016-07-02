@@ -1,13 +1,14 @@
 import {DependencyResolver} from './resolvers/DependencyResolver';
 import {PackageResolver} from './resolvers/PackageResolver';
 import {LocalResolver, LocalBuildFiles} from './resolvers/LocalResolver';
+
 import {ThemingBuilder, MdTheme} from './theming/ThemingBuilder';
+import {JSBuilder} from './builders/JSBuilder';
+import {CSSBuilder} from './builders/CSSBuilder';
+
 import * as path from 'path';
-import * as fs from 'fs';
 
 const sass = require('node-sass');
-const uglify = require('uglify-js');
-const cleanCSS = require('clean-css');
 const fse = require('fs-extra');
 
 export class MaterialTools {
@@ -16,6 +17,11 @@ export class MaterialTools {
   private options: MaterialToolsOptions;
 
   constructor(_options: MaterialToolsOptions | string) {
+    if (!_options) {
+      // Add a runtime check for the JS version.
+      throw new Error('No options have been specified.');
+    }
+
     this.options = typeof _options === 'string' ? require(path.resolve(_options)) : _options;
 
     Object.keys(DEFAULTS).forEach(key => {
@@ -44,26 +50,34 @@ export class MaterialTools {
       .then(buildData => {
         // Create the destination path.
         return this._makeDirectory(this.options.destination).then(() => {
+          // Copy the license to the destination.
+          let filename = 'LICENSE';
+          let source = path.join(buildData.files.root, 'module', filename);
+          let destination = path.join(this.options.destination, filename);
+
+          fse.copy(source, destination);
+
           return buildData;
         })
       })
       .then(buildData => {
         let base = path.join(this.options.destination, this.options.destinationFilename);
         let minifiedJSName = `${base}.min.js`;
-        let js = this._buildJS(buildData, minifiedJSName);
-        let css = this._buildCSS(buildData);
+        let js = JSBuilder.build(buildData, minifiedJSName);
+        let css = CSSBuilder.build(buildData);
+        let license = this._getLicense(buildData.dependencies._flat);
 
         // JS files
-        fs.writeFileSync(`${base}.js`, js.source);
-        fs.writeFileSync(minifiedJSName, js.compressed);
-        fs.writeFileSync(`${minifiedJSName}.map`, js.map);
+        this._writeFile(`${base}.js`, js.source, license);
+        this._writeFile(minifiedJSName, js.compressed, license);
+        this._writeFile(`${minifiedJSName}.map`, js.map);
 
         // CSS files
-        fs.writeFileSync(`${base}.css`, css.source);
-        fs.writeFileSync(`${base}.min.css`, css.compressed);
+        this._writeFile(`${base}.css`, css.source, license);
+        this._writeFile(`${base}.min.css`, css.compressed, license);
 
         if (this.options.theme) {
-          fs.writeFileSync(`${base}-theme.css`, this._buildStaticTheme(buildData.files));
+          this._writeFile(`${base}-theme.css`, this._buildStaticTheme(buildData.files), license);
         }
 
         return buildData;
@@ -81,53 +95,11 @@ export class MaterialTools {
     }
 
     let themeCSS = buildFiles.themes
-      .map(themeFile => fs.readFileSync(themeFile).toString())
+      .map(themeFile => fse.readFileSync(themeFile).toString())
       .map(themeSCSS => this._buildThemeStylesheet(buildFiles.scss, themeSCSS))
       .reduce((styleSheet, part) => styleSheet + part);
 
    return this.themeBuilder.build(themeCSS);
-  }
-
-  /**
-   * Generates the minified and non-minified JS, as well as a source map, based on the options.
-   */
-  _buildJS(data: MaterialToolsData, filename: string): MaterialToolsOutput {
-    let mainModule = data.dependencies._mainModule;
-    let dependencyString = mainModule.dependencies.map(name => `'${name}'`).join(', ');
-    let raw = data.files.js.map(path => fs.readFileSync(path).toString()).join('\n');
-    let source =
-    `
-      (function() {
-        "use strict";
-        angular.module('${mainModule.rawName}', [${dependencyString}]);
-      })();
-
-      ${raw}
-    `;
-
-    let compressed = uglify.minify(source, {
-      fromString: true,
-      outSourceMap: filename
-    });
-
-    return {
-      source: source,
-      compressed: compressed.code,
-      map: compressed.map
-    }
-  }
-
-  /**
-   * Generates minified and non-minified version of the CSS, based on the options.
-   */
-  _buildCSS(data: MaterialToolsData): MaterialToolsOutput {
-    let raw = data.files.css.map(path => fs.readFileSync(path).toString()).join('\n');
-    let compressed = new cleanCSS().minify(raw);
-
-    return {
-      source: raw,
-      compressed: compressed.styles
-    }
   }
 
   /**
@@ -141,6 +113,9 @@ export class MaterialTools {
     return PackageResolver
       .resolve(options.version, options.cache)
       .then(versionData => {
+        // Update the resolved version, in case it was `node`.
+        options.version = versionData.version;
+
         return {
           versionRoot: path.resolve(versionData.module, '../'),
           dependencies: DependencyResolver.resolve(
@@ -180,7 +155,7 @@ export class MaterialTools {
 
     // Load the base SCSS files, to be able to prepend them to the style content.
     let scssBaseContent = scssFiles
-      .map(scssFile => fs.readFileSync(scssFile).toString())
+      .map(scssFile => fse.readFileSync(scssFile).toString())
       .join('');
 
     return sass.renderSync({
@@ -192,12 +167,41 @@ export class MaterialTools {
   /**
    * Promise wrapper around mkdirp.
    */
-  _makeDirectory(path: string): Promise<string> {
+  private _makeDirectory(path: string): Promise<string> {
     return new Promise((resolve, reject) => {
       fse.mkdirp(path, error => error ? reject(error) : resolve(path));
     });
   };
 
+  /**
+   * Generates the license string.
+   */
+  private _getLicense(modules: string[]): string {
+    let lines = [
+      'Angular Material Design',
+      'https://github.com/angular/material',
+      '@license MIT',
+      'v' + this.options.version,
+      'Built with: material-tools',
+      'Includes modules: ' + modules.join(', '),
+      '',
+      `Copyright ${new Date().getFullYear()} Google Inc. All Rights Reserved.`,
+      'Use of this source code is governed by an MIT-style license that can be ' +
+        'found in the LICENSE file at http://material.angularjs.org/LICENSE.'
+    ].map(line => ' * ' + line);
+
+    lines.unshift('/*!');
+    lines.push(' */', '\n');
+
+    return lines.join('\n');
+  }
+
+  /**
+   * Shorthand to write the file and include the license.
+   */
+  private _writeFile(destination: string, content: string, license = ''): void {
+    fse.writeFileSync(destination, license + content);
+  }
 }
 
 const DEFAULTS: MaterialToolsOptions = {

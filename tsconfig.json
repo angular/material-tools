@@ -4,7 +4,8 @@
     "module": "commonjs",
     "target": "es5",
     "sourceMap": true,
-    "moduleResolution": "node"
+    "moduleResolution": "node",
+    "outDir": "./dist"
   },
   "files": [
     "typings/index.d.ts"
