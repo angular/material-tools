@@ -32,7 +32,9 @@ export class DependencyResolver {
     };
 
     targetModules.forEach(function addDependencies(componentName) {
-      if (!resultMap.hasOwnProperty(componentName)) {
+      let exists = output.dependencies.hasOwnProperty(componentName);
+
+      if (exists && !resultMap.hasOwnProperty(componentName)) {
         let component = output.dependencies[componentName];
         let dependencies = component.dependencies;
 
@@ -46,6 +48,8 @@ export class DependencyResolver {
         if (dependencies && dependencies.length) {
           dependencies.forEach(addDependencies);
         }
+      } else if (!exists) {
+        console.warn(`Module "${componentName}" does not exist and will be skipped.`);
       }
     });
 
