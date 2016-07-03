@@ -39,7 +39,7 @@ export class LocalResolver {
    * @param {string[]} modules The modules to be looked up.
    */
   private static resolveThemes(modules: string[], ...rest): Promise<string[]> {
-    let pattern = `/*(${modules.join('|')})/**/*-theme.scss`;
+    let pattern = `/*(${modules.join('|')})/**/*-theme.+(scss|css)`;
     return this.resolvePattern.call(this, pattern, ...rest, false);
   }
 
@@ -62,25 +62,30 @@ export class LocalResolver {
    * Resolves JS and CSS files within a directory.
    * @param {string[]} modules Modules to be resolved.
    * @param {Object} versionDirectory The directory of the stored version files.
+   * @param {boolean} isPost1_1 Whether the resolved version is Post v1.1.0
    * @returns {Promise.<any>} Contains the paths to the JS and CSS files.
    */
-  static resolve(modules: string[], versionDirectory: string): Promise<LocalBuildFiles> {
-    let jsModules = path.join(versionDirectory, 'module', 'modules', 'js');
+  static resolve(modules: string[], versionDirectory: string, isPost1_1: boolean = true): Promise<LocalBuildFiles> {
+    let moduleDirectory = path.join(versionDirectory, 'module', 'modules');
+    let jsModules = path.join(moduleDirectory, 'js');
     let sourceRoot = path.join(versionDirectory, 'source', 'src');
+    let sourceComponents = path.join(sourceRoot, 'components');
 
     return Promise.all([
       this.resolveExtension(modules, 'js', jsModules),
       this.resolveExtension(modules, 'css', jsModules, false),
-      this.resolveSCSS(modules, sourceRoot),
-      this.resolveThemes(modules, path.join(sourceRoot, 'components'))
+      this.resolveThemes(modules, isPost1_1 ? jsModules : sourceComponents),
+      this.resolvePattern('/angular-material.layouts.css', path.join(moduleDirectory, 'layouts'), false),
+      isPost1_1 ? [] : this.resolveSCSS(modules, sourceRoot)
     ])
     .then(results => {
       return {
         root: versionDirectory,
         js: results[0],
         css: results[1],
-        scss: results[2],
-        themes: results[3]
+        themes: results[2],
+        layout: results[3][0],
+        scss: results[4],
       };
     });
   }
@@ -94,4 +99,5 @@ export interface LocalBuildFiles {
   css: string[];
   scss: string[];
   themes: string[];
+  layout: string;
 }

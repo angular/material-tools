@@ -12,9 +12,9 @@ const fse = require('fs-extra');
 
 export class MaterialTools {
 
-  private versionDigitRegex = /([0-9])\.([0-9])\.([0-9])(?:-rc(?:.|-)([0-9]+))?/;
   private themeBuilder: ThemingBuilder;
   private options: MaterialToolsOptions;
+  private _isPost1_1: boolean = true;
 
   constructor(_options: MaterialToolsOptions | string) {
     if (!_options) {
@@ -64,7 +64,7 @@ export class MaterialTools {
         let base = path.join(this.options.destination, this.options.destinationFilename);
         let minifiedJSName = `${base}.min.js`;
         let js = JSBuilder.build(buildData, minifiedJSName);
-        let css = CSSBuilder.build(buildData);
+        let css = CSSBuilder.build(buildData, this._isPost1_1);
         let license = this._getLicense(buildData.dependencies._flat);
 
         // JS files
@@ -105,6 +105,7 @@ export class MaterialTools {
       .then(versionData => {
         // Update the resolved version, in case it was `node`.
         options.version = versionData.version;
+        this._isPost1_1 = versionData.isPost1_1;
 
         return {
           versionRoot: path.resolve(versionData.module, '../'),
@@ -117,7 +118,8 @@ export class MaterialTools {
       .then(data => {
         return LocalResolver.resolve(
           data.dependencies._flat,
-          data.versionRoot
+          data.versionRoot,
+          this._isPost1_1
         ).then(files => {
           return {
             files: files,
@@ -137,28 +139,22 @@ export class MaterialTools {
       return;
     }
 
+    /** If the current version is Post v1.1.0 then we could just load the styles and build the themes */
+    if (this._isPost1_1) {
+      return this.themeBuilder.build(CSSBuilder._loadStyles(buildFiles.themes));
+    }
+
     let baseSCSSFiles = [
       'variables.scss',
-      'mixins.scss'
+      'mixins.scss',
+      'themes.scss'
     ];
-
-    // If the version is before the 1.1.0 release, then some mixins are stored inside of the
-    // `themes.scss` file. Those wrong placed mixins are fixing in Post 1.1.0 versions.
-    if (this._getVersionNumber() < this._getVersionNumber('1.1.0')) {
-      baseSCSSFiles.push('themes.scss');
-    }
 
     let scssFiles = buildFiles.scss
       .filter(file => baseSCSSFiles.indexOf(path.basename(file)) !== -1);
 
-    let scssBaseContent = scssFiles
-      .map(scssFile => fse.readFileSync(scssFile).toString())
-      .join('');
-
-    let themeSCSS = buildFiles.themes
-      .map(themeFile => fse.readFileSync(themeFile).toString())
-      .join('');
-
+    let scssBaseContent = CSSBuilder._loadStyles(scssFiles);
+    let themeSCSS = CSSBuilder._loadStyles(buildFiles.themes);
     let themeCSS = CSSBuilder._compileSCSS(scssBaseContent + themeSCSS);
 
     return this.themeBuilder.build(themeCSS);
@@ -202,24 +198,6 @@ export class MaterialTools {
   private _writeFile(destination: string, content: string, license = ''): void {
     fse.writeFileSync(destination, license + content);
   }
-
-  /**
-   * Generates a unique identifier / number for the specified version.
-   * Those numbers can be easily compared. The higher number is the newer version.
-   */
-  private _getVersionNumber(version = this.options.version): number {
-    let matches = version.match(this.versionDigitRegex).slice(1);
-    let digits = matches.slice(0, 3);
-    let rcVersion = parseInt(matches[3]);
-
-    let versionNumber = parseInt(digits.join(""));
-
-    if (rcVersion) {
-      versionNumber = (versionNumber - 1) + (rcVersion / ((rcVersion > 9) ? 100 : 1000));
-    }
-
-    return versionNumber;
-  }
 }
 
 const DEFAULTS: MaterialToolsOptions = {
@@ -244,7 +222,7 @@ export interface MaterialToolsData {
   dependencies: any
 }
 
-export interface MaterialToolsOutput {
+export interface MaterialToolsFile {
   source: string;
   compressed: string;
   map?: string;

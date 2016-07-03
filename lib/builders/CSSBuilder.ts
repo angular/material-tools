@@ -1,4 +1,4 @@
-import {MaterialToolsData, MaterialToolsOutput} from '../MaterialTools';
+import {MaterialToolsData, MaterialToolsFile} from '../MaterialTools';
 
 const cleanCSS = require('clean-css');
 const fse = require('fs-extra');
@@ -12,13 +12,27 @@ export class CSSBuilder {
   /**
    * Generates minified and non-minified version of the CSS, based on the specified build data.
    */
-  static build(data: MaterialToolsData): { noLayout: MaterialToolsOutput, layout: MaterialToolsOutput } {
-    // Compiled core.css without the layout.
+  static build(data: MaterialToolsData, isPost1_1 = true): MaterialToolsCSS {
+
+    if (isPost1_1) {
+      return {
+        noLayout: this._buildStylesheet(this._loadStyles(data.files.css)),
+        layout: this._buildStylesheet(this._loadStyles(data.files.css.concat(data.files.layout)))
+      };
+    }
+
+    /**
+     * If the current version is not Post v1.1.0, then we have to manually compile the SCSS and build
+     * our CSS w/o layouts.
+     */
+
+    // Compile the `core` module without the layout.
+    // By default the `core` module includes the layout.
     let coreNoLayout = this._compileSCSS(
       this._loadStyles(
         data.files.scss
-          .sort(path => (path.indexOf('variables.scss') > -1 || path.indexOf('mixins.scss') > -1) ? -1 : 1)
-          .filter(path => path.indexOf('core') > -1)
+          .sort(path => (path.indexOf('variables.scss') !== -1 || path.indexOf('mixins.scss') !== -1) ? -1 : 1)
+          .filter(path => path.indexOf('core') !== -1)
       )
     );
 
@@ -36,7 +50,7 @@ export class CSSBuilder {
   /**
    * Generates a minified and non-minified version of the specified stylesheet.
    */
-  static _buildStylesheet(styleSheet: string): MaterialToolsOutput {
+  static _buildStylesheet(styleSheet: string): MaterialToolsFile {
     let compressed = new cleanCSS({
       // Strip the licensing info from the original file. It'll be re-added by the MaterialTools.
       keepSpecialComments: 0
@@ -74,10 +88,16 @@ export class CSSBuilder {
       outputStyle: 'compressed'
     }).css.toString();
 
+
     let prefixer = autoprefixer({
       browsers: ['last 2 versions', 'last 4 Android versions']
     });
 
     return postcss(prefixer).process(compiled).css;
   }
+}
+
+export type MaterialToolsCSS = {
+  noLayout: MaterialToolsFile,
+  layout: MaterialToolsFile
 }
