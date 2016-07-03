@@ -12,6 +12,7 @@ const fse = require('fs-extra');
 
 export class MaterialTools {
 
+  private versionDigitRegex = /([0-9])\.([0-9])\.([0-9])(?:-rc(?:.|-)([0-9]+))?/;
   private themeBuilder: ThemingBuilder;
   private options: MaterialToolsOptions;
 
@@ -139,18 +140,26 @@ export class MaterialTools {
     let baseSCSSFiles = [
       'variables.scss',
       'mixins.scss'
-    ]
+    ];
 
-    let scssFiles = buildFiles.scss.filter(file => baseSCSSFiles.indexOf(path.basename(file)) !== -1);
+    // If the version is before the 1.1.0 release, then some mixins are stored inside of the
+    // `themes.scss` file. Those wrong placed mixins are fixing in Post 1.1.0 versions.
+    if (this._getVersionNumber() < this._getVersionNumber('1.1.0')) {
+      baseSCSSFiles.push('themes.scss');
+    }
+
+    let scssFiles = buildFiles.scss
+      .filter(file => baseSCSSFiles.indexOf(path.basename(file)) !== -1);
 
     let scssBaseContent = scssFiles
       .map(scssFile => fse.readFileSync(scssFile).toString())
       .join('');
 
-    let themeCSS = buildFiles.themes
+    let themeSCSS = buildFiles.themes
       .map(themeFile => fse.readFileSync(themeFile).toString())
-      .map(themeSCSS => CSSBuilder._compileSCSS(scssBaseContent + themeSCSS))
-      .reduce((styleSheet, part) => styleSheet + part);
+      .join('');
+
+    let themeCSS = CSSBuilder._compileSCSS(scssBaseContent + themeSCSS);
 
     return this.themeBuilder.build(themeCSS);
   }
@@ -192,6 +201,24 @@ export class MaterialTools {
    */
   private _writeFile(destination: string, content: string, license = ''): void {
     fse.writeFileSync(destination, license + content);
+  }
+
+  /**
+   * Generates a unique identifier / number for the specified version.
+   * Those numbers can be easily compared. The higher number is the newer version.
+   */
+  private _getVersionNumber(version = this.options.version): number {
+    let matches = version.match(this.versionDigitRegex).slice(1);
+    let digits = matches.slice(0, 3);
+    let rcVersion = parseInt(matches[3]);
+
+    let versionNumber = parseInt(digits.join(""));
+
+    if (rcVersion) {
+      versionNumber = (versionNumber - 1) + (rcVersion / ((rcVersion > 9) ? 100 : 1000));
+    }
+
+    return versionNumber;
   }
 }
 

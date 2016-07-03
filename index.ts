@@ -3,7 +3,7 @@ import {MaterialTools} from './lib/MaterialTools';
 let tools = new MaterialTools({
   destination: './output',
   version: '1.1.0-rc.5',
-  modules: ['datepicker'],
+  modules: ['checkbox', 'datepicker'],
   theme: {
     primaryPalette: 'indigo',
     accentPalette: 'purple',
