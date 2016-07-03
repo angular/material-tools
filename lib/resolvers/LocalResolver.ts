@@ -75,7 +75,7 @@ export class LocalResolver {
       this.resolveExtension(modules, 'js', jsModules),
       this.resolveExtension(modules, 'css', jsModules, false),
       this.resolveThemes(modules, isPost1_1 ? jsModules : sourceComponents),
-      this.resolvePattern('/angular-material.layouts.css', path.join(moduleDirectory, 'layouts'), false),
+      this.resolvePattern('/*.layouts.css', path.join(moduleDirectory, 'layouts'), false),
       isPost1_1 ? [] : this.resolveSCSS(modules, sourceRoot)
     ])
     .then(results => {

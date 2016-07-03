@@ -57,7 +57,7 @@ export class PackageResolver {
 
         return Promise.all([
           VersionDownloader.getModuleVersion(version, path.join(cacheDirectory, 'module')),
-          !isPost1_1 ? VersionDownloader.getSourceVersion(version, path.join(cacheDirectory, 'source')) : ''
+          isPost1_1 ? '' : VersionDownloader.getSourceVersion(version, path.join(cacheDirectory, 'source'))
         ]).then(directories => {
           return {
             module: directories[0],
