@@ -4,6 +4,8 @@ const cleanCSS = require('clean-css');
 const fse = require('fs-extra');
 const formatCSS = require('cssbeautify');
 const sass = require('node-sass');
+const postcss = require('postcss');
+const autoprefixer = require('autoprefixer');
 
 export class CSSBuilder {
 
@@ -64,12 +66,18 @@ export class CSSBuilder {
   }
 
   /**
-   * Compiles SCSS to CSS.
+   * Compiles SCSS to CSS and passes it through Autoprefixer.
    */
   static _compileSCSS(styles: string): string {
-    return sass.renderSync({
+    let compiled = sass.renderSync({
       data: styles,
       outputStyle: 'compressed'
     }).css.toString();
+
+    let prefixer = autoprefixer({
+      browsers: ['last 2 versions', 'last 4 Android versions']
+    });
+
+    return postcss(prefixer).process(compiled).css;
   }
 }
