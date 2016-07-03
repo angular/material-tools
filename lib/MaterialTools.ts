@@ -71,9 +71,13 @@ export class MaterialTools {
         this._writeFile(minifiedJSName, js.compressed, license);
         this._writeFile(`${minifiedJSName}.map`, js.map);
 
-        // CSS files
-        this._writeFile(`${base}.css`, css.source, license);
-        this._writeFile(`${base}.min.css`, css.compressed, license);
+        // CSS files with layout
+        this._writeFile(`${base}.css`, css.layout.source, license);
+        this._writeFile(`${base}.min.css`, css.layout.compressed, license);
+
+        // CSS files without layout
+        this._writeFile(`${base}-no-layout.css`, css.noLayout.source, license);
+        this._writeFile(`${base}-no-layout.min.css`, css.noLayout.compressed, license);
 
         if (this.options.theme) {
           let compiledCSS = this._buildStaticTheme(buildData.files);

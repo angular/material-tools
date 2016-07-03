@@ -10,9 +10,25 @@ export class CSSBuilder {
   /**
    * Generates minified and non-minified version of the CSS, based on the specified build data.
    */
-  static build(data: MaterialToolsData): MaterialToolsOutput {
-    let raw = data.files.css.map(path => fse.readFileSync(path).toString()).join('\n');
-    return this._buildStylesheet(raw);
+  static build(data: MaterialToolsData): { noLayout: MaterialToolsOutput, layout: MaterialToolsOutput } {
+    // Compiled core.css without the layout.
+    let coreNoLayout = this._compileSCSS(
+      this._loadStyles(
+        data.files.scss
+          .sort(path => (path.indexOf('variables.scss') > -1 || path.indexOf('mixins.scss') > -1) ? -1 : 1)
+          .filter(path => path.indexOf('core') > -1)
+      )
+    );
+
+    // CSS for the components, without any layouts or structure.
+    let componentCSS = this._loadStyles(
+      data.files.css.filter(path => path.indexOf('core.css') === -1)
+    );
+
+    return {
+      noLayout: this._buildStylesheet(coreNoLayout + componentCSS),
+      layout: this._buildStylesheet(this._loadStyles(data.files.css))
+    };
   }
 
   /**
@@ -38,6 +54,13 @@ export class CSSBuilder {
       indent: '  ',
       autosemicolon: true
     });
+  }
+
+  /**
+   * Reads and concatenates CSS files.
+   */
+  static _loadStyles(files: string[]): string {
+    return files.map(path => fse.readFileSync(path).toString()).join('\n');
   }
 
   /**
