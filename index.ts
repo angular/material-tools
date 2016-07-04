@@ -15,4 +15,4 @@ let tools = new MaterialTools({
 tools
   .build()
   .then(data => console.log(`Successfully built ${data.dependencies._flat.join(', ')}.`))
-  .catch(error => console.error(error));
+  .catch(error => console.error(error.stack || error));
