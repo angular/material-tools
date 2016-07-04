@@ -1,29 +1,36 @@
 // #! /usr/bin/env node
-
 import {MaterialTools} from './MaterialTools';
 
-let options = require('commander');
+const yargs = require('yargs').options({
+  destination: {
+    alias: ['d', 'dest'],
+    describe: 'Target location for the Material build.'
+  },
+  config: {
+    alias: 'c',
+    describe: 'JSON config file to be loaded.',
+  },
+  vesion: {
+    alias: 'v',
+    describe: 'Angular Material version.'
+  },
+  modules: {
+    alias: 'm',
+    describe: 'List of modules to be included in the build.',
+    array: true
+  },
+  cache: {
+    describe: 'Directory to be used as a cache for downloaded versions.'
+  },
+  mainFilename: {
+    describe: 'File to be used to figure out the dependencies between modules.'
+  },
+  destinationFilename: {
+    describe: 'Base for the output filenames.'
+  }
+}).help().strict();
 
-options
-  .option('-c, --config [path]', 'JSON config file to be loaded.')
-  .option('-v, --version [version]', 'Angular Material version.')
-  .option('-d, --destination [path]', 'Target location for the Material build.')
-  .option('-m, --modules <list>', 'Comma-separated list of modules to be included in the build.', list => list.split(','))
-  .option('--cache [directory]', 'Directory to be used as a cache for downloaded versions.')
-  .option('--main-filename [name]', 'File to be used to figure out the dependencies between modules.')
-  .option('--destination-filename [name]', 'Base for the output filenames.')
-  .parse(process.argv);
-
-// `commander` has a `version` method on it's prototype. This means that if no `version`
-// is specified, it would get looked up the prototype chain. In this case we define
-// an own, undefined `version` property so the MaterialTools can properly fall back
-// to the default.
-if (!options.hasOwnProperty('version')) {
-  Object.defineProperty(options, 'version', {
-    writable: true
-  });
-}
-
+let options = yargs.argv;
 const tools = new MaterialTools(options.config || options);
 
 tools.build().catch(error => console.error(error));
