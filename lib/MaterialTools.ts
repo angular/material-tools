@@ -60,7 +60,7 @@ export class MaterialTools {
           return buildData;
         })
       })
-      .then(buildData => {
+      .then((buildData: MaterialToolsData) => {
         let base = path.join(this.options.destination, this.options.destinationFilename);
         let minifiedJSName = `${base}.min.js`;
         let js = JSBuilder.build(buildData, minifiedJSName);
@@ -87,6 +87,12 @@ export class MaterialTools {
           this._writeFile(`${base}-theme.min.css`, themeStylesheet.compressed, license);
           this._writeFile(`${base}-theme.css`, themeStylesheet.source, license);
         }
+
+        buildData.files.layout.forEach(layoutFile => {
+          // Retrieve the last two extension name portions.
+          let suffix = path.basename(layoutFile).split('.').slice(-2).join('.');
+          this._writeFile(`${base}.${suffix}`, CSSBuilder._loadStyles([layoutFile]), license);
+        });
 
         return buildData;
       });

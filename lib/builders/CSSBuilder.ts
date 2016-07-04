@@ -15,9 +15,12 @@ export class CSSBuilder {
   static build(data: MaterialToolsData, isPost1_1 = true): MaterialToolsCSS {
 
     if (isPost1_1) {
+
+      let classLayout = data.files.layout.filter(file => file.indexOf('attributes') === -1)[0];
+
       return {
         noLayout: this._buildStylesheet(this._loadStyles(data.files.css)),
-        layout: this._buildStylesheet(this._loadStyles(data.files.css.concat(data.files.layout)))
+        layout: this._buildStylesheet(this._loadStyles(data.files.css.concat(classLayout)))
       };
     }
 

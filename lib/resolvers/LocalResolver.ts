@@ -75,7 +75,7 @@ export class LocalResolver {
       this.resolveExtension(modules, 'js', jsModules),
       this.resolveExtension(modules, 'css', jsModules, false),
       this.resolveThemes(modules, isPost1_1 ? jsModules : sourceComponents),
-      this.resolvePattern('/*.layouts.css', path.join(moduleDirectory, 'layouts'), false),
+      this.resolvePattern('/*.+(layouts|layout-attributes).css', path.join(moduleDirectory, 'layouts'), false),
       isPost1_1 ? [] : this.resolveSCSS(modules, sourceRoot)
     ])
     .then(results => {
@@ -84,7 +84,7 @@ export class LocalResolver {
         js: results[0],
         css: results[1],
         themes: results[2],
-        layout: results[3][0],
+        layout: results[3],
         scss: results[4],
       };
     });
@@ -99,5 +99,5 @@ export interface LocalBuildFiles {
   css: string[];
   scss: string[];
   themes: string[];
-  layout: string;
+  layout: string[];
 }
