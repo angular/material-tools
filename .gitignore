@@ -10,4 +10,4 @@ typings/
 # Material Tools specific files / directories
 .material-cache/
 dist/
-output/
+tmp/

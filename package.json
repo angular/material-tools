@@ -7,6 +7,7 @@
   "scripts": {
     "postinstall": "typings install",
     "test": "node scripts/run-tests.js",
+    "test:versions": "node scripts/test-versions.js",
     "build": "node scripts/build-release.js"
   },
   "dependencies": {
