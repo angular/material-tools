@@ -77,15 +77,15 @@ export class MaterialTools {
         this._writeFile(`${base}.min.css`, css.layout.compressed, license);
 
         // CSS files without layout
-        this._writeFile(`${base}-no-layout.css`, css.noLayout.source, license);
-        this._writeFile(`${base}-no-layout.min.css`, css.noLayout.compressed, license);
+        this._writeFile(`${base}.layout-none.css`, css.noLayout.source, license);
+        this._writeFile(`${base}.layout-none.min.css`, css.noLayout.compressed, license);
 
         if (this.options.theme) {
           let compiledCSS = this._buildStaticTheme(buildData.files);
           let themeStylesheet = CSSBuilder._buildStylesheet(compiledCSS);
 
-          this._writeFile(`${base}-theme.min.css`, themeStylesheet.compressed, license);
-          this._writeFile(`${base}-theme.css`, themeStylesheet.source, license);
+          this._writeFile(`${base}.theme.min.css`, themeStylesheet.compressed, license);
+          this._writeFile(`${base}.theme.css`, themeStylesheet.source, license);
         }
 
         buildData.files.layout.forEach(layoutFile => {
