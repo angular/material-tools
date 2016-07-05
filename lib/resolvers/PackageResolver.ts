@@ -5,7 +5,7 @@ import * as fs from 'fs';
 export class PackageResolver {
 
   /** RegEx to retrieve the digits of a ngMaterial version. */
-  private static _versionDigitRegex = /([0-9])\.([0-9])\.([0-9])(?:-rc(?:.|-)([0-9]+))?/;
+  private static _versionDigitRegex = /([0-9]{1,3})\.([0-9]{1,3})\.([0-9]{1,3})(?:-rc(?:.|-)([0-9]{1,3}))?/;
 
   /**
    * Checks whether a version is cached.
@@ -40,7 +40,15 @@ export class PackageResolver {
       // Load the version from the local installed Angular Material dependency.
       version = require(packageFile)['version'];
     }
-    let isPost1_1 = this._getVersionNumber(version) >= this._getVersionNumber('1.1.0');
+
+    let versionNumber = this._getVersionNumber(version);
+    let isPost1_1 = versionNumber >= this._getVersionNumber('1.1.0');
+
+    if (versionNumber < this._getVersionNumber('1.0.0')) {
+      console.warn(
+        "Material-Tools: You are loading an unsupported version. Only >= 1.0.0 versions are fully supported."
+      );
+    }
 
     let cacheDirectory = path.join(path.resolve(cache), version);
 
@@ -74,18 +82,23 @@ export class PackageResolver {
    * Generates a unique identifier / number for the specified version.
    * Those numbers can be easily compared. The higher number is the newer version.
    */
-  private static _getVersionNumber(version): number {
-    let matches = version.match(this._versionDigitRegex).slice(1);
-    let digits = matches.slice(0, 3);
-    let rcVersion = parseInt(matches[3]);
+  //TODO(devversion): move into utils
+  static _getVersionNumber(version): number {
 
-    let versionNumber = parseInt(digits.join(""));
+    let matches = version
+      .match(this._versionDigitRegex)
+      .slice(1)
+      .map(digit => fillDigit(digit, 3));
 
-    if (rcVersion) {
-      versionNumber = (versionNumber - 1) + (rcVersion / ((rcVersion > 9) ? 100 : 1000));
+    function fillDigit(digitString = '999', slots: number): string {
+      for (let i = 0; i < slots - digitString.length; i++) {
+        digitString = `0${digitString}`;
+      }
+
+      return digitString;
     }
 
-    return versionNumber;
+    return parseInt(matches.join(''));
   }
 
 }

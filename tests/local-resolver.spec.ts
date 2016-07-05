@@ -31,7 +31,7 @@ describe('Local Resolver', () => {
     LocalResolver.resolve(tooltip, directory).then(files => {
       reduceToFilenames(files);
 
-      expect(files.themes).toContain('tooltip-default-theme.scss');
+      expect(files.themes).toContain('tooltip-default-theme.css');
 
       done();
     }, done.fail);
