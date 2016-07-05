@@ -90,8 +90,10 @@ export class PackageResolver {
       .slice(1)
       .map(digit => fillDigit(digit, 3));
 
-    function fillDigit(digitString = '999', slots: number): string {
-      for (let i = 0; i < slots - digitString.length; i++) {
+    function fillDigit(digitString = '999', maxSlotLength: number): string {
+      let digitLength = digitString.length;
+
+      for (let i = 0; i < maxSlotLength - digitLength; i++) {
         digitString = `0${digitString}`;
       }
 

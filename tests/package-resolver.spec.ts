@@ -24,6 +24,11 @@ describe('Package Resolver', () => {
         .toBeLessThan(PackageResolver._getVersionNumber('1.1.0'));
     });
 
+    it('should correctly compare release candiates with major releases', () => {
+      expect(PackageResolver._getVersionNumber('1.0.0'))
+        .toBeLessThan(PackageResolver._getVersionNumber('1.1.0-rc.5'))
+    });
+
   })
 
 });
