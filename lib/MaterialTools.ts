@@ -206,7 +206,7 @@ export class MaterialTools {
   }
 }
 
-const DEFAULTS: MaterialToolsOptions = {
+export const DEFAULTS: MaterialToolsOptions = {
   version: 'node',
   mainFilename: 'angular-material.js',
   destinationFilename: 'angular-material',
