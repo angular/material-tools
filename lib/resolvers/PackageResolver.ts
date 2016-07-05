@@ -2,6 +2,8 @@ import {VersionDownloader} from '../download/VersionDownloader';
 import * as path from 'path';
 import * as fs from 'fs';
 
+const NodeModule = require('module');
+
 export class PackageResolver {
 
   /** RegEx to retrieve the digits of a ngMaterial version. */
@@ -36,9 +38,7 @@ export class PackageResolver {
    */
   static resolve(version: string, cache: string): Promise<ResolvedPackage> {
     if (version === 'node') {
-      let packageFile = path.join(path.dirname(require.resolve('angular-material')), 'package.json');
-      // Load the version from the local installed Angular Material dependency.
-      version = require(packageFile)['version'];
+      version = this._retrieveLocalVersion();
     }
 
     let versionNumber = this._getVersionNumber(version);
@@ -101,6 +101,23 @@ export class PackageResolver {
     }
 
     return parseInt(matches.join(''));
+  }
+
+  /**
+   * Retrieves the local installed Angular Material version form the current Process Working Directory
+   */
+  private static _retrieveLocalVersion() {
+    // Create a Node module which runs at the current process working directory.
+    let _cliModule = new NodeModule(process.cwd());
+    _cliModule.paths = NodeModule._nodeModulePaths(process.cwd());
+
+    // Resolve the angular-material module form the CWD module.
+    let resolvedModule = NodeModule._resolveFilename('angular-material', _cliModule);
+
+    let packageFile = path.join(path.dirname(resolvedModule), 'package.json');
+
+    // Load the version from the local installed Angular Material dependency.
+    return require(packageFile)['version'];
   }
 
 }
