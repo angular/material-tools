@@ -1,4 +1,3 @@
-// #! /usr/bin/env node
 import {MaterialTools, DEFAULTS} from './MaterialTools';
 
 const yargs = require('yargs');

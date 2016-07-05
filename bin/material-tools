@@ -1,0 +1,8 @@
+#! /usr/bin/env node
+'use strict';
+
+// Specify the process title.
+process.title = 'material-tools';
+
+// Load the CLI logic.
+require('../lib/MaterialCLI');
