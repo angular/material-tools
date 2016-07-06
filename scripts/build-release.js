@@ -21,10 +21,17 @@ fse.copySync(`${PROJECT_ROOT}/package.json`, `${OUTPUT_DIRECTORY}/package.json`)
 fse.copySync(`${PROJECT_ROOT}/bin/material-tools`, `${OUTPUT_DIRECTORY}/bin/material-tools`);
 
 // Retrieve all source files.
-let sourceFiles = glob(`${PROJECT_ROOT}/lib/**/*.ts`).join(' ');
+let sourceFiles = glob(`${PROJECT_ROOT}/lib/**/*.ts`);
+
+// Append our main files to the sourceFiles array.
+// TODO(devversion): resolve files through a build configuration for build and release process.
+sourceFiles.push(
+  `${PROJECT_ROOT}/typings/index.d.ts`,
+  `${PROJECT_ROOT}/index.ts`
+);
 
 try {
-  exec(`node ${TSC_BIN} --declaration ${sourceFiles} ./typings/index.d.ts --outDir ${OUTPUT_DIRECTORY}/lib`, {
+  exec(`node ${TSC_BIN} --declaration ${sourceFiles.join(' ')} --outDir ${OUTPUT_DIRECTORY}`, {
     cwd: PROJECT_ROOT
   });
 

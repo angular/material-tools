@@ -1,19 +1,17 @@
 import {MaterialTools} from './lib/MaterialTools';
-import {Logger} from './lib/Logger';
+import {ThemingBuilder} from './lib/theming/ThemingBuilder';
+import {VersionDownloader} from './lib/download/VersionDownloader';
+import {PackageResolver} from './lib/resolvers/PackageResolver';
+import {DependencyResolver} from './lib/resolvers/DependencyResolver';
+import {LocalResolver} from './lib/resolvers/LocalResolver';
+import {VirtualContext} from './lib/virtual_context/VirtualContext';
 
-let tools = new MaterialTools({
-  destination: './tmp',
-  version: '1.1.0-rc.5',
-  modules: ['checkbox', 'datepicker'],
-  theme: {
-    primaryPalette: 'indigo',
-    accentPalette: 'purple',
-    warnPalette: 'deep-orange',
-    backgroundPalette: 'grey'
-  }
-});
-
-tools
-  .build()
-  .then(data => Logger.log(`Successfully built ${data.dependencies._flat.join(', ')}.`))
-  .catch(error => Logger.error(error.stack || error));
+export {
+  MaterialTools,
+  ThemingBuilder,
+  VersionDownloader,
+  PackageResolver,
+  DependencyResolver,
+  LocalResolver,
+  VirtualContext
+}
