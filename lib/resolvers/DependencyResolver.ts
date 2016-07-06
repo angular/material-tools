@@ -1,4 +1,5 @@
 import {VirtualContext} from '../virtual_context/VirtualContext';
+import {Logger} from '../Logger';
 
 export class DependencyResolver {
 
@@ -49,7 +50,7 @@ export class DependencyResolver {
           dependencies.forEach(addDependencies);
         }
       } else if (!exists) {
-        console.warn(`Module "${componentName}" does not exist and will be skipped.`);
+        Logger.warn(`Module "${componentName}" does not exist and will be skipped.`);
       }
     });
 

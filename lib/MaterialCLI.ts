@@ -1,8 +1,10 @@
 import {MaterialTools, DEFAULTS} from './MaterialTools';
+import {Logger} from './Logger';
 
 const yargs = require('yargs');
 const MAIN_GROUP = 'Arguments:';
 const OPTIONAL_GROUP = 'Optional arguments:';
+const LOGGING_GROUP = 'Logging arguments:';
 
 // Main arguments.
 yargs.option('config', {
@@ -61,6 +63,17 @@ yargs.option('destination-filename', {
   group: OPTIONAL_GROUP
 });
 
+// Logging arguments.
+yargs.option('verbose', {
+  describe: 'Logs additional info as a build is progressing.',
+  group: LOGGING_GROUP
+});
+
+yargs.option('silent', {
+  describe: 'Will not log any info, including errors and warnings.',
+  group: LOGGING_GROUP
+});
+
 yargs.strict().help();
 
 let options = yargs.argv;
@@ -68,5 +81,5 @@ const tools = new MaterialTools(options.config || options);
 
 tools
   .build()
-  .then(data => console.log(`Material-Tools: Successfully built ${data.dependencies._flat.join(', ')}.`))
-  .catch(error => console.error(error.stack || error));
+  .then(data => Logger.log(`Material-Tools: Successfully built ${data.dependencies._flat.join(', ')}.`))
+  .catch(error => Logger.error(error.stack || error));

@@ -1,4 +1,5 @@
 import {MaterialTools} from './lib/MaterialTools';
+import {Logger} from './lib/Logger';
 
 let tools = new MaterialTools({
   destination: './tmp',
@@ -14,5 +15,5 @@ let tools = new MaterialTools({
 
 tools
   .build()
-  .then(data => console.log(`Successfully built ${data.dependencies._flat.join(', ')}.`))
-  .catch(error => console.error(error.stack || error));
+  .then(data => Logger.log(`Successfully built ${data.dependencies._flat.join(', ')}.`))
+  .catch(error => Logger.error(error.stack || error));
