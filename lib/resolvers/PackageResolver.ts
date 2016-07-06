@@ -126,8 +126,11 @@ export class PackageResolver {
   //TODO(devversion): move into utils
   static _getVersionNumber(version): number {
 
-    let matches = version
-      .match(this._versionDigitRegex)
+    let matches = version.match(this._versionDigitRegex);
+
+    if (!matches) return -1;
+
+    matches = matches
       .slice(1)
       .map(digit => fillDigit(digit, 3));
 

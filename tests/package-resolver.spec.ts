@@ -29,6 +29,16 @@ describe('Package Resolver', () => {
         .toBeLessThan(PackageResolver._getVersionNumber('1.1.0-rc.5'))
     });
 
+    it('should should not throw if a version that does not match the pattern', () => {
+      let result = null;
+
+      expect(() => {
+        result = PackageResolver._getVersionNumber('something');
+      }).not.toThrow();
+
+      expect(result).toBe(-1);
+    });
+
   })
 
 });
