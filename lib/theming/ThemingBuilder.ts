@@ -64,7 +64,9 @@ export class ThemingBuilder {
     // The `$mdTheming` is using the $injector service for loading the theme stylesheet.
     // We can take advantage of it, for specifying our own theme stylesheet.
     let _fakeInjector = {
-      get: () => themeCSS || this._$mdThemeCSS,
+      // Note that the theme needs to be trimmed, because the theming service can generate CSS with
+      // syntax errors, if the input ends in a newline.
+      get: () => (themeCSS || this._$mdThemeCSS).trim(),
       has: () => true
     };
 
