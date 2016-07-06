@@ -114,7 +114,7 @@ export class MaterialTools {
         this._isPost1_1 = versionData.isPost1_1;
 
         return {
-          versionRoot: path.resolve(versionData.module, '../'),
+          versionData: versionData,
           dependencies: DependencyResolver.resolve(
             path.join(versionData.module, options.mainFilename),
             options.modules
@@ -124,7 +124,7 @@ export class MaterialTools {
       .then(data => {
         return LocalResolver.resolve(
           data.dependencies._flat,
-          data.versionRoot,
+          data.versionData,
           this._isPost1_1
         ).then(files => {
           return {
@@ -207,7 +207,7 @@ export class MaterialTools {
 }
 
 export const DEFAULTS: MaterialToolsOptions = {
-  version: 'node',
+  version: 'local',
   mainFilename: 'angular-material.js',
   destinationFilename: 'angular-material',
   cache: './.material-cache/'

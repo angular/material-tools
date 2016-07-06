@@ -65,4 +65,8 @@ yargs.strict().help();
 
 let options = yargs.argv;
 const tools = new MaterialTools(options.config || options);
-tools.build().catch(error => console.error(error));
+
+tools
+  .build()
+  .then(data => console.log(`Material-Tools: Successfully built ${data.dependencies._flat.join(', ')}.`))
+  .catch(error => console.error(error.stack || error));

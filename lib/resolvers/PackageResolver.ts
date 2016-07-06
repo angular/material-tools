@@ -37,45 +37,83 @@ export class PackageResolver {
    * source version and module version.
    */
   static resolve(version: string, cache: string): Promise<ResolvedPackage> {
-    if (version === 'node') {
-      version = this._retrieveLocalVersion();
+    let localSourcePath = '';
+    let directoryPromise: Promise<any> = null;
+
+    if (version === 'local') {
+      let retrievedData = this._retrieveLocalVersion();
+      // Update the resolving version to the retrieved local version.
+      version = retrievedData.version;
+      localSourcePath = retrievedData.path;
     }
 
-    let versionNumber = this._getVersionNumber(version);
-    let isPost1_1 = versionNumber >= this._getVersionNumber('1.1.0');
+    let isPost1_1 = this._validateVersion(version, !!localSourcePath);
 
-    if (versionNumber < this._getVersionNumber('1.0.0')) {
-      console.warn(
-        "Material-Tools: You are loading an unsupported version. Only >= 1.0.0 versions are fully supported."
-      );
+    if (localSourcePath && isPost1_1) {
+      directoryPromise = Promise.resolve({ module: localSourcePath });
+    } else {
+      directoryPromise = this.isCached(path.join(path.resolve(cache), version));
     }
 
-    let cacheDirectory = path.join(path.resolve(cache), version);
-
-    return this.isCached(cacheDirectory)
-      .then(cacheDirectory => {
+    return directoryPromise
+      .then(this._resolveDirectories)
+      .then(directories => {
         return {
-          module: path.join(cacheDirectory, 'module'),
-          source: path.join(cacheDirectory, 'source'),
+          root: localSourcePath || path.join(directories.module, '..'),
+          module: directories.module,
+          source: directories.source || '',
           version: version,
           isPost1_1: isPost1_1
         }
       })
-      .catch(cacheDirectory => {
+      .catch(directories => {
+        directories = this._resolveDirectories(directories);
 
         return Promise.all([
-          VersionDownloader.getModuleVersion(version, path.join(cacheDirectory, 'module')),
-          isPost1_1 ? '' : VersionDownloader.getSourceVersion(version, path.join(cacheDirectory, 'source'))
-        ]).then(directories => {
+          VersionDownloader.getModuleVersion(version, directories.module),
+          isPost1_1 ? '' : VersionDownloader.getSourceVersion(version, directories.source)
+        ]).then(downloadPaths => {
           return {
-            module: directories[0],
-            source: directories[1],
+            root: localSourcePath || path.join(directories.module, '..'),
+            module: downloadPaths[0],
+            source: downloadPaths[1],
             version: version,
             isPost1_1: isPost1_1
           };
         });
 
       });
+  }
+
+  /** Creates the directory paths for the cached versions */
+  private static _resolveDirectories(cacheDirectory: string) {
+    return {
+      module: path.join(cacheDirectory, 'module'),
+      source: path.join(cacheDirectory, 'source')
+    }
+  }
+
+  /** Validates the current resolving version and shows warnings if necessary */
+  private static _validateVersion(version: string, useLocalVersion = false): boolean {
+
+    let versionNumber = this._getVersionNumber(version);
+    let isPost1_1 = versionNumber >= this._getVersionNumber('1.1.0');
+
+    if (versionNumber < this._getVersionNumber('1.0.0')) {
+      console.warn(
+        'Material-Tools: You are loading an unsupported version. ' +
+        'Only >= v1.0.0 versions are fully supported.'
+      );
+    }
+
+    if (!isPost1_1 && useLocalVersion) {
+      console.warn(
+        'Material-Tools: When using `local` as the version, the tools will ' +
+        'only use the local sources if the version is later than v1.1.0'
+      );
+    }
+
+    return isPost1_1;
   }
 
   /**
@@ -106,25 +144,29 @@ export class PackageResolver {
   /**
    * Retrieves the local installed Angular Material version form the current Process Working Directory
    */
-  private static _retrieveLocalVersion() {
+  private static _retrieveLocalVersion(): { path: string, version: string } {
     // Create a Node module which runs at the current process working directory.
     let _cliModule = new NodeModule(process.cwd());
     _cliModule.paths = NodeModule._nodeModulePaths(process.cwd());
 
     // Resolve the angular-material module form the CWD module.
-    let resolvedModule = NodeModule._resolveFilename('angular-material', _cliModule);
+    let resolvedModule = path.dirname(NodeModule._resolveFilename('angular-material', _cliModule));
 
-    let packageFile = path.join(path.dirname(resolvedModule), 'package.json');
+    let packageFile = path.join(resolvedModule, 'package.json');
 
     // Load the version from the local installed Angular Material dependency.
-    return require(packageFile)['version'];
+    return {
+      path: resolvedModule,
+      version: require(packageFile)['version']
+    };
   }
 
 }
 
 export type ResolvedPackage = {
-  source?: string,
+  root: string
   module: string,
+  source?: string,
   version: string,
   isPost1_1: boolean
 }

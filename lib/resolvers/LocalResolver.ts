@@ -1,4 +1,5 @@
 import * as path from 'path';
+import {ResolvedPackage} from './PackageResolver';
 
 const glob = require('glob');
 
@@ -61,14 +62,14 @@ export class LocalResolver {
   /**
    * Resolves JS and CSS files within a directory.
    * @param {string[]} modules Modules to be resolved.
-   * @param {Object} versionDirectory The directory of the stored version files.
+   * @param {Object} versionData Resolved Package Data from the Package Resolver.
    * @param {boolean} isPost1_1 Whether the resolved version is Post v1.1.0
    * @returns {Promise.<any>} Contains the paths to the JS and CSS files.
    */
-  static resolve(modules: string[], versionDirectory: string, isPost1_1: boolean = true): Promise<LocalBuildFiles> {
-    let moduleDirectory = path.join(versionDirectory, 'module', 'modules');
+  static resolve(modules: string[], versionData: ResolvedPackage, isPost1_1: boolean = true): Promise<LocalBuildFiles> {
+    let moduleDirectory = path.join(versionData.module, 'modules');
     let jsModules = path.join(moduleDirectory, 'js');
-    let sourceRoot = path.join(versionDirectory, 'source', 'src');
+    let sourceRoot = path.join(versionData.source, 'src');
     let sourceComponents = path.join(sourceRoot, 'components');
 
     return Promise.all([
@@ -80,7 +81,7 @@ export class LocalResolver {
     ])
     .then(results => {
       return {
-        root: versionDirectory,
+        root: versionData.root,
         js: results[0],
         css: results[1],
         themes: results[2],
