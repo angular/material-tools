@@ -1,5 +1,5 @@
 import {MaterialTools, DEFAULTS} from './MaterialTools';
-import {Logger} from './Logger';
+import {Utils} from './Utils';
 
 const yargs = require('yargs');
 const MAIN_GROUP = 'Arguments:';
@@ -81,5 +81,5 @@ const tools = new MaterialTools(options.config || options);
 
 tools
   .build()
-  .then(data => Logger.log(`Material-Tools: Successfully built ${data.dependencies._flat.join(', ')}.`))
-  .catch(error => Logger.error(error.stack || error));
+  .then(data => Utils.log(`Material-Tools: Successfully built ${data.dependencies._flat.join(', ')}.`))
+  .catch(error => Utils.error(error.stack || error));

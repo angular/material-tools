@@ -1,6 +1,7 @@
 import * as fs from 'fs';
 import * as vm from 'vm';
 import * as path from 'path';
+import {Utils} from '../Utils';
 
 const NodeModule = require('module');
 const merge = require('merge');
@@ -28,7 +29,7 @@ export function createSandboxRequire(filePath, globals?, options?: SandboxRequir
   _parentModule.filename = filePath;
   _parentModule.paths = NodeModule._nodeModulePaths(path.dirname(filePath));
 
-   function SandboxRequire(file: string): any {
+  function SandboxRequire(file: string): any {
     let fileName = resolve(file);
 
     if (EXPORTS_CACHE[fileName] && options.caching) {
@@ -57,11 +58,8 @@ export function createSandboxRequire(filePath, globals?, options?: SandboxRequir
     let runFn = vm.runInNewContext(fileSource, globals, fileName);
 
     let _localValues = [];
-    for (let key in locals) {
-      if (locals.hasOwnProperty(key)) {
-        _localValues.push(locals[key]);
-      }
-    }
+    // Iterate through all locals and push the retrieved values to the value array.
+    Utils.forEach(locals, (value, key) => _localValues.push(value));
 
     // Run our Function inside of the new context.
     runFn.apply(currentModule.exports, [globals].concat(_localValues));
@@ -74,11 +72,8 @@ export function createSandboxRequire(filePath, globals?, options?: SandboxRequir
   }
 
   function updateGlobals() {
-    for (let globalKey in global) {
-      if (!globals.hasOwnProperty(globalKey)) {
-        globals[globalKey] = global[globalKey];
-      }
-    }
+    // Moves the default Node globals into the current fake global object.
+    Utils.forEach(global, (value, key) => globals[key] = value);
   }
 
   function getLocals(module: NodeModule, requireFn: Function): any {

@@ -1,14 +1,11 @@
 import {VersionDownloader} from '../download/VersionDownloader';
-import {Logger} from '../Logger';
+import {Utils} from '../Utils';
 import * as path from 'path';
 import * as fs from 'fs';
 
 const NodeModule = require('module');
 
 export class PackageResolver {
-
-  /** RegEx to retrieve the digits of a ngMaterial version. */
-  private static _versionDigitRegex = /([0-9]{1,3})\.([0-9]{1,3})\.([0-9]{1,3})(?:-rc(?:.|-)([0-9]{1,3}))?/;
 
   /**
    * Checks whether a version is cached.
@@ -59,7 +56,7 @@ export class PackageResolver {
     return directoryPromise
       .then(this._resolveDirectories)
       .then(directories => {
-        Logger.info('Using Angular Material version from cache.');
+        Utils.info('Using Angular Material version from cache.');
 
         return {
           root: localSourcePath || path.join(directories.module, '..'),
@@ -99,18 +96,18 @@ export class PackageResolver {
   /** Validates the current resolving version and shows warnings if necessary */
   private static _validateVersion(version: string, useLocalVersion = false): boolean {
 
-    let versionNumber = this._getVersionNumber(version);
-    let isPost1_1 = versionNumber >= this._getVersionNumber('1.1.0');
+    let versionNumber = Utils.getVersionNumber(version);
+    let isPost1_1 = versionNumber >= Utils.getVersionNumber('1.1.0');
 
-    if (versionNumber < this._getVersionNumber('1.0.0')) {
-      Logger.warn(
+    if (versionNumber < Utils.getVersionNumber('1.0.0')) {
+      Utils.warn(
         'Material-Tools: You are loading an unsupported version. ' +
         'Only >= v1.0.0 versions are fully supported.'
       );
     }
 
     if (!isPost1_1 && useLocalVersion) {
-      Logger.warn(
+      Utils.warn(
         'Material-Tools: When using `local` as the version, the tools will ' +
         'only use the local sources if the version is later than v1.1.0'
       );
@@ -119,33 +116,7 @@ export class PackageResolver {
     return isPost1_1;
   }
 
-  /**
-   * Generates a unique identifier / number for the specified version.
-   * Those numbers can be easily compared. The higher number is the newer version.
-   */
-  //TODO(devversion): move into utils
-  static _getVersionNumber(version): number {
 
-    let matches = version.match(this._versionDigitRegex);
-
-    if (!matches) return -1;
-
-    matches = matches
-      .slice(1)
-      .map(digit => fillDigit(digit, 3));
-
-    function fillDigit(digitString = '999', maxSlotLength: number): string {
-      let digitLength = digitString.length;
-
-      for (let i = 0; i < maxSlotLength - digitLength; i++) {
-        digitString = `0${digitString}`;
-      }
-
-      return digitString;
-    }
-
-    return parseInt(matches.join(''));
-  }
 
   /**
    * Retrieves the local installed Angular Material version form the current Process Working Directory

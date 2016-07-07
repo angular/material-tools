@@ -1,5 +1,6 @@
 import {createSandboxRequire, SandboxRequireOptions} from './SandboxRequire';
 import {BrowserWindow} from './BrowserMock';
+import {Utils} from '../Utils';
 
 export class VirtualContext {
 
@@ -17,11 +18,7 @@ export class VirtualContext {
     // Apply the custom globals from the developer to the default globals
     // without modifying the globals reference, because otherwise we would
     // lose the circular references.
-    for (let _key in globals) {
-      if (globals.hasOwnProperty(_key)) {
-        this.globals[_key] = globals[_key];
-      }
-    }
+    Utils.forEach(globals, (value, key) => this.globals[key] = value);
   }
 
   /**
