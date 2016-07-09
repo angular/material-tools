@@ -38,5 +38,9 @@
   },
   "bin": {
     "material-tools": "./bin/material-tools"
-  }
+  },
+  "contributors": [
+    "Paul Gschwendtner <paulgschwendtner@gmail.com>",
+    "Kristiyan Kostadinov <crisbeto@abv.bg> (http://crisbeto.com/)"
+  ]
 }

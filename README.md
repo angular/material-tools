@@ -80,3 +80,7 @@ You will get the following files as a result of the build process:
 * `angular-material.layout-none.css` - Only contains the modules that you selected, in addition to the core structural CSS.
 * `angular-material.theme.css` - Your pre-built theme, if it was specified in the options.
 * `angular-material.layout.css` and `angular-material.layouts-attributes.css` - Class-based and attribute-based layout CSS.
+
+## Authors
+* [Paul Gschwendtner](https://github.com/DevVersion)
+* [Kristiyan Kostadinov](https://github.com/crisbeto)
