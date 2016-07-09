@@ -11,3 +11,4 @@ typings/
 .material-cache/
 dist/
 tmp/
+npm-debug.log

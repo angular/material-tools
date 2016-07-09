@@ -8,6 +8,7 @@
     "postinstall": "typings install",
     "test": "node scripts/run-tests.js",
     "test:versions": "node scripts/test-versions.js",
+    "tslint": "tslint -c tslint.json lib/**/*.ts",
     "build": "node scripts/build-release.js"
   },
   "dependencies": {
@@ -31,6 +32,7 @@
     "angular-material": "^1.1.0-rc.5",
     "jasmine": "^2.4.1",
     "ts-node": "^0.9.3",
+    "tslint": "^3.13.0",
     "typescript": "^1.8.10",
     "typings": "^1.3.0"
   },
