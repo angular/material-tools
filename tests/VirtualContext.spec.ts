@@ -1,4 +1,4 @@
-import {VirtualContext} from '../lib/virtual_context/virtual_context';
+import {VirtualContext} from '../lib/virtual_context/VirtualContext';
 import * as path from 'path';
 
 describe('virtual context', () => {

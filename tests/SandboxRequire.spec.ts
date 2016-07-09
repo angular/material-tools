@@ -1,4 +1,4 @@
-import {createSandboxRequire} from '../lib/virtual_context/sandbox';
+import {createSandboxRequire} from '../lib/virtual_context/SandboxRequire';
 
 describe('sandbox require', () => {
 
