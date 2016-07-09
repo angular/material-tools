@@ -1,4 +1,4 @@
-import {MaterialToolsData, MaterialToolsFile} from '../tools/interfaces/files';
+import {MaterialToolsData, MaterialToolsOutput} from '../common/Interfaces';
 
 const cleanCSS = require('clean-css');
 const fse = require('fs-extra');
@@ -24,11 +24,6 @@ export class CSSBuilder {
       };
     }
 
-    /**
-     * If the current version is not Post v1.1.0, then we have to manually compile the SCSS and build
-     * our CSS w/o layouts.
-     */
-
     // Compile the `core` module without the layout.
     // By default the `core` module includes the layout.
     let coreNoLayout = this._compileSCSS(
@@ -53,7 +48,7 @@ export class CSSBuilder {
   /**
    * Generates a minified and non-minified version of the specified stylesheet.
    */
-  static _buildStylesheet(styleSheet: string): MaterialToolsFile {
+  static _buildStylesheet(styleSheet: string): MaterialToolsOutput {
     let compressed = new cleanCSS({
       // Strip the licensing info from the original file. It'll be re-added by the MaterialTools.
       keepSpecialComments: 0
@@ -65,19 +60,7 @@ export class CSSBuilder {
     }
   }
 
-  /**
-   * Beautifies the specified CSS stylesheet.
-   */
-  private static _beautifyStylesheet(styleSheet: string): string {
-    return formatCSS(styleSheet, {
-      indent: '  ',
-      autosemicolon: true
-    });
-  }
-
-  /**
-   * Reads and concatenates CSS files.
-   */
+  /** Reads and concatenates CSS files */
   static _loadStyles(files: string[]): string {
     return files.map(path => fse.readFileSync(path).toString()).join('\n');
   }
@@ -98,9 +81,17 @@ export class CSSBuilder {
 
     return postcss(prefixer).process(compiled).css;
   }
+
+  /** Beautifies the specified CSS stylesheet */
+  private static _beautifyStylesheet(styleSheet: string): string {
+    return formatCSS(styleSheet, {
+      indent: '  ',
+      autosemicolon: true
+    });
+  }
 }
 
 export type MaterialToolsCSS = {
-  noLayout: MaterialToolsFile,
-  layout: MaterialToolsFile
+  noLayout: MaterialToolsOutput,
+  layout: MaterialToolsOutput
 }

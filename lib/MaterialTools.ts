@@ -1,68 +1,44 @@
 import * as path from 'path';
-
-import {DEFAULTS} from '../cli/options';
-import {ToolOptions } from './interfaces/options';
-import { MaterialToolsData, LocalBuildFiles } from './interfaces/files';
-
-import {DependencyResolver} from '../resolvers/dependency';
-import {PackageResolver} from '../resolvers/packages';
-import {LocalResolver } from '../resolvers/node_modules';
-
-import {ThemingBuilder} from '../builders/ThemingBuilder';
-import {JSBuilder} from '../builders/JSBuilder';
-import {CSSBuilder} from '../builders/CSSBuilder';
+import {DEFAULTS} from './cli/options';
+import {JSBuilder} from './builders/JSBuilder';
+import {CSSBuilder} from './builders/CSSBuilder';
+import {ThemeBuilder} from './builders/ThemeBuilder';
+import {Utils} from './common/Utils';
+import {PackageResolver} from './resolvers/PackageResolver';
+import {DependencyResolver} from './resolvers/DependencyResolver';
+import {LocalResolver, MaterialToolsFiles} from './resolvers/FileResolver';
+import {MaterialToolsOptions, MaterialToolsData} from './common/Interfaces';
 
 const fse = require('fs-extra');
 
-/**
- *
- */
 export class MaterialTools {
 
   private _isPost1_1: boolean = true;
-  private _options: ToolOptions;
-  private themeBuilder: ThemingBuilder;
+  private _options: MaterialToolsOptions;
+  private themeBuilder: ThemeBuilder;
 
-  /**
-   * Constructor
-   */
-  constructor(options?: ToolOptions | string) {
-    this.options = (typeof options === 'string') ? require(path.resolve(options)) : options || { };
-  }
+  constructor(_options: MaterialToolsOptions | string) {
 
-  /**
-   * Accessor for 'options' property
-   */
-  get options():ToolOptions {
-    return this._options;
-  }
-
-  /**
-   * Mutator for 'options' property
-   */
-  set options(config: ToolOptions) {
-    if (!config) {
-      // Add a runtime check for the JS version.
+    if (!_options) {
       throw new Error('No options have been specified.');
     }
 
-    this._options = config;
-    let options = this._options;
+    this._options = typeof _options === 'string' ? require(path.resolve(_options)) : _options;
 
-
-    // Assign defaults if needed
-    Object.keys(DEFAULTS).forEach(key => {
-      if (typeof options[key] === 'undefined') {
-        options[key] = DEFAULTS[key];
+    Utils.forEach(DEFAULTS, (value, key) => {
+      if (typeof this._options[key] === 'undefined') {
+        this._options[key] = value
       }
     });
 
-    if (options.theme) {
-      this.themeBuilder = new ThemingBuilder(options.theme)
+    if (this._options.destination) {
+      this._options.destination = path.resolve(this._options.destination);
+    } else {
+      throw new Error('You have to specify a destination.');
     }
 
-    if (this.options.destination) {
-      this.options.destination = path.resolve(this.options.destination);
+    if (this._options.theme) {
+      this.themeBuilder = new ThemeBuilder(this._options.theme);
     }
   }
 
@@ -70,16 +46,18 @@ export class MaterialTools {
    * Builds all of the files.
    */
   build(): Promise<MaterialToolsData> {
-    if ( !this.options.destination ) throw new Error('You have to specify a destination.');
+    if (!this._options.destination) {
+      throw new Error('You have to specify a destination.');
+    }
 
     return this._getData()
       .then(buildData => {
         // Create the destination path.
-        return this._makeDirectory(this.options.destination).then(() => {
+        return this._makeDirectory(this._options.destination).then(() => {
           // Copy the license to the destination.
           let filename = 'LICENSE';
           let source = path.join(buildData.files.root, 'module', filename);
-          let destination = path.join(this.options.destination, filename);
+          let destination = path.join(this._options.destination, filename);
 
           fse.copy(source, destination);
 
@@ -87,7 +65,7 @@ export class MaterialTools {
         })
       })
       .then((buildData: MaterialToolsData) => {
-        let base = path.join(this.options.destination, this.options.destinationFilename);
+        let base = path.join(this._options.destination, this._options.destinationFilename);
         let minifiedJSName = `${base}.min.js`;
         let js = JSBuilder.build(buildData, minifiedJSName);
         let css = CSSBuilder.build(buildData, this._isPost1_1);
@@ -106,7 +84,7 @@ export class MaterialTools {
         this._writeFile(`${base}.layout-none.css`, css.noLayout.source, license);
         this._writeFile(`${base}.layout-none.min.css`, css.noLayout.compressed, license);
 
-        if (this.options.theme) {
+        if (this._options.theme) {
           let compiledCSS = this._buildStaticTheme(buildData.files);
           let themeStylesheet = CSSBuilder._buildStylesheet(compiledCSS);
 
@@ -127,11 +105,9 @@ export class MaterialTools {
 
   /**
    * Figures out all the dependencies and necessary files for a build, based on the options.
-   * @return {Promise<any>} Resolves with a map, containing the necessary
-   * JS and CSS files.
    */
   _getData(): Promise<MaterialToolsData> {
-    const options = this.options;
+    const options = this._options;
 
     return PackageResolver
       .resolve(options.version, options.cache)
@@ -163,16 +139,14 @@ export class MaterialTools {
   }
 
   /**
-   * Builds a static theme stylesheet, based on the specified options.
-   * @param buildFiles Build files to be used to generate the static theme.
-   * @returns {string} Generated theme stylesheet
+   * Builds a static theme stylesheet, based on the specified options
    */
-  _buildStaticTheme(buildFiles: LocalBuildFiles): string {
+  _buildStaticTheme(buildFiles: MaterialToolsFiles): string {
     if (!this.themeBuilder) {
       return;
     }
 
-    /** If the current version is Post v1.1.0 then we could just load the styles and build the themes */
+    // If the current version is Post v1.1.0 then we could just load the styles and build the themes
     if (this._isPost1_1) {
       return this.themeBuilder.build(CSSBuilder._loadStyles(buildFiles.themes));
     }
@@ -193,24 +167,20 @@ export class MaterialTools {
     return this.themeBuilder.build(themeCSS);
   }
 
-  /**
-   * Promise wrapper around mkdirp.
-   */
+  /** Promise wrapper around mkdirp */
   private _makeDirectory(path: string): Promise<string> {
     return new Promise((resolve, reject) => {
       fse.mkdirp(path, error => error ? reject(error) : resolve(path));
     });
   };
 
-  /**
-   * Generates the license string.
-   */
+  /** Generates the license string */
   private _getLicense(modules: string[]): string {
     let lines = [
       'Angular Material Design',
       'https://github.com/angular/material',
       '@license MIT',
-      'v' + this.options.version,
+      'v' + this._options.version,
       'Built with: material-tools',
       'Includes modules: ' + modules.join(', '),
       '',
@@ -225,12 +195,8 @@ export class MaterialTools {
     return lines.join('\n');
   }
 
-  /**
-   * Shorthand to write the file and include the license.
-   */
+  /** Writes a given content with the associated license to a new file */
   private _writeFile(destination: string, content: string, license = ''): void {
     fse.writeFileSync(destination, license + content);
   }
 }
-
-

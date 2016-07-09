@@ -1,8 +1,8 @@
-import {Logger} from '../utils/logger';
 import * as zlib from 'zlib';
+import {Logger} from './logger';
 
-let request = require('request');
-let tar = require('tar-fs');
+const request = require('request');
+const tar = require('tar-fs');
 
 const MODULE_REPO = 'https://github.com/angular/bower-material/archive/v';
 const SOURCE_REPO = 'https://github.com/angular/material/archive/v';

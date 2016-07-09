@@ -1,42 +1,19 @@
-import { Logger } from '../utils/logger';
-import {VersionDownloader} from '../tools/downloader';
-import { extractVersionNumber } from '../utils/lodash';
-
 import * as path from 'path';
 import * as fs from 'fs';
+import {Logger} from '../common/logger';
+import {Utils} from '../common/utils';
+import {VersionDownloader} from '../common/VersionDownloader';
 
 const NodeModule = require('module');
 
 export class PackageResolver {
 
   /**
-   * Checks whether a version is cached.
-   * @param  {string} path Path to be checked.
-   * @return {Promise<string>} Gets resolved if the version is
-   * cached, or rejected if it is not. In both cases the
-   * cache directory will be passed to the promise.
-   */
-  private static isCached(path: string): Promise<string> {
-    return new Promise((resolve, reject) => {
-      fs.access(path, fs.R_OK | fs.W_OK, doesNotExist => {
-        if (doesNotExist) {
-          reject(path);
-        } else {
-          resolve(path);
-        }
-      });
-    });
-  }
-
-  /**
    * Resolves the directories for a version. The version either gets taken
    * from the cache, or is downloaded via the VersionDownloader.
-   * @param  {string} version Angular Material version.
-   * @param  {string} cache Root directory for the cache.
-   * @return {Promise<{Object>} Resolves with an object, containing the paths to the
-   * source version and module version.
+   * Returns a promise which resolves with the retrieved directories.
    */
-  static resolve(version: string, cache: string): Promise<ResolvedPackage> {
+  static resolve(version: string, cacheRoot: string): Promise<MaterialToolsPackage> {
     let localSourcePath = '';
     let directoryPromise: Promise<any> = null;
 
@@ -52,7 +29,7 @@ export class PackageResolver {
     if (localSourcePath && isPost1_1) {
       directoryPromise = Promise.resolve({ module: localSourcePath });
     } else {
-      directoryPromise = this.isCached(path.join(path.resolve(cache), version));
+      directoryPromise = this._isExisting(path.join(path.resolve(cacheRoot), version));
     }
 
     return directoryPromise
@@ -98,10 +75,10 @@ export class PackageResolver {
   /** Validates the current resolving version and shows warnings if necessary */
   private static _validateVersion(version: string, useLocalVersion = false): boolean {
 
-    let versionNumber = extractVersionNumber(version);
-    let isPost1_1 = versionNumber >= extractVersionNumber('1.1.0');
+    let versionNumber = Utils.extractVersionNumber(version);
+    let isPost1_1 = versionNumber >= Utils.extractVersionNumber('1.1.0');
 
-    if (versionNumber < extractVersionNumber('1.0.0')) {
+    if (versionNumber < Utils.extractVersionNumber('1.0.0')) {
       Logger.warn(
         'Material-Tools: You are loading an unsupported version. ' +
         'Only >= v1.0.0 versions are fully supported.'
@@ -117,8 +94,6 @@ export class PackageResolver {
 
     return isPost1_1;
   }
-
-
 
   /**
    * Retrieves the local installed Angular Material version form the current Process Working Directory
@@ -140,9 +115,25 @@ export class PackageResolver {
     };
   }
 
+  /**
+   * Checks whether the given path is available in the file system.
+   * Returns a promise which resolves / rejects with the given path.
+   */
+  private static _isExisting(path: string): Promise<string> {
+    return new Promise((resolve, reject) => {
+      fs.access(path, fs.R_OK | fs.W_OK, doesNotExist => {
+        if (doesNotExist) {
+          reject(path);
+        } else {
+          resolve(path);
+        }
+      });
+    });
+  }
+
 }
 
-export type ResolvedPackage = {
+export type MaterialToolsPackage = {
   root: string
   module: string,
   source?: string,

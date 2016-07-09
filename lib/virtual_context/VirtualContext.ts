@@ -1,6 +1,6 @@
-import {createSandboxRequire, SandboxRequireOptions} from './sandbox';
-import {BrowserWindow} from './mock_browser';
-import {forEach} from '../utils/lodash';
+import {BrowserWindow} from './MockBrowser';
+import {Utils} from '../common/Utils';
+import {createSandboxRequire, SandboxRequireOptions} from './SandboxRequire';
 
 export class VirtualContext {
 
@@ -9,8 +9,7 @@ export class VirtualContext {
   /**
    * Creates a virtual context, which allows developers to run files inside of a new V8
    * JavaScript Instance.
-   * Also supports a Sandboxed NodeJS environment in the new V8 context.
-   * @param globals Custom global variables to be applied to the Virtual Context.
+   * The virtual context includes a sandboxed NodeJS environment inside of the V8 machine.
    */
   constructor(globals?: any) {
     this.globals = new BrowserWindow();
@@ -18,15 +17,12 @@ export class VirtualContext {
     // Apply the custom globals from the developer to the default globals
     // without modifying the globals reference, because otherwise we would
     // lose the circular references.
-    forEach(globals, (value, key) => this.globals[key] = value);
+    Utils.forEach(globals, (value, key) => this.globals[key] = value);
   }
 
   /**
    * Runs the specified file inside of the Virtual Context and returns the synchronized module exports from
    * the second V8 instance.
-   * @param fileName File which will be run inside of the Virtual Context.
-   * @param options Options for the Sandboxed Require
-   * @returns {Object} Module Exports of the given file
    */
   run(fileName: string, options?: SandboxRequireOptions): any {
     return createSandboxRequire(__filename, this.globals, options)(fileName);

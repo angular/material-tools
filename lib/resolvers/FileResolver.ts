@@ -1,6 +1,5 @@
 import * as path from 'path';
-import {ResolvedPackage} from './packages';
-import { LocalBuildFiles } from '../tools/interfaces/files';
+import {MaterialToolsPackage} from './PackageResolver';
 
 const glob = require('glob');
 
@@ -8,9 +7,7 @@ export class LocalResolver {
 
   /**
    * Looks up files that match a glob pattern.
-   * @param {string} pattern Pattern to be looked up.
-   * @param {string} directory Root directory for the pattern.
-   * @param {boolean=true} required Whether to reject if no files are found.
+   * When marking as required and no files could be found, the Promise will be rejected.
    */
   private static resolvePattern(pattern: string, directory: string, required = true): Promise<string[]> {
     return new Promise((resolve, reject) => {
@@ -27,9 +24,6 @@ export class LocalResolver {
   /**
    * Looks up files, with a given extension, in the file system.
    * Excludes minified files and themes.
-   * @param {string[]} modules Modules to be looked up.
-   * @param {string} extension Extension of the files to be looked up.
-   * @returns {Promise.<Array>} Contains the paths to the relevant files.
    */
   private static resolveExtension(modules: string[], extension: string, ...rest): Promise<string[]> {
     let pattern = `/*(${modules.join('|')})/**/!(*.min|*-theme).${extension}`;
@@ -38,7 +32,7 @@ export class LocalResolver {
 
   /**
    * Looks up the theme files for an array of modules.
-   * @param {string[]} modules The modules to be looked up.
+   * Returns a promise which resolves with an array of the required theme files.
    */
   private static resolveThemes(modules: string[], ...rest): Promise<string[]> {
     let pattern = `/*(${modules.join('|')})/**/*-theme.+(scss|css)`;
@@ -47,9 +41,7 @@ export class LocalResolver {
 
   /**
    * Looks up for all SCSS files, related to the specified modules.
-   * @param modules Modules to be looked up
-   * @param sourceDirectory Angular Material Source directory
-   * @returns {Promise.<Array>} Promise which resolves with an array of paths to the SCSS files.
+   * Returns a promise which resolves with an array of the required SCSS files.
    */
   private static resolveSCSS(modules: string[], sourceDirectory: string): Promise<string[]> {
     return Promise.all([
@@ -62,12 +54,9 @@ export class LocalResolver {
 
   /**
    * Resolves JS and CSS files within a directory.
-   * @param {string[]} modules Modules to be resolved.
-   * @param {Object} versionData Resolved Package Data from the Package Resolver.
-   * @param {boolean} isPost1_1 Whether the resolved version is Post v1.1.0
-   * @returns {Promise.<any>} Contains the paths to the JS and CSS files.
+   * Returns a promise which fulfills with the resolved files for the modules.
    */
-  static resolve(modules: string[], versionData: ResolvedPackage, isPost1_1: boolean = true): Promise<LocalBuildFiles> {
+  static resolve(modules: string[], versionData: MaterialToolsPackage, isPost1_1: boolean = true): Promise<MaterialToolsFiles> {
     let moduleDirectory = path.join(versionData.module, 'modules');
     let jsModules = path.join(moduleDirectory, 'js');
     let sourceRoot = path.join(versionData.source, 'src');
@@ -93,3 +82,14 @@ export class LocalResolver {
   }
 
 }
+
+/** Interface for the output object of the local resolver. */
+export interface MaterialToolsFiles {
+  root: string;
+  js: string[];
+  css: string[];
+  scss: string[];
+  themes: string[];
+  layout: string[];
+}
+

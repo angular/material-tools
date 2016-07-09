@@ -1,5 +1,5 @@
-import {VirtualContext} from '../virtual_context/virtual_context';
-import {Logger} from '../utils/logger';
+import {Logger} from '../common/logger';
+import {VirtualContext} from '../virtual_context/VirtualContext';
 
 export class DependencyResolver {
 
@@ -21,7 +21,7 @@ export class DependencyResolver {
 
     // Execute our dependency resolve script in the virtual context, to completely
     // isolate the window modification from our node environment.
-    let angular = `${__dirname}/mock_angular.js`,
+    let angular = `${__dirname}/isolated_browser_resolver.js`,
         output = virtualContext.run( angular, {
           strictMode: true
         });

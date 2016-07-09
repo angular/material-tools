@@ -1,41 +1,40 @@
-import {Logger} from '../lib/utils/logger';
-import {extractVersionNumber} from '../lib/utils/versioner';
-import {forEach} from '../lib/utils/lodash';
+import {Logger} from '../lib/common/logger';
+import {Utils} from '../lib/common/Utils';
 
 describe('Utils', () => {
 
   describe('_getVersionNumber function', () => {
 
     it('should correctly compare versions', () => {
-      expect(extractVersionNumber('1.1.0'))
-        .toBeGreaterThan(extractVersionNumber('1.0.9'))
+      expect(Utils.extractVersionNumber('1.1.0'))
+        .toBeGreaterThan(Utils.extractVersionNumber('1.0.9'))
     });
 
     it('should correctly compare new release candidates versions', () => {
-      expect(extractVersionNumber('1.1.0-rc.5'))
-        .toBeGreaterThan(extractVersionNumber('1.1.0-rc.4'))
+      expect(Utils.extractVersionNumber('1.1.0-rc.5'))
+        .toBeGreaterThan(Utils.extractVersionNumber('1.1.0-rc.4'))
     });
 
     it('should correctly compare old release candidates versions', () => {
-      expect(extractVersionNumber('1.1.0-rc-5'))
-        .toBeGreaterThan(extractVersionNumber('1.1.0-rc-4'))
+      expect(Utils.extractVersionNumber('1.1.0-rc-5'))
+        .toBeGreaterThan(Utils.extractVersionNumber('1.1.0-rc-4'))
     });
 
     it('should correctly compare older versions', () => {
-      expect(extractVersionNumber('0.11.0'))
-        .toBeLessThan(extractVersionNumber('1.1.0'));
+      expect(Utils.extractVersionNumber('0.11.0'))
+        .toBeLessThan(Utils.extractVersionNumber('1.1.0'));
     });
 
     it('should correctly compare release candiates with major releases', () => {
-      expect(extractVersionNumber('1.0.0'))
-        .toBeLessThan(extractVersionNumber('1.1.0-rc.5'))
+      expect(Utils.extractVersionNumber('1.0.0'))
+        .toBeLessThan(Utils.extractVersionNumber('1.1.0-rc.5'))
     });
 
     it('should should not throw if a version that does not match the pattern', () => {
       let result = null;
 
       expect(() => {
-        result = extractVersionNumber('something');
+        result = Utils.extractVersionNumber('something');
       }).not.toThrow();
 
       expect(result).toBe(-1);
@@ -49,7 +48,7 @@ describe('Utils', () => {
 
       let iteratorFn = jasmine.createSpy('onIteratorFn');
 
-      forEach({
+      Utils.forEach({
         key1: 'value1',
         key2: 'value2'
       }, iteratorFn);
@@ -64,7 +63,7 @@ describe('Utils', () => {
         key2: 'value2'
       };
 
-      forEach(iteratorObject, (value, key) => fakeObject[key] = value);
+      Utils.forEach(iteratorObject, (value, key) => fakeObject[key] = value);
 
       expect(fakeObject).toEqual(iteratorObject);
 

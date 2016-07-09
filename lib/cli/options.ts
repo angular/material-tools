@@ -1,9 +1,8 @@
-import {ToolOptions} from "../tools/interfaces/options";
+import {MaterialToolsOptions} from '../common/Interfaces';
 
-export const DEFAULTS: ToolOptions = {
-  version             : 'local',
-  cache               : './.material-cache/',
-  destinationFilename : 'angular-material',
-  mainFilename        : 'angular-material.js'
+export const DEFAULTS: MaterialToolsOptions = {
+  version: 'local',
+  cache: './.material-cache/',
+  destinationFilename: 'angular-material',
+  mainFilename: 'angular-material.js'
 };
-

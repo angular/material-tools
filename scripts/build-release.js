@@ -23,14 +23,13 @@ fse.copySync(`${PROJECT_ROOT}/bin/material-tools`, `${OUTPUT_DIRECTORY}/bin/mate
 let sourceFiles = glob(`${PROJECT_ROOT}/lib/**/*.ts`);
 
 // Append our main files to the sourceFiles array.
-// TODO(devversion): resolve files through a build configuration for build and release process.
 sourceFiles.push(
   `${PROJECT_ROOT}/typings/index.d.ts`,
   `${PROJECT_ROOT}/index.ts`
 );
 
 try {
-  exec(`node ${TSC_BIN} --declaration ${sourceFiles.join(' ')} --outDir ${OUTPUT_DIRECTORY} --t 'ES5'`, {
+  exec(`node ${TSC_BIN} --declaration ${sourceFiles.join(' ')} --outDir ${OUTPUT_DIRECTORY}`, {
     cwd: PROJECT_ROOT
   });
 

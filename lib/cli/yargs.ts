@@ -2,12 +2,12 @@ import { DEFAULTS } from './options';
 
 export let yargs = require('yargs');
 
-const MAIN_GROUP = 'Arguments:',
-      OPTIONAL_GROUP = 'Optional arguments:',
-      LOGGING_GROUP = 'Logging arguments:';
+const MAIN_GROUP = 'Arguments:';
+const OPTIONAL_GROUP = 'Optional arguments:';
+const LOGGING_GROUP = 'Logging arguments:';
 
 yargs
-  .option('config', {           // Main arguments.
+  .option('config', {
     alias: 'c',
     describe: 'JSON config file to be loaded. If specified, all other options are ignored.',
     type: 'string',
@@ -20,6 +20,7 @@ yargs
     type: 'string',
     requiresArg: true,
     group: MAIN_GROUP,
+    // TODO: reintroduce as required options. Not possible yet, because of chained option registrations.
     // demand: !yargs.argv.config
   })
   .option('modules', {
@@ -49,13 +50,13 @@ yargs
     requiresArg: true,
     group: OPTIONAL_GROUP
   })
-  .option('cache', {            // Optional arguments.
+  .option('cache', {
     describe: 'Directory to be used as a cache for downloaded versions.',
     default: DEFAULTS.cache,
     requiresArg: true,
     group: OPTIONAL_GROUP
   })
-  .option('verbose', {          // Logging arguments.
+  .option('verbose', {
     describe: 'Logs additional info as a build is progressing.',
     group: LOGGING_GROUP
   })

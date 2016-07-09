@@ -1,17 +1,14 @@
-import {VirtualContext} from '../virtual_context/virtual_context';
+import {VirtualContext} from '../virtual_context/VirtualContext';
 
 /**
- * Use a customized $mdTheming service to generateThemes for the specified ThemeCSS
- * Preparing the $mdTheming service using our isolated, hijacked Angular script in
- * the virtual context, to completely isolate the window modification from our node
- * environment.
+ * Theming Builder uses the real $mdTheming service to generate static theme stylesheets
  */
-export class ThemingBuilder {
+export class ThemeBuilder {
 
-  private _$mdTheming: any;                   // Virtual $mdTheming service
-  private _$mdThemeCSS: string;               // Default theming stylesheet for all components
-  private _generateThemes: Function;          // VM function which generates the themes
-  private _virtualContext: VirtualContext;    // Context which runs all the browser code
+  private _$mdTheming: any;
+  private _$mdThemeCSS: string;
+  private _generateThemes: Function;
+  private _virtualContext: VirtualContext;
 
   /**
    * Generates a static theme file from the specified theme.
@@ -21,15 +18,15 @@ export class ThemingBuilder {
 
     // Create a virtual context, to isolate the script which modifies the globals
     // to be able to mock a Browser Environment.
-
     this._virtualContext = new VirtualContext({
       $$interception: {
         run: this._onAngularRunFn.bind(this)
       }
     });
 
-    let angular = `${__dirname}/../resolvers/mock_angular.js`;
-    let injector =  this._virtualContext.run( angular, { strictMode: true })['injector'];
+    let injector =  this._virtualContext.run(__dirname + '/../resolvers/isolated_browser_resolver.js', {
+      strictMode: true
+    })['injector'];
 
     this._buildThemingService(theme, injector);
   }
@@ -46,6 +43,7 @@ export class ThemingBuilder {
    */
   build(themeCSS?: string): string {
     let _fakeInjector = {
+      // Trim the theming CSS, because the $mdTheming service accidentally introduces a syntax error.
       get: () => (themeCSS || this._$mdThemeCSS).trim(),  // Known $mdTheming bug: input CSS cannot end with newline
       has: () => true
     };
@@ -96,10 +94,6 @@ export class ThemingBuilder {
   }
 
 }
-
-// *************************************************
-// Internal Interfaces
-// *************************************************
 
 /**
  * Mocked interface of the $mdThemingProvider

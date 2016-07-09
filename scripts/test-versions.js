@@ -1,21 +1,20 @@
 'use strict';
 
-// Allow Jasmine Core to load typescript files.
 require('ts-node/register');
 
 const request = require('request');
-const PackageResolver = require('../lib/resolvers/packages').PackageResolver;
+const PackageResolver = require('../lib/resolvers/PackageResolver').PackageResolver;
 const MaterialTools = require('../lib/MaterialTools').MaterialTools;
-const _getVersionNumber = PackageResolver._getVersionNumber.bind(PackageResolver);
+const extractVersionNumber = require('../lib/common/Utils').Utils.extractVersionNumber;
 
-const SUPPORTED_VERSION = _getVersionNumber('1.0.0');
+const SUPPORTED_VERSION = extractVersionNumber('1.0.0');
 
 request('http://material.angularjs.org/docs.json', (error, response, body) => {
   if (!error && response.statusCode == 200) {
     let versions = JSON.parse(body)['versions'];
 
     versions = versions
-      .filter(entry => _getVersionNumber(entry) >= SUPPORTED_VERSION);
+      .filter(entry => extractVersionNumber(entry) >= SUPPORTED_VERSION);
 
     onVersionsRetrieved(versions);
   }

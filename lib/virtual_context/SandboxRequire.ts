@@ -1,7 +1,7 @@
 import * as fs from 'fs';
 import * as vm from 'vm';
 import * as path from 'path';
-import { forEach } from '../utils/lodash';
+import {Utils} from '../common/Utils';
 
 const NodeModule = require('module');
 const merge = require('merge');
@@ -15,11 +15,6 @@ const DEFAULT_OPTIONS: SandboxRequireOptions = {
 /**
  * Creates a require function, which runs the required files inside of a new Virtual Machine,
  * which supports the Node Environment inside of the new VM, without accessing the main VM.
- * @param filePath File path of the current used module
- * @param globals Globals which will be applied to the context
- * @param options Options for the Sandboxed Require
- * @param EXPORTS_CACHE Cache Object for the sandboxed require.
- * @returns {Function(<String>)}
  */
 export function createSandboxRequire(filePath, globals?, options?: SandboxRequireOptions, EXPORTS_CACHE = {}) {
 
@@ -59,7 +54,7 @@ export function createSandboxRequire(filePath, globals?, options?: SandboxRequir
 
     let _localValues = [];
     // Iterate through all locals and push the retrieved values to the value array.
-    forEach(locals, (value, key) => _localValues.push(value));
+    Utils.forEach(locals, (value, key) => _localValues.push(value));
 
     // Run our Function inside of the new context.
     runFn.apply(currentModule.exports, [globals].concat(_localValues));
@@ -73,7 +68,7 @@ export function createSandboxRequire(filePath, globals?, options?: SandboxRequir
 
   function updateGlobals() {
     // Moves the default Node globals into the current fake global object.
-    forEach(global, (value, key) => globals[key] = value);
+    Utils.forEach(global, (value, key) => globals[key] = value);
   }
 
   function getLocals(module: NodeModule, requireFn: Function): any {
