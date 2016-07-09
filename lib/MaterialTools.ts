@@ -1,5 +1,4 @@
 import * as path from 'path';
-import {DEFAULTS} from './cli/options';
 import {JSBuilder} from './builders/JSBuilder';
 import {CSSBuilder} from './builders/CSSBuilder';
 import {ThemeBuilder, MdTheme} from './builders/ThemeBuilder';
@@ -24,7 +23,7 @@ export class MaterialTools {
 
     this._options = typeof _options === 'string' ? require(path.resolve(_options)) : _options;
 
-    Utils.forEach(DEFAULTS, (value, key) => {
+    Utils.forEach(DEFAULT_OPTIONS, (value, key) => {
       if (typeof this._options[key] === 'undefined') {
         this._options[key] = value
       }
@@ -223,3 +222,11 @@ export interface MaterialToolsOptions {
   cache?: string;
   destinationFilename?: string;
 }
+
+/** Default options for the Material Tools. */
+export const DEFAULT_OPTIONS: MaterialToolsOptions = {
+  version: 'local',
+  cache: './.material-cache/',
+  destinationFilename: 'angular-material',
+  mainFilename: 'angular-material.js'
+};
