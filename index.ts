@@ -1,3 +1,3 @@
 import {MaterialTools} from './lib/MaterialTools';
 
-export default MaterialTools;
+module.exports = MaterialTools;

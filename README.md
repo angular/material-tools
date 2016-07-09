@@ -24,8 +24,8 @@ You can use the module either through the command line, by importing the NodeJS 
 
 #### NodeJS usage
 ```javascript
-var material = require('angular-material-tools');
-var tools = new material.MaterialTools({
+var MaterialTools = require('angular-material-tools');
+var tools = new MaterialTools({
   destination: './output',
   version: '1.0.0',
   modules: ['menu', 'checkbox']
@@ -36,16 +36,6 @@ tools
   .then(() => console.log('Build was successful.'))
   .catch(error => console.error(error));
 ```
-
-Note that in addition to the `MaterialTools` module, you can import the following sub-modules:
-* `ThemingBuilder` - Allows you to build an individual theme.
-* `PackageResolver` - Used for dealing with fetching, caching and resolving Angular Material versions.
-* `VersionDownloader` - Downloads and unpacks a version of Angular Material. Gets called internally by `PackageResolver`.
-* `DependencyResolver` - Loads a JS file and figures out the dependencies between the Angular modules within it.
-* `LocalResolver` - Looks up the necessary files for a build within the file system.
-* `VirtualContext` - Creates a sandboxes environment for executing JS without polluting the global scope. Used internally
-by the `DependencyResolver` and `ThemingBuilder`.
-
 
 #### CLI usage
 In order to use the tools through the command line, you have to have installed the module globally
@@ -69,7 +59,7 @@ In addition to the options from the Node and TypeScript modules, the CLI has the
 #### TypeScript usage
 If you're already using TypeScript, you can use the above-mentioned modules directly:
 ```typescript
-import { MaterialTools } from 'angular-material-tools';
+import {MaterialTools} from 'angular-material-tools';
 
 let tools = new MaterialTools({
   destination: './output',
