@@ -4,7 +4,7 @@
 require('ts-node/register');
 
 const request = require('request');
-const PackageResolver = require('../lib/resolvers/PackageResolver').PackageResolver;
+const PackageResolver = require('../lib/resolvers/packages').PackageResolver;
 const MaterialTools = require('../lib/MaterialTools').MaterialTools;
 const _getVersionNumber = PackageResolver._getVersionNumber.bind(PackageResolver);
 

@@ -1,4 +1,4 @@
-import {LocalResolver} from '../lib/resolvers/LocalResolver';
+import {LocalResolver} from '../lib/resolvers/node_modules.ts';
 import * as path from 'path';
 
 const merge = require('merge');

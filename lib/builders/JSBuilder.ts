@@ -1,4 +1,4 @@
-import {MaterialToolsData, MaterialToolsFile} from '../MaterialTools';
+import {MaterialToolsData, MaterialToolsFile} from '../tools/interfaces/files';
 
 const fse = require('fs-extra');
 const uglify = require('uglify-js');

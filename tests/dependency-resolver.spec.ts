@@ -1,4 +1,4 @@
-import {DependencyResolver} from '../lib/resolvers/DependencyResolver';
+import {DependencyResolver} from '../lib/resolvers/dependency';
 
 describe('Dependency Resolver', () => {
 

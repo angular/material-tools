@@ -12,12 +12,11 @@ const PROJECT_ROOT = path.join(__dirname, '..');
 const OUTPUT_DIRECTORY = path.join(PROJECT_ROOT, 'dist');
 
 // Copy all current source files over to the distribution folder.
-fse.copySync(`${PROJECT_ROOT}/lib`, `${OUTPUT_DIRECTORY}/lib`);
-
 // Copy the package.json file to the distribution folder, so we can easily deploy the NPM module.
-fse.copySync(`${PROJECT_ROOT}/package.json`, `${OUTPUT_DIRECTORY}/package.json`);
-
 // Copy the bin directory in order to be able to run the CLI.
+
+fse.copySync(`${PROJECT_ROOT}/lib`, `${OUTPUT_DIRECTORY}/lib`);
+fse.copySync(`${PROJECT_ROOT}/package.json`, `${OUTPUT_DIRECTORY}/package.json`);
 fse.copySync(`${PROJECT_ROOT}/bin/material-tools`, `${OUTPUT_DIRECTORY}/bin/material-tools`);
 
 // Retrieve all source files.
@@ -31,7 +30,7 @@ sourceFiles.push(
 );
 
 try {
-  exec(`node ${TSC_BIN} --declaration ${sourceFiles.join(' ')} --outDir ${OUTPUT_DIRECTORY}`, {
+  exec(`node ${TSC_BIN} --declaration ${sourceFiles.join(' ')} --outDir ${OUTPUT_DIRECTORY} --t 'ES5'`, {
     cwd: PROJECT_ROOT
   });
 

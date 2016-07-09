@@ -1,5 +1,5 @@
-import {VirtualContext} from '../virtual_context/VirtualContext';
-import {Utils} from '../Utils';
+import {VirtualContext} from '../virtual_context/virtual_context';
+import {Logger} from '../utils/logger';
 
 export class DependencyResolver {
 
@@ -21,9 +21,10 @@ export class DependencyResolver {
 
     // Execute our dependency resolve script in the virtual context, to completely
     // isolate the window modification from our node environment.
-    let output = virtualContext.run(__dirname + '/isolated_browser_resolver.js', {
-      strictMode: true
-    });
+    let angular = `${__dirname}/mock_angular.js`,
+        output = virtualContext.run( angular, {
+          strictMode: true
+        });
 
     let targetModules = modules && modules.length ? modules : Object.keys(output.dependencies);
 
@@ -50,7 +51,7 @@ export class DependencyResolver {
           dependencies.forEach(addDependencies);
         }
       } else if (!exists) {
-        Utils.warn(`Module "${componentName}" does not exist and will be skipped.`);
+        Logger.warn(`Module "${componentName}" does not exist and will be skipped.`);
       }
     });
 

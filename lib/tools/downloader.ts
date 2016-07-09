@@ -1,4 +1,4 @@
-import {Utils} from '../Utils';
+import {Logger} from '../utils/logger';
 import * as zlib from 'zlib';
 
 let request = require('request');
@@ -11,11 +11,11 @@ const EXTENSION = '.tar.gz';
 export class VersionDownloader {
 
   private static _downloadFile(url: string, destination: string) {
-    Utils.info(`Downloading ${url}.`);
+    Logger.info(`Downloading ${url}.`);
 
     return new Promise((resolve, reject) => {
       let rejectPromise = error => {
-        Utils.error(error);
+        Logger.error(error);
         reject(error);
       };
 
@@ -35,7 +35,7 @@ export class VersionDownloader {
               .on('finish', () => {
                 resolve(destination);
                 stream.destroy();
-                Utils.info(`Downloaded ${url} successfuly.`);
+                Logger.info(`Downloaded ${url} successfuly.`);
               });
           } else {
             rejectPromise(`Failed to download ${url}. Status code: ${response.statusCode}.`);

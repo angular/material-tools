@@ -1,43 +1,68 @@
-import {DependencyResolver} from './resolvers/DependencyResolver';
-import {PackageResolver} from './resolvers/PackageResolver';
-import {LocalResolver, LocalBuildFiles} from './resolvers/LocalResolver';
-
-import {ThemingBuilder, MdTheme} from './theming/ThemingBuilder';
-import {JSBuilder} from './builders/JSBuilder';
-import {CSSBuilder} from './builders/CSSBuilder';
-
 import * as path from 'path';
+
+import {DEFAULTS} from '../cli/options';
+import {ToolOptions } from './interfaces/options';
+import { MaterialToolsData, LocalBuildFiles } from './interfaces/files';
+
+import {DependencyResolver} from '../resolvers/dependency';
+import {PackageResolver} from '../resolvers/packages';
+import {LocalResolver } from '../resolvers/node_modules';
+
+import {ThemingBuilder} from '../builders/ThemingBuilder';
+import {JSBuilder} from '../builders/JSBuilder';
+import {CSSBuilder} from '../builders/CSSBuilder';
 
 const fse = require('fs-extra');
 
+/**
+ *
+ */
 export class MaterialTools {
 
-  private themeBuilder: ThemingBuilder;
-  private options: MaterialToolsOptions;
   private _isPost1_1: boolean = true;
+  private _options: ToolOptions;
+  private themeBuilder: ThemingBuilder;
 
-  constructor(_options: MaterialToolsOptions | string) {
-    if (!_options) {
+  /**
+   * Constructor
+   */
+  constructor(options?: ToolOptions | string) {
+    this.options = (typeof options === 'string') ? require(path.resolve(options)) : options || { };
+  }
+
+  /**
+   * Accessor for 'options' property
+   */
+  get options():ToolOptions {
+    return this._options;
+  }
+
+  /**
+   * Mutator for 'options' property
+   */
+  set options(config: ToolOptions) {
+    if (!config) {
       // Add a runtime check for the JS version.
       throw new Error('No options have been specified.');
     }
 
-    this.options = typeof _options === 'string' ? require(path.resolve(_options)) : _options;
+    this._options = config;
+    let options = this._options;
 
+
+    // Assign defaults if needed
     Object.keys(DEFAULTS).forEach(key => {
-      if (typeof this.options[key] === 'undefined') {
-        this.options[key] = DEFAULTS[key];
+      if (typeof options[key] === 'undefined') {
+        options[key] = DEFAULTS[key];
       }
     });
 
-    if (this.options.destination) {
-      this.options.destination = path.resolve(this.options.destination);
-    } else {
-      throw new Error('You have to specify a destination.');
+    if (options.theme) {
+      this.themeBuilder = new ThemingBuilder(options.theme)
     }
 
-    if (this.options.theme) {
-      this.themeBuilder = new ThemingBuilder(this.options.theme)
+    if (this.options.destination) {
+      this.options.destination = path.resolve(this.options.destination);
     }
   }
 
@@ -45,6 +70,7 @@ export class MaterialTools {
    * Builds all of the files.
    */
   build(): Promise<MaterialToolsData> {
+    if ( !this.options.destination ) throw new Error('You have to specify a destination.');
 
     return this._getData()
       .then(buildData => {
@@ -97,6 +123,7 @@ export class MaterialTools {
         return buildData;
       });
   }
+
 
   /**
    * Figures out all the dependencies and necessary files for a build, based on the options.
@@ -206,30 +233,4 @@ export class MaterialTools {
   }
 }
 
-export const DEFAULTS: MaterialToolsOptions = {
-  version: 'local',
-  mainFilename: 'angular-material.js',
-  destinationFilename: 'angular-material',
-  cache: './.material-cache/'
-};
 
-export interface MaterialToolsOptions {
-  destination?: string;
-  modules?: string[];
-  version?: string;
-  theme?: MdTheme;
-  mainFilename?: string;
-  cache?: string;
-  destinationFilename?: string;
-}
-
-export interface MaterialToolsData {
-  files: LocalBuildFiles,
-  dependencies: any
-}
-
-export interface MaterialToolsFile {
-  source: string;
-  compressed: string;
-  map?: string;
-}

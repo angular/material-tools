@@ -4,5 +4,8 @@
 // Specify the process title.
 process.title = 'material-tools';
 
-// Load the CLI logic.
-require('../lib/MaterialCLI');
+// Load the CLI wrapper for MaterialTools w/ yargs
+require('../lib/cli/tools')
+  .build()
+  .then(data => Logger.log(`Successfully built ${data.dependencies._flat.join(', ')}.`))
+  .catch(error => Logger.error(error.stack || error));

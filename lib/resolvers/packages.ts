@@ -1,5 +1,7 @@
-import {VersionDownloader} from '../download/VersionDownloader';
-import {Utils} from '../Utils';
+import { Logger } from '../utils/logger';
+import {VersionDownloader} from '../tools/downloader';
+import { extractVersionNumber } from '../utils/lodash';
+
 import * as path from 'path';
 import * as fs from 'fs';
 
@@ -56,7 +58,7 @@ export class PackageResolver {
     return directoryPromise
       .then(this._resolveDirectories)
       .then(directories => {
-        Utils.info('Using Angular Material version from cache.');
+        Logger.info('Using Angular Material version from cache.');
 
         return {
           root: localSourcePath || path.join(directories.module, '..'),
@@ -96,18 +98,18 @@ export class PackageResolver {
   /** Validates the current resolving version and shows warnings if necessary */
   private static _validateVersion(version: string, useLocalVersion = false): boolean {
 
-    let versionNumber = Utils.getVersionNumber(version);
-    let isPost1_1 = versionNumber >= Utils.getVersionNumber('1.1.0');
+    let versionNumber = extractVersionNumber(version);
+    let isPost1_1 = versionNumber >= extractVersionNumber('1.1.0');
 
-    if (versionNumber < Utils.getVersionNumber('1.0.0')) {
-      Utils.warn(
+    if (versionNumber < extractVersionNumber('1.0.0')) {
+      Logger.warn(
         'Material-Tools: You are loading an unsupported version. ' +
         'Only >= v1.0.0 versions are fully supported.'
       );
     }
 
     if (!isPost1_1 && useLocalVersion) {
-      Utils.warn(
+      Logger.warn(
         'Material-Tools: When using `local` as the version, the tools will ' +
         'only use the local sources if the version is later than v1.1.0'
       );

@@ -1,4 +1,4 @@
-import {MaterialToolsData, MaterialToolsFile} from '../MaterialTools';
+import {MaterialToolsData, MaterialToolsFile} from '../tools/interfaces/files';
 
 const cleanCSS = require('clean-css');
 const fse = require('fs-extra');
