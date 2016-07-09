@@ -17,7 +17,7 @@ export class ThemeBuilder {
       }
     });
 
-    let injector =  this._virtualContext.run(__dirname + '/../resolvers/isolated_browser_resolver.js', {
+    let injector =  this._virtualContext.run(__dirname + '/../resolvers/isolated_angular.js', {
       strictMode: true
     })['injector'];
 

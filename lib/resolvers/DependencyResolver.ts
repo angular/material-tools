@@ -18,7 +18,7 @@ export class DependencyResolver {
 
     // Execute our dependency resolve script in the virtual context, to completely
     // isolate the window modification from our node environment.
-    let output = virtualContext.run(`${__dirname}/isolated_browser_resolver.js`, {
+    let output = virtualContext.run(`${__dirname}/isolated_angular.js`, {
       strictMode: true
     });
 
