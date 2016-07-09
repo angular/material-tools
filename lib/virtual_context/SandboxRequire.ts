@@ -16,7 +16,8 @@ const DEFAULT_OPTIONS: SandboxRequireOptions = {
  * Creates a require function, which runs the required files inside of a new Virtual Machine,
  * which supports the Node Environment inside of the new VM, without accessing the main VM.
  */
-export function createSandboxRequire(filePath, globals?, options?: SandboxRequireOptions, EXPORTS_CACHE = {}) {
+export function createSandboxRequire(filePath, globals?, options?: SandboxRequireOptions,
+                                     EXPORTS_CACHE = {}) {
 
   options = merge({}, DEFAULT_OPTIONS, options || {});
 
@@ -104,5 +105,5 @@ export interface SandboxRequireOptions {
   strictMode?: boolean;
 
   /** Whether the created require function should cache the exports */
-  caching?: boolean
+  caching?: boolean;
 }

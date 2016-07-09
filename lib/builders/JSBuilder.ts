@@ -21,7 +21,7 @@ export class JSBuilder {
       source: source,
       compressed: compressed.code,
       map: compressed.map
-    }
+    };
   }
 
   /**

@@ -11,7 +11,7 @@ const fse = require('fs-extra');
 
 export class MaterialTools {
 
-  private _isPost1_1: boolean = true;
+  private _isValidBuild: boolean = true;
   private _options: MaterialToolsOptions;
   private themeBuilder: ThemeBuilder;
 
@@ -25,7 +25,7 @@ export class MaterialTools {
 
     Utils.forEach(DEFAULT_OPTIONS, (value, key) => {
       if (typeof this._options[key] === 'undefined') {
-        this._options[key] = value
+        this._options[key] = value;
       }
     });
 
@@ -60,13 +60,13 @@ export class MaterialTools {
           fse.copy(source, destination);
 
           return buildData;
-        })
+        });
       })
       .then((buildData: MaterialToolsData) => {
         let base = path.join(this._options.destination, this._options.destinationFilename);
         let minifiedJSName = `${base}.min.js`;
         let js = JSBuilder.build(buildData, minifiedJSName);
-        let css = CSSBuilder.build(buildData, this._isPost1_1);
+        let css = CSSBuilder.build(buildData, this._isValidBuild);
         let license = this._getLicense(buildData.dependencies._flat);
 
         // JS files
@@ -112,7 +112,7 @@ export class MaterialTools {
       .then(versionData => {
         // Update the resolved version, in case it was `node`.
         options.version = versionData.version;
-        this._isPost1_1 = versionData.isPost1_1;
+        this._isValidBuild = versionData.isValidBuild;
 
         return {
           versionData: versionData,
@@ -125,13 +125,12 @@ export class MaterialTools {
       .then(data => {
         return LocalResolver.resolve(
           data.dependencies._flat,
-          data.versionData,
-          this._isPost1_1
+          data.versionData
         ).then(files => {
           return {
             files: files,
             dependencies: data.dependencies
-          }
+          };
         });
       });
   }
@@ -145,7 +144,7 @@ export class MaterialTools {
     }
 
     // If the current version is Post v1.1.0 then we could just load the styles and build the themes
-    if (this._isPost1_1) {
+    if (this._isValidBuild) {
       return this.themeBuilder.build(CSSBuilder._loadStyles(buildFiles.themes));
     }
 
@@ -208,8 +207,8 @@ export interface MaterialToolsOutput {
 
 /** Resolved data for the specified version */
 export interface MaterialToolsData {
-  files: MaterialToolsFiles,
-  dependencies: any
+  files: MaterialToolsFiles;
+  dependencies: any;
 }
 
 /** Valid options for the Material Tools */

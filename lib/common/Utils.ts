@@ -14,7 +14,10 @@ export class Utils {
   static extractVersionNumber(version): number {
 
     let matches = version.match(VERSION_DIGIT_REGEX);
-    if (!matches) return -1;
+
+    if (!matches) {
+      return -1;
+    }
 
     matches = matches
       .slice(1)

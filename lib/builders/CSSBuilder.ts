@@ -7,14 +7,17 @@ const sass = require('node-sass');
 const postcss = require('postcss');
 const autoprefixer = require('autoprefixer');
 
+// TODO(devversion): combine into baseSCSS config
+const BASE_SCSS_REGEX = /(variables|mixins).scss/;
+
 export class CSSBuilder {
 
   /**
    * Generates minified and non-minified version of the CSS, based on the specified build data.
    */
-  static build(data: MaterialToolsData, isPost1_1 = true): MaterialToolsCSS {
+  static build(data: MaterialToolsData, isValidBuild = true): MaterialToolsCSS {
 
-    if (isPost1_1) {
+    if (isValidBuild) {
 
       let classLayout = data.files.layout.filter(file => file.indexOf('attributes') === -1)[0];
 
@@ -29,7 +32,7 @@ export class CSSBuilder {
     let coreNoLayout = this._compileSCSS(
       this._loadStyles(
         data.files.scss
-          .sort(path => (path.indexOf('variables.scss') !== -1 || path.indexOf('mixins.scss') !== -1) ? -1 : 1)
+          .sort(path => BASE_SCSS_REGEX.test(path) ? -1 : 1)
           .filter(path => path.indexOf('core') !== -1)
       )
     );
@@ -57,7 +60,7 @@ export class CSSBuilder {
     return {
       source: this._beautifyStylesheet(styleSheet),
       compressed: compressed.styles
-    }
+    };
   }
 
   /** Reads and concatenates CSS files */

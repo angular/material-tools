@@ -37,7 +37,7 @@ yargs.option('config', {
   type: 'string',
   requiresArg: true,
   group: MAIN_GROUP
-})
+});
 
 // Optional arguments
 yargs.option('main-filename', {

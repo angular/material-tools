@@ -17,7 +17,7 @@
     "no-arg": true,
     "no-internal-module": true,
     "no-trailing-whitespace": true,
-    "no-bitwise": true,
+    "no-bitwise": false,
     "no-shadowed-variable": true,
     "no-unused-expression": true,
     "no-unused-variable": [true, {
@@ -51,7 +51,8 @@
       true,
       "ban-keywords",
       "check-format",
-      "allow-leading-underscore"
+      "allow-leading-underscore",
+      "allow-pascal-case"
     ],
     "whitespace": [
       true,

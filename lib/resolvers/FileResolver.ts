@@ -9,11 +9,11 @@ export class LocalResolver {
    * Looks up files that match a glob pattern.
    * When marking as required and no files could be found, the Promise will be rejected.
    */
-  private static resolvePattern(pattern: string, directory: string, required = true): Promise<string[]> {
+  private static resolvePattern(pattern: string, dir: string, required = true): Promise<string[]> {
     return new Promise((resolve, reject) => {
-      glob(pattern, { root: directory, nocase: true }, (error, files) => {
+      glob(pattern, { root: dir, nocase: true }, (error, files) => {
         if (error || (required && (!files || !files.length))) {
-          reject(error || `Could not find files matching ${pattern} in ${directory}.`);
+          reject(error || `Could not find files matching ${glob} in ${dir}.`);
         } else {
           resolve(files);
         }
@@ -25,8 +25,8 @@ export class LocalResolver {
    * Looks up files, with a given extension, in the file system.
    * Excludes minified files and themes.
    */
-  private static resolveExtension(modules: string[], extension: string, ...rest): Promise<string[]> {
-    let pattern = `/*(${modules.join('|')})/**/!(*.min|*-theme).${extension}`;
+  private static resolveExtension(modules: string[], extname: string, ...rest): Promise<string[]> {
+    let pattern = `/*(${modules.join('|')})/**/!(*.min|*-theme).${extname}`;
     return this.resolvePattern.call(this, pattern, ...rest);
   }
 
@@ -56,22 +56,23 @@ export class LocalResolver {
    * Resolves JS and CSS files within a directory.
    * Returns a promise which fulfills with the resolved files for the modules.
    */
-  static resolve(modules: string[], versionData: MaterialToolsPackage, isPost1_1: boolean = true): Promise<MaterialToolsFiles> {
-    let moduleDirectory = path.join(versionData.module, 'modules');
+  static resolve(modules: string[], _package: MaterialToolsPackage): Promise<MaterialToolsFiles> {
+    let moduleDirectory = path.join(_package.module, 'modules');
     let jsModules = path.join(moduleDirectory, 'js');
-    let sourceRoot = path.join(versionData.source, 'src');
+    let sourceRoot = path.join(_package.source, 'src');
     let sourceComponents = path.join(sourceRoot, 'components');
+    let layoutModules = path.join(moduleDirectory, 'layouts');
 
     return Promise.all([
       this.resolveExtension(modules, 'js', jsModules),
       this.resolveExtension(modules, 'css', jsModules, false),
-      this.resolveThemes(modules, isPost1_1 ? jsModules : sourceComponents),
-      this.resolvePattern('/*.+(layouts|layout-attributes).css', path.join(moduleDirectory, 'layouts'), false),
-      isPost1_1 ? [] : this.resolveSCSS(modules, sourceRoot)
+      this.resolveThemes(modules, _package.isValidBuild ? jsModules : sourceComponents),
+      this.resolvePattern('/*.+(layouts|layout-attributes).css', layoutModules, false),
+      _package.isValidBuild ? [] : this.resolveSCSS(modules, sourceRoot)
     ])
     .then(results => {
       return {
-        root: versionData.root,
+        root: _package.root,
         js: results[0],
         css: results[1],
         themes: results[2],

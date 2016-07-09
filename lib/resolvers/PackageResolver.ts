@@ -24,9 +24,11 @@ export class PackageResolver {
       localSourcePath = retrievedData.path;
     }
 
-    let isPost1_1 = this._validateVersion(version, !!localSourcePath);
+    // In Post v1.1.0, Angular Material has changed it's build process, to fix incorrect
+    // outputs to the bower-material repository. That's why Post v1.1.0 versions are different.
+    let isValidBuild = this._validateVersion(version, !!localSourcePath);
 
-    if (localSourcePath && isPost1_1) {
+    if (localSourcePath && isValidBuild) {
       directoryPromise = Promise.resolve({ module: localSourcePath });
     } else {
       directoryPromise = this._isExisting(path.join(path.resolve(cacheRoot), version));
@@ -42,22 +44,22 @@ export class PackageResolver {
           module: directories.module,
           source: directories.source || '',
           version: version,
-          isPost1_1: isPost1_1
-        }
+          isValidBuild: isValidBuild
+        };
       })
       .catch(directories => {
         directories = this._resolveDirectories(directories);
 
         return Promise.all([
           VersionDownloader.getModuleVersion(version, directories.module),
-          isPost1_1 ? '' : VersionDownloader.getSourceVersion(version, directories.source)
+          isValidBuild ? '' : VersionDownloader.getSourceVersion(version, directories.source)
         ]).then(downloadPaths => {
           return {
             root: localSourcePath || path.join(directories.module, '..'),
             module: downloadPaths[0],
             source: downloadPaths[1],
             version: version,
-            isPost1_1: isPost1_1
+            isValidBuild: isValidBuild
           };
         });
 
@@ -69,14 +71,14 @@ export class PackageResolver {
     return {
       module: path.join(cacheDirectory, 'module'),
       source: path.join(cacheDirectory, 'source')
-    }
+    };
   }
 
   /** Validates the current resolving version and shows warnings if necessary */
   private static _validateVersion(version: string, useLocalVersion = false): boolean {
 
     let versionNumber = Utils.extractVersionNumber(version);
-    let isPost1_1 = versionNumber >= Utils.extractVersionNumber('1.1.0');
+    let isValidBuild = versionNumber >= Utils.extractVersionNumber('1.1.0');
 
     if (versionNumber < Utils.extractVersionNumber('1.0.0')) {
       Logger.warn(
@@ -85,18 +87,18 @@ export class PackageResolver {
       );
     }
 
-    if (!isPost1_1 && useLocalVersion) {
+    if (!isValidBuild && useLocalVersion) {
       Logger.warn(
         'Material-Tools: When using `local` as the version, the tools will ' +
         'only use the local sources if the version is later than v1.1.0'
       );
     }
 
-    return isPost1_1;
+    return isValidBuild;
   }
 
   /**
-   * Retrieves the local installed Angular Material version form the current Process Working Directory
+   * Retrieves the local installed Angular Material version form the current PWD.
    */
   private static _retrieveLocalVersion(): { path: string, version: string } {
     // Create a Node module which runs at the current process working directory.
@@ -138,5 +140,5 @@ export type MaterialToolsPackage = {
   module: string,
   source?: string,
   version: string,
-  isPost1_1: boolean
+  isValidBuild: boolean
 }

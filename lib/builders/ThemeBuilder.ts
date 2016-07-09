@@ -49,7 +49,7 @@ export class ThemeBuilder {
    * the default color palettes of Angular Material.
    *
    * Register the specified theme in the `$mdThemingProvider` by overwriting the default theme.
-   * Using the `default` theme allows developers to use the static stylesheet without doing anything.
+   * Using the default theme allows users to use the static stylesheet without doing anything.
    *
    * Instantiate the `$mdTheming` service after the provider has been configured.
    */

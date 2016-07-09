@@ -21,8 +21,8 @@ export class VirtualContext {
   }
 
   /**
-   * Runs the specified file inside of the Virtual Context and returns the synchronized module exports from
-   * the second V8 instance.
+   * Runs the specified file inside of the Virtual Context and returns the synchronized
+   * module exports from the second V8 instance.
    */
   run(fileName: string, options?: SandboxRequireOptions): any {
     return createSandboxRequire(__filename, this.globals, options)(fileName);
