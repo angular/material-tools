@@ -5,28 +5,26 @@ const glob = require('glob').sync;
 const fse = require('fs-extra');
 const path = require('path');
 
+const buildConfig = require('../build.json');
+
 // We run the Typescript Compiler from the node modules because we want to be consistent
 // with the compiler version.
 const TSC_BIN = './node_modules/typescript/bin/tsc';
 const PROJECT_ROOT = path.join(__dirname, '..');
-const OUTPUT_DIRECTORY = path.join(PROJECT_ROOT, 'dist');
+const OUTPUT_DIRECTORY = path.resolve(PROJECT_ROOT, buildConfig.outDir);
 
-// Copy all current source files over to the distribution folder.
-// Copy the package.json file to the distribution folder, so we can easily deploy the NPM module.
-// Copy the bin directory in order to be able to run the CLI.
+buildConfig.copyFiles.forEach(pattern => {
+  let files = glob(pattern, { cwd: PROJECT_ROOT });
 
-fse.copySync(`${PROJECT_ROOT}/lib`, `${OUTPUT_DIRECTORY}/lib`);
-fse.copySync(`${PROJECT_ROOT}/package.json`, `${OUTPUT_DIRECTORY}/package.json`);
-fse.copySync(`${PROJECT_ROOT}/bin/material-tools`, `${OUTPUT_DIRECTORY}/bin/material-tools`);
+  files.forEach(file => {
+    fse.copySync(file, path.join(OUTPUT_DIRECTORY, file));
+  });
+});
 
 // Retrieve all source files.
-let sourceFiles = glob(`${PROJECT_ROOT}/lib/**/*.ts`);
-
-// Append our main files to the sourceFiles array.
-sourceFiles.push(
-  `${PROJECT_ROOT}/typings/index.d.ts`,
-  `${PROJECT_ROOT}/index.ts`
-);
+let sourceFiles = buildConfig.tsFiles
+  .map(pattern => glob(pattern, { cwd: PROJECT_ROOT }))
+  .reduce((array, item) => array.concat(item), []);
 
 try {
   exec(`node ${TSC_BIN} --declaration ${sourceFiles.join(' ')} --outDir ${OUTPUT_DIRECTORY}`, {
