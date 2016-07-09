@@ -1,30 +1,51 @@
 # angular-material-tools
 Build tools for Angular Material
 
-## Installation
+### Quick Links
+- [Installation](#installation)
+- [CLI Usage](#cli-usage)
+- [NodeJS Usage](#nodejs-usage)
+- [TypeScript Usage](#typescript-usage)
+
+### Installation
 - `npm install angular-material-tools --save`
 
 ### Options
-* `destination: string` - Target location for the Material build.
-* `modules?: string[]` - Modules that should be part of the build. All modules will be built if nothing
-is specified.
-* `version: string = 'local'` - Version of Angular Material. If set to `local`, the current
-Material version from the `package.json` will be loaded, otherwise it will be downloaded.
-* `theme?: Object` - Map of palettes to be used when generating a pre-built theme.
-Should contain the following properties: `primaryPalette`, `accentPalette`, `warnPalette`, `backgroundPalette`.
-* `cache: string = './.material-cache/'` - Directory for caching downloads.
-* `mainFilename: string = 'angular-material.js'` - Name of the file that will be loaded to
-figure out the dependencies.
-* `destinationFilename: string = 'angular-material'` - Name to be used as a base for the output files.
+
+|          Name         	|    Type  	|                             Description                                     |
+|-------------------	|---------|---------------------------------------------------------------------------------- |
+| `destination` (*)      	| `string` 	 | Target location for the Material build.                                    |
+| `modules`             	| `string[]` | Modules that should be part of the build.<br/> All modules will be built if nothing is specified.                                                                                                          |
+| `version`             	| `string`	 | Version of Angular Material.<br/> If set to local, it will take the local installed Angular Material version from the node modules                                                                              |
+| `theme`               	| `MdTheme`	 | Palettes, which will be used to generate a static theme stylesheet.        |
+| `cache`               	| `string`	 | Directory for caching the downloads                                        |
+| `mainFilename`        	| `string` 	 | Name of the entry file that will be loaded to figure out the dependencies. |
+| `destinationFilename` 	| `string` 	 | Name to be used as a base for the output files.                            |
 
 **Note:** The options can also be set in a JSON file whose path can be passed to the tools module.
 
-### Usage
-You can use the module either through the command line, by importing the NodeJS module or the TypeScript source.
+### CLI usage
+The build tools also include a CLI, which can be used by installing the tools globally.
+- `npm install -g angular-material-tools`
+
+To create a custom Angular Material with the CLI, you can pass the above-mentioned [options](#options) as CLI arguments.
+
+All possible options can be listed in the CLI.
+- `material-tools --help`
+
+**Examples**
+```bash
+material-tools --destination ./output --modules list datepicker autocomplete --version 1.0.0
+```
+
+When no version is specified, the CLI will automatically use the installed Angular Material version from the `node modules`.
+```bash
+material-tools -d ./output -m list
+```
 
 #### NodeJS usage
-```javascript
-var MaterialTools = require('angular-material-tools');
+```js
+const MaterialTools = require('angular-material-tools');
 var tools = new MaterialTools({
   destination: './output',
   version: '1.0.0',
@@ -36,25 +57,6 @@ tools
   .then(() => console.log('Build was successful.'))
   .catch(error => console.error(error));
 ```
-
-#### CLI usage
-In order to use the tools through the command line, you have to have installed the module globally
-via `npm install -g angular-material-tools`. Now you can create a build at any time by passing any of the above-mentioned
-options via command line arguments:
-
-```bash
-material-tools --destination ./output --modules list datepicker autocomplete --version 1.0.0
-```
-
-##### CLI-specific options
-In addition to the options from the Node and TypeScript modules, the CLI has the following options:
-* `--help` - Prints out usage information and a list of all the options.
-* `--config` or `-c` - Path to a JSON config file to be loaded. If passed, all other options are ignored.
-* `-d` or `--dest` - Shorthands for `--destination`.
-* `-m` - Shorthand for `--modules`.
-* `-v` - Shorthand for `--version`.
-* `--verbose` - Logs extra info during the build process. Useful for debugging.
-* `--silent` - Silences all build errors and warnings.
 
 #### TypeScript usage
 If you're already using TypeScript, you can use the above-mentioned modules directly:
@@ -74,12 +76,14 @@ tools
 ```
 
 ### Output
-You will get the following files as a result of the build process:
-* `angular-material.js` - Contains the modules that you specified, as well as their dependencies.
-* `angular-material.css` - CSS files that has the modules you selected, as well as the layout CSS and core CSS.
-* `angular-material.layout-none.css` - Only contains the modules that you selected, in addition to the core structural CSS.
-* `angular-material.theme.css` - Your pre-built theme, if it was specified in the options.
-* `angular-material.layout.css` and `angular-material.layouts-attributes.css` - Class-based and attribute-based layout CSS.
+|                   File                   |                                   Description                                        |
+| ---------------------------------------- | ------------------------------------------------------------------------------------ |
+| `angular-material.js`                    | Contains the modules that you specified, as well as their dependencies.              |
+| `angular-material.css`                   | CSS files that has the modules you selected, as well as the layout CSS and core CSS. |
+| `angular-material.layout-none.css`       | Only contains the modules that you selected, in addition to the core structural CSS. |
+| `angular-material.theme.css`             | Static generated theme stylesheet, if it was specified in the options.               |
+| `angular-material.layouts.css`           | Standalone Layout stylesheet with class selectors                                    |
+| `angular-material.layout-attributes.css` | Standalone Layout stylesheet with attribute selectors                                |
 
 ## Authors
 * [Paul Gschwendtner](https://github.com/DevVersion)
