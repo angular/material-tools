@@ -2,12 +2,11 @@ import * as path from 'path';
 import {DEFAULTS} from './cli/options';
 import {JSBuilder} from './builders/JSBuilder';
 import {CSSBuilder} from './builders/CSSBuilder';
-import {ThemeBuilder} from './builders/ThemeBuilder';
+import {ThemeBuilder, MdTheme} from './builders/ThemeBuilder';
 import {Utils} from './common/Utils';
 import {PackageResolver} from './resolvers/PackageResolver';
 import {DependencyResolver} from './resolvers/DependencyResolver';
 import {LocalResolver, MaterialToolsFiles} from './resolvers/FileResolver';
-import {MaterialToolsOptions, MaterialToolsData} from './common/Interfaces';
 
 const fse = require('fs-extra');
 
@@ -199,4 +198,28 @@ export class MaterialTools {
   private _writeFile(destination: string, content: string, license = ''): void {
     fse.writeFileSync(destination, license + content);
   }
+}
+
+/** Material Tools Output File */
+export interface MaterialToolsOutput {
+  source: string;
+  compressed: string;
+  map?: string;
+}
+
+/** Resolved data for the specified version */
+export interface MaterialToolsData {
+  files: MaterialToolsFiles,
+  dependencies: any
+}
+
+/** Valid options for the Material Tools */
+export interface MaterialToolsOptions {
+  destination?: string;
+  modules?: string[];
+  version?: string;
+  theme?: MdTheme;
+  mainFilename?: string;
+  cache?: string;
+  destinationFilename?: string;
 }

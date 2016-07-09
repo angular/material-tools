@@ -1,8 +1,5 @@
 import {VirtualContext} from '../virtual_context/VirtualContext';
 
-/**
- * Theming Builder uses the real $mdTheming service to generate static theme stylesheets
- */
 export class ThemeBuilder {
 
   private _$mdTheming: any;
@@ -10,10 +7,6 @@ export class ThemeBuilder {
   private _generateThemes: Function;
   private _virtualContext: VirtualContext;
 
-  /**
-   * Generates a static theme file from the specified theme.
-   * @param theme Angular Material Theme
-   */
   constructor(theme: MdTheme) {
 
     // Create a virtual context, to isolate the script which modifies the globals
@@ -33,18 +26,12 @@ export class ThemeBuilder {
 
 
   /**
-   * Builds the theming stylesheet for the current theme and returns it.
-   *
-   * The `$mdTheming` is using the $injector service for loading the theme stylesheet.
-   * Generate our themes, by injecting the fake injector and the virtual `$mdTheming` service, which
-   * contains the specified theme.
-   *
-   * @param themeCSS Optional Theme Stylesheet for override.
+   * Generates a static theme file from the specified theme.
    */
   build(themeCSS?: string): string {
     let _fakeInjector = {
-      // Trim the theming CSS, because the $mdTheming service accidentally introduces a syntax error.
-      get: () => (themeCSS || this._$mdThemeCSS).trim(),  // Known $mdTheming bug: input CSS cannot end with newline
+      // Trim the theme CSS, because the $mdTheming service accidentally introduces a syntax error.
+      get: () => (themeCSS || this._$mdThemeCSS).trim(),
       has: () => true
     };
 
@@ -58,17 +45,17 @@ export class ThemeBuilder {
   }
 
   /**
-   *  Instantiate the $mdTheming service by calling the provider function with
-   *  the $mdColorPalette variable; using Default Color Palettes for Angular Material
+   * Instantiate the $mdTheming service by calling the provider function with
+   * the default color palettes of Angular Material.
    *
-   *  Register the specified theme in the `$mdThemingProvider` by overwriting the default theme.
-   *  Using the `default` theme allows developers to use the static stylesheet without doing anything.
+   * Register the specified theme in the `$mdThemingProvider` by overwriting the default theme.
+   * Using the `default` theme allows developers to use the static stylesheet without doing anything.
    *
-   *  Instantiate the `$mdTheming` service after the theme has been configured.
+   * Instantiate the `$mdTheming` service after the provider has been configured.
    */
-  private _buildThemingService(theme: MdTheme, injector:any) {
-    let _colorPalettes = injector['$mdColorPalette'],
-        $mdThemingProvider : MdThemingProvider = injector['$mdTheming'](_colorPalettes);
+  private _buildThemingService(theme: MdTheme, injector: any) {
+    let _colorPalettes = injector['$mdColorPalette'];
+    let $mdThemingProvider: MdThemingProvider = injector['$mdTheming'](_colorPalettes);
 
     this._$mdThemeCSS = injector['$MD_THEME_CSS'];
 
@@ -80,12 +67,9 @@ export class ThemeBuilder {
       .backgroundPalette(theme.backgroundPalette);
 
     this._$mdTheming = $mdThemingProvider['$get']();
-
   }
   /**
    * Function will be used to intercept Angular's Run Phase.
-   * @param runFn Angular Run Function
-   * @private
    */
   private _onAngularRunFn(runFn) {
     if (runFn.name === 'generateAllThemes') {
@@ -95,18 +79,12 @@ export class ThemeBuilder {
 
 }
 
-/**
- * Mocked interface of the $mdThemingProvider
- * @internal
- */
+/** Mocked interface of the $mdThemingProvider */
 interface MdThemingProvider {
   theme: (themeName, inheritFrom?) => MdThemeBuilder;
 }
 
-/**
- * Angular Material Theme Builder interface
- * @internal
- */
+/** Angular Material Theme Builder interface */
 interface MdThemeBuilder {
   primaryPalette: (value) => MdThemeBuilder;
   accentPalette: (value) => MdThemeBuilder;
@@ -114,9 +92,7 @@ interface MdThemeBuilder {
   backgroundPalette: (value) => MdThemeBuilder;
 }
 
-/**
- * Angular Material Theme definition
- */
+/** Angular Material Theme definition */
 export interface MdTheme {
   primaryPalette: string;
   accentPalette: string;

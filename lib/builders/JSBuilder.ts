@@ -1,4 +1,4 @@
-import {MaterialToolsOutput, MaterialToolsData} from '../common/Interfaces';
+import {MaterialToolsOutput, MaterialToolsData} from '../MaterialTools';
 
 const fse = require('fs-extra');
 const uglify = require('uglify-js');
@@ -8,6 +8,7 @@ export class JSBuilder {
    * Generates the minified and non-minified JS, as well as a source map, based on the options.
    */
   static build(data: MaterialToolsData, filename: string): MaterialToolsOutput {
+
     let mainModule = this._buildMainModule(data.dependencies._mainModule);
     let raw = data.files.js.map(path => fse.readFileSync(path).toString()).join('\n');
     let source = [mainModule, '', raw].join('\n');

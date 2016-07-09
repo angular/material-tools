@@ -6,12 +6,9 @@ export class DependencyResolver {
   /**
    * Determines the dependencies and parent dependencies of the specified
    * Angular `modules` within a `file`.
-   * @param  {string} file File to be executed.
-   * @param  {string[]=} modules The modules whose dependencies need to be determined.
-   * @param  {string=} mainModule Name of the main wrapper module.
-   * @return {Object} Contains a map of the dependencies, as well as a flat list of all of them.
    */
   static resolve(file: string, modules?: string[], mainModule?: string): any {
+
     // Create a virtual context, to isolate the script which modifies the globals
     // to be able to mock a Browser Environment.
     let virtualContext = new VirtualContext({
@@ -21,10 +18,9 @@ export class DependencyResolver {
 
     // Execute our dependency resolve script in the virtual context, to completely
     // isolate the window modification from our node environment.
-    let angular = `${__dirname}/isolated_browser_resolver.js`,
-        output = virtualContext.run( angular, {
-          strictMode: true
-        });
+    let output = virtualContext.run(`${__dirname}/isolated_browser_resolver.js`, {
+      strictMode: true
+    });
 
     let targetModules = modules && modules.length ? modules : Object.keys(output.dependencies);
 

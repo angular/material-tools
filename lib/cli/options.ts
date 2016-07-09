@@ -1,4 +1,4 @@
-import {MaterialToolsOptions} from '../common/Interfaces';
+import {MaterialToolsOptions} from '../MaterialTools';
 
 export const DEFAULTS: MaterialToolsOptions = {
   version: 'local',
