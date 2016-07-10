@@ -7,9 +7,7 @@ let tools = new MaterialTools({
   modules: ['list', 'datepicker'],
   theme: {
     primaryPalette: 'indigo',
-    accentPalette: 'purple',
-    warnPalette: 'deep-orange',
-    backgroundPalette: 'grey'
+    accentPalette: 'purple'
   }
 });
 

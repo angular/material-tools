@@ -1,8 +1,10 @@
-import {MaterialTools, DEFAULT_OPTIONS} from './MaterialTools';
+import {MaterialTools} from './MaterialTools';
 import {Logger} from './common/Logger';
+import {DefaultConfig} from './common/DefaultConfig';
 
 const yargs = require('yargs');
 
+const DEFAULT_OPTIONS = DefaultConfig.options;
 const MAIN_GROUP = 'Arguments:';
 const OPTIONAL_GROUP = 'Optional arguments:';
 const LOGGING_GROUP = 'Logging arguments:';

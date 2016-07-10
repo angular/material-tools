@@ -1,4 +1,7 @@
 import {VirtualContext} from '../virtual_context/VirtualContext';
+import {DefaultConfig} from '../common/DefaultConfig';
+
+const merge = require('merge');
 
 export class ThemeBuilder {
 
@@ -20,6 +23,8 @@ export class ThemeBuilder {
     let injector =  this._virtualContext.run(__dirname + '/../resolvers/isolated_angular.js', {
       strictMode: true
     })['injector'];
+
+    theme = merge({}, DefaultConfig.theme, theme);
 
     this._buildThemingService(theme, injector);
   }
@@ -59,12 +64,16 @@ export class ThemeBuilder {
 
     this._$mdThemeCSS = injector['$MD_THEME_CSS'];
 
-    $mdThemingProvider
+    let defaultTheme = $mdThemingProvider
       .theme('default')
       .primaryPalette(theme.primaryPalette)
       .accentPalette(theme.accentPalette)
       .warnPalette(theme.warnPalette)
       .backgroundPalette(theme.backgroundPalette);
+
+    if (theme.dark) {
+      defaultTheme.dark();
+    }
 
     this._$mdTheming = $mdThemingProvider['$get']();
   }
@@ -90,14 +99,16 @@ interface MdThemeBuilder {
   accentPalette: (value) => MdThemeBuilder;
   warnPalette: (value) => MdThemeBuilder;
   backgroundPalette: (value) => MdThemeBuilder;
+  dark: () => MdThemeBuilder;
 }
 
 /** Angular Material Theme definition */
 export interface MdTheme {
-  primaryPalette: string;
-  accentPalette: string;
-  warnPalette: string;
-  backgroundPalette: string;
+  primaryPalette?: string;
+  accentPalette?: string;
+  warnPalette?: string;
+  backgroundPalette?: string;
+  dark?: boolean;
 }
 
 

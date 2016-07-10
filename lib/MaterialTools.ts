@@ -6,6 +6,7 @@ import {Utils} from './common/Utils';
 import {PackageResolver} from './resolvers/PackageResolver';
 import {DependencyResolver} from './resolvers/DependencyResolver';
 import {LocalResolver, MaterialToolsFiles} from './resolvers/FileResolver';
+import {DefaultConfig} from './common/DefaultConfig';
 
 const fse = require('fs-extra');
 
@@ -24,7 +25,7 @@ export class MaterialTools {
 
     this._options = typeof _options === 'string' ? require(path.resolve(_options)) : _options;
 
-    Utils.forEach(DEFAULT_OPTIONS, (value, key) => {
+    Utils.forEach(DefaultConfig.options, (value, key) => {
       if (typeof this._options[key] === 'undefined') {
         this._options[key] = value;
       }
@@ -258,10 +259,3 @@ export interface MaterialToolsOptions {
   destinationFilename?: string;
 }
 
-/** Default options for the Material Tools. */
-export const DEFAULT_OPTIONS: MaterialToolsOptions = {
-  version: 'local',
-  cache: './.material-cache/',
-  destinationFilename: 'angular-material',
-  mainFilename: 'angular-material.js'
-};
