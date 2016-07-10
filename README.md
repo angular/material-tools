@@ -9,40 +9,49 @@ Build tools for Angular Material
 ### Installation
 - `npm install angular-material-tools --save`
 
-### Options
+### Usage
 
-|          Name         	|    Type    |                             Description                                    |
-| ----------------------- | ---------- | -------------------------------------------------------------------------- |
-| `destination` (*)      	| `string` 	 | Target location for the Material build.                                    |
-| `modules`             	| `string[]` | Modules that should be part of the build.<br/> All modules will be built if nothing is specified.                                                                                                          |
-| `version`             	| `string`	 | Version of Angular Material.<br/> If set to local, it will take the local installed Angular Material version from the node modules                                                                              |
-| `theme`               	| `MdTheme`	 | Palettes, which will be used to generate a static theme stylesheet.        |
-| `cache`               	| `string`	 | Directory for caching the downloads                                        |
-| `mainFilename`        	| `string` 	 | Name of the entry file that will be loaded to figure out the dependencies. |
-| `destinationFilename` 	| `string` 	 | Name to be used as a base for the output files.                            |
+`material-tools` can be easily used from the **command-line** or from your own custom **NodeJS** code.
 
-**Note:** The options can also be set in a JSON file whose path can be passed to the tools module.
+----
 
-### CLI usage
+#### CLI usage
+
 The build tools also include a CLI, which can be used by installing the tools globally.
 - `npm install -g angular-material-tools`
 
-To create a custom Angular Material with the CLI, you can pass the above-mentioned [options](#options) as CLI arguments.
+To create a custom Angular Material build with the command-line interface (CLI), you can pass the following [options](#options) as CLI arguments.
 
-All possible options can be listed in the CLI.
-- `material-tools --help`
+|          Name           |    Type    |                             Description                                    |
+| ----------------------- | ---------- | -------------------------------------------------------------------------- |
+| `destination` (*)       | `string`   | Target location for the Material build.                                    |
+| `modules`               | `string[]` | Modules that should be part of the build.<br/> All modules will be built if nothing is specified.                                                                                                          |
+| `version`               | `string`   | Version of Angular Material.<br/> If set to local, it will take the local installed Angular Material version from the node modules                                                                              |
+| `theme`                 | `MdTheme`  | Palettes, which will be used to generate a static theme stylesheet.        |
+| `cache`                 | `string`   | Directory for caching the downloads                                        |
+| `mainFilename`          | `string`   | Name of the entry file that will be loaded to figure out the dependencies. |
+| `destinationFilename`   | `string`   | Name to be used as a base for the output files.                            |
+
+**Note:** The options can also be set in a JSON file whose path can be passed to the tools module.
+
+
+> All possible options can be listed in the CLI.
+  - `material-tools --help`
 
 **Examples**
 ```bash
 material-tools --destination ./output --modules list datepicker autocomplete --version 1.0.0
 ```
 
-When no version is specified, the CLI will automatically use the installed Angular Material version from the `node modules`.
+When a version is not specified, the CLI will automatically use the installed Angular Material version from your local `node_modules` directories.
 ```bash
 material-tools -d ./output -m list
 ```
 
+----
+
 #### NodeJS usage
+
 ```js
 const MaterialTools = require('angular-material-tools');
 
@@ -59,19 +68,19 @@ let tools = new MaterialTools({
 });
 
 const successHandler = () => console.log('Build was successful.');
-const errorHandler = error => console.error(error);
+const errorHandler = (error) => console.error(error);
 
 // Build all of the files.
-tools.build().then(successHandler).catch(errorHandler);
+tools.build().then(successHandler, errorHandler);
 
 // Only build the JS.
-tools.buildJS().then(successHandler).catch(errorHandler);
+tools.buildJS().then(successHandler, errorHandler);
 
 // Only build the theme.
-tools.buildTheme().then(successHandler).catch(errorHandler);
+tools.buildTheme().then(successHandler, errorHandler);
 
 // Only build the CSS
-tools.buildCSS().then(successHandler).catch(errorHandler);
+tools.buildCSS().then(successHandler, errorHandler);
 ```
 
 ### Output
@@ -83,6 +92,8 @@ tools.buildCSS().then(successHandler).catch(errorHandler);
 | `angular-material.theme.css`             | Static generated theme stylesheet, if it was specified in the options.               |
 | `angular-material.layouts.css`           | Standalone Layout stylesheet with class selectors                                    |
 | `angular-material.layout-attributes.css` | Standalone Layout stylesheet with attribute selectors                                |
+
+----
 
 ## Authors
 * [Paul Gschwendtner](https://github.com/DevVersion)
