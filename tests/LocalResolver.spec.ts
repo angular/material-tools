@@ -12,7 +12,7 @@ describe('Local Resolver', () => {
     module: path.join(root, 'module'),
     source: path.resolve(root, 'source'),
     version: '1.1.0',
-    isPost1_1: true
+    isValidBuild: true
   };
 
   it('should resolve the JS and CSS files', done => {
