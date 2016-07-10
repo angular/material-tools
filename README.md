@@ -62,16 +62,16 @@ const successHandler = () => console.log('Build was successful.');
 const errorHandler = error => console.error(error);
 
 // Build all of the files.
-tools.build().then(successHandler, errorHandler);
+tools.build().then(successHandler).catch(errorHandler);
 
 // Only build the JS.
-tools.buildJS().then(successHandler, errorHandler);
+tools.buildJS().then(successHandler).catch(errorHandler);
 
 // Only build the theme.
-tools.buildTheme().then(successHandler, errorHandler);
+tools.buildTheme().then(successHandler).catch(errorHandler);
 
 // Only build the CSS
-tools.buildCSS().then(successHandler, errorHandler);
+tools.buildCSS().then(successHandler).catch(errorHandler);
 ```
 
 ### Output
