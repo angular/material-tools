@@ -11,16 +11,18 @@ Build tools for Angular Material
 
 ### Usage
 
-`material-tools` can be easily used from the **command-line** or from your own custom **NodeJS** code.
+`material-tools` can be easily used from the **command-line** or from your own custom **NodeJS** code. The build tools also include a CLI, which can be used by installing the tools globally.
+- `npm install -g angular-material-tools`
 
 ----
 
 #### CLI usage
 
-The build tools also include a CLI, which can be used by installing the tools globally.
-- `npm install -g angular-material-tools`
 
-To create a custom Angular Material build with the command-line interface (CLI), you can pass the following [options](#options) as CLI arguments.
+To create a custom Angular Material build with the command-line interface (CLI), you can pass the following [options](#options) as CLI arguments. 
+
+All possible options in the CLI can be listed with the command:
+  - `material-tools --help`
 
 |          Name           |    Type    |                             Description                                    |
 | ----------------------- | ---------- | -------------------------------------------------------------------------- |
@@ -34,9 +36,6 @@ To create a custom Angular Material build with the command-line interface (CLI),
 
 **Note:** The options can also be set in a JSON file whose path can be passed to the tools module.
 
-
-> All possible options can be listed in the CLI.
-  - `material-tools --help`
 
 **Examples**
 ```bash
