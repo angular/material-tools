@@ -2,13 +2,13 @@
 
 [Angular-Material](http://github.com/angular/material) deploys standard builds to [github.com/angular/bower-material](http://github.com/angular/bower-material). The **standard** build contains all material components, all themes, and all layout features.... for easy installs and usages.
 
-Developers interested in custom builds should use **material-tools** to generate their own desired builds:
+Developers interested in custom builds should use **material-tools** to generate their own custom [Angular-Material v1.x](http://github.com/angular/material) builds:
 
 *  using only a subset of components, 
 *  using only 1 specific theme, 
 *  using only the Layout API
 
-> Currently, only [Angular-Material v1.x](http://github.com/angular/material) is supported. Angular Material v2 support may be added in the future.
+> Support for Angular Material v2 may be added in the future.
 
 ## Quick Links
 - [Installation](#installation)
