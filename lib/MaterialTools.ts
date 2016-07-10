@@ -54,12 +54,13 @@ export class MaterialTools {
           this.buildCSS(buildData),
           this.buildTheme(buildData)
         ]).then(() => {
-          let filename = 'LICENSE';
-          let source = path.join(buildData.files.root, 'module', filename);
-          let destination = path.join(this._options.destination, filename);
-
-          // We don't have to wait for the license to be copied over.
-          this._writeFile(destination, fse.readFileSync(source));
+          if (buildData.files.license) {
+            // We don't have to wait for the license to be copied over.
+            this._writeFile(
+              path.join(this._options.destination, 'LICENSE'),
+              fse.readFileSync(buildData.files.license)
+            );
+          }
 
           return buildData;
         });

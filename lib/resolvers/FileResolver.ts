@@ -68,7 +68,8 @@ export class LocalResolver {
       this.resolveExtension(modules, 'css', jsModules, false),
       this.resolveThemes(modules, _package.isValidBuild ? jsModules : sourceComponents),
       this.resolvePattern('/*.+(layouts|layout-attributes).css', layoutModules, false),
-      _package.isValidBuild ? [] : this.resolveSCSS(modules, sourceRoot)
+      _package.isValidBuild ? [] : this.resolveSCSS(modules, sourceRoot),
+      this.resolvePattern('/LICENSE', _package.module, false)
     ])
     .then(results => {
       return {
@@ -78,6 +79,7 @@ export class LocalResolver {
         themes: results[2],
         layout: results[3],
         scss: results[4],
+        license: results[5][0]
       };
     });
   }
@@ -92,5 +94,6 @@ export interface MaterialToolsFiles {
   scss: string[];
   themes: string[];
   layout: string[];
+  license: string;
 }
 
