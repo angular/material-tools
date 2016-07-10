@@ -5,15 +5,14 @@ Build tools for Angular Material
 - [Installation](#installation)
 - [CLI Usage](#cli-usage)
 - [NodeJS Usage](#nodejs-usage)
-- [TypeScript Usage](#typescript-usage)
 
 ### Installation
 - `npm install angular-material-tools --save`
 
 ### Options
 
-|          Name         	|    Type  	|                             Description                                     |
-|-------------------	|---------|---------------------------------------------------------------------------------- |
+|          Name         	|    Type    |                             Description                                    |
+| ----------------------- | ---------- | -------------------------------------------------------------------------- |
 | `destination` (*)      	| `string` 	 | Target location for the Material build.                                    |
 | `modules`             	| `string[]` | Modules that should be part of the build.<br/> All modules will be built if nothing is specified.                                                                                                          |
 | `version`             	| `string`	 | Version of Angular Material.<br/> If set to local, it will take the local installed Angular Material version from the node modules                                                                              |
@@ -46,33 +45,33 @@ material-tools -d ./output -m list
 #### NodeJS usage
 ```js
 const MaterialTools = require('angular-material-tools');
-var tools = new MaterialTools({
-  destination: './output',
-  version: '1.0.0',
-  modules: ['menu', 'checkbox']
-});
-
-tools
-  .build()
-  .then(() => console.log('Build was successful.'))
-  .catch(error => console.error(error));
-```
-
-#### TypeScript usage
-If you're already using TypeScript, you can use the above-mentioned modules directly:
-```typescript
-import {MaterialTools} from 'angular-material-tools';
 
 let tools = new MaterialTools({
   destination: './output',
   version: '1.0.0',
-  modules: ['menu', 'checkbox']
+  modules: ['menu', 'checkbox'],
+  theme: {
+    primaryPalette: 'indigo',
+    accentPalette: 'purple',
+    warnPalette: 'deep-orange',
+    backgroundPalette: 'grey'
+  }
 });
 
-tools
-  .build()
-  .then(files => console.log(files))
-  .catch(error => console.error(error));
+const successHandler = () => console.log('Build was successful.');
+const errorHandler = error => console.error(error);
+
+// Build all of the files.
+tools.build().then(successHandler, errorHandler);
+
+// Only build the JS.
+tools.buildJS().then(successHandler, errorHandler);
+
+// Only build the theme.
+tools.buildTheme().then(successHandler, errorHandler);
+
+// Only build the CSS
+tools.buildCSS().then(successHandler, errorHandler);
 ```
 
 ### Output

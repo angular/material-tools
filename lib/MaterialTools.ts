@@ -13,6 +13,7 @@ export class MaterialTools {
 
   private _isValidBuild: boolean = true;
   private _options: MaterialToolsOptions;
+  private _outputBase: string;
   private themeBuilder: ThemeBuilder;
 
   constructor(_options: MaterialToolsOptions | string) {
@@ -38,65 +39,30 @@ export class MaterialTools {
     if (this._options.theme) {
       this.themeBuilder = new ThemeBuilder(this._options.theme);
     }
+
+    this._outputBase = path.join(this._options.destination, this._options.destinationFilename);
   }
 
   /**
    * Builds all of the files.
    */
   build(): Promise<MaterialToolsData> {
-    if (!this._options.destination) {
-      throw new Error('You have to specify a destination.');
-    }
-
     return this._getData()
-      .then(buildData => {
-        // Create the destination path.
-        return this._makeDirectory(this._options.destination).then(() => {
-          // Copy the license to the destination.
+      .then((buildData: MaterialToolsData) => {
+        return Promise.all([
+          this.buildJS(buildData),
+          this.buildCSS(buildData),
+          this.buildTheme(buildData)
+        ]).then(() => {
           let filename = 'LICENSE';
           let source = path.join(buildData.files.root, 'module', filename);
           let destination = path.join(this._options.destination, filename);
 
-          fse.copy(source, destination);
+          // We don't have to wait for the license to be copied over.
+          this._writeFile(destination, fse.readFileSync(source));
 
           return buildData;
         });
-      })
-      .then((buildData: MaterialToolsData) => {
-        let base = path.join(this._options.destination, this._options.destinationFilename);
-        let minifiedJSName = `${base}.min.js`;
-        let js = JSBuilder.build(buildData, minifiedJSName);
-        let css = CSSBuilder.build(buildData, this._isValidBuild);
-        let license = this._getLicense(buildData.dependencies._flat);
-
-        // JS files
-        this._writeFile(`${base}.js`, js.source, license);
-        this._writeFile(minifiedJSName, js.compressed, license);
-        this._writeFile(`${minifiedJSName}.map`, js.map);
-
-        // CSS files with layout
-        this._writeFile(`${base}.css`, css.layout.source, license);
-        this._writeFile(`${base}.min.css`, css.layout.compressed, license);
-
-        // CSS files without layout
-        this._writeFile(`${base}.layout-none.css`, css.noLayout.source, license);
-        this._writeFile(`${base}.layout-none.min.css`, css.noLayout.compressed, license);
-
-        if (this._options.theme) {
-          let compiledCSS = this._buildStaticTheme(buildData.files);
-          let themeStylesheet = CSSBuilder._buildStylesheet(compiledCSS);
-
-          this._writeFile(`${base}.theme.min.css`, themeStylesheet.compressed, license);
-          this._writeFile(`${base}.theme.css`, themeStylesheet.source, license);
-        }
-
-        buildData.files.layout.forEach(layoutFile => {
-          // Retrieve the last two extension name portions.
-          let suffix = path.basename(layoutFile).split('.').slice(-2).join('.');
-          this._writeFile(`${base}.${suffix}`, CSSBuilder._loadStyles([layoutFile]), license);
-        });
-
-        return buildData;
       });
   }
 
@@ -136,40 +102,100 @@ export class MaterialTools {
   }
 
   /**
-   * Builds a static theme stylesheet, based on the specified options
+   * Outputs the CSS, based on the options.
    */
-  _buildStaticTheme(buildFiles: MaterialToolsFiles): string {
+  buildCSS(buildData?: MaterialToolsData): Promise<MaterialToolsData> {
+    let promise = buildData ? Promise.resolve(buildData) : this._getData();
+
+    return promise
+      .then((data: MaterialToolsData) => {
+        let base = this._outputBase;
+        let css = CSSBuilder.build(data, this._isValidBuild);
+        let license = this._getLicense(data.dependencies._flat);
+
+        let outputPromises = data.files.layout.map(layoutFile => {
+          // Retrieve the last two extension name portions.
+          let suffix = path.basename(layoutFile).split('.').slice(-2).join('.');
+          let styles = CSSBuilder._loadStyles([layoutFile]);
+
+          return this._writeFile(`${base}.${suffix}`, styles, license);
+        }).concat([
+          // Files with layout
+          this._writeFile(`${base}.css`, css.layout.source, license),
+          this._writeFile(`${base}.min.css`, css.layout.compressed, license),
+
+          // Files without layout
+          this._writeFile(`${base}.layout-none.css`, css.noLayout.source, license),
+          this._writeFile(`${base}.layout-none.min.css`, css.noLayout.compressed, license)
+        ]);
+
+        return Promise.all(outputPromises).then(() => data);
+      });
+  }
+
+  /**
+   * Outputs the necessary JS, based on the options.
+   */
+  buildJS(buildData?: MaterialToolsData): Promise<MaterialToolsData> {
+    let promise = buildData ? Promise.resolve(buildData) : this._getData();
+
+    return promise
+      .then((data: MaterialToolsData) => {
+        let minifiedJSName = `${this._outputBase}.min.js`;
+        let js = JSBuilder.build(data, minifiedJSName);
+        let license = this._getLicense(data.dependencies._flat);
+
+        return Promise.all([
+          this._writeFile(`${this._outputBase}.js`, js.source, license),
+          this._writeFile(minifiedJSName, js.compressed, license),
+          this._writeFile(`${minifiedJSName}.map`, js.map)
+        ]).then(() => data);
+      });
+  }
+
+  /**
+   * Outputs a static theme stylesheet, based on the specified options
+   */
+  buildTheme(buildData?: MaterialToolsData): Promise<MaterialToolsData> {
     if (!this.themeBuilder) {
       return;
     }
 
-    // If the current version is Post v1.1.0 then we could just load the styles and build the themes
-    if (this._isValidBuild) {
-      return this.themeBuilder.build(CSSBuilder._loadStyles(buildFiles.themes));
-    }
+    let promise = buildData ? Promise.resolve(buildData) : this._getData();
 
-    let baseSCSSFiles = [
-      'variables.scss',
-      'mixins.scss',
-      'themes.scss'
-    ];
+    return promise
+      .then((data: MaterialToolsData) => {
+        let themeStylesheet = null;
+        let license = this._getLicense(data.dependencies._flat);
 
-    let scssFiles = buildFiles.scss
-      .filter(file => baseSCSSFiles.indexOf(path.basename(file)) !== -1);
+        // In Post v1.1.0 versions, we could just load the styles and build the themes.
+        if (this._isValidBuild) {
+          themeStylesheet = this.themeBuilder.build(CSSBuilder._loadStyles(data.files.themes));
+        } else {
+          let baseSCSSFiles = [
+            'variables.scss',
+            'mixins.scss',
+            'themes.scss'
+          ];
 
-    let scssBaseContent = CSSBuilder._loadStyles(scssFiles);
-    let themeSCSS = CSSBuilder._loadStyles(buildFiles.themes);
-    let themeCSS = CSSBuilder._compileSCSS(scssBaseContent + themeSCSS);
+          let scssFiles = data.files.scss
+            .filter(file => baseSCSSFiles.indexOf(path.basename(file)) !== -1);
 
-    return this.themeBuilder.build(themeCSS);
+          let scssBaseContent = CSSBuilder._loadStyles(scssFiles);
+          let themeSCSS = CSSBuilder._loadStyles(data.files.themes);
+          let themeCSS = CSSBuilder._compileSCSS(scssBaseContent + themeSCSS);
+
+          themeStylesheet = this.themeBuilder.build(themeCSS);
+        }
+
+        let output = CSSBuilder._buildStylesheet(themeStylesheet);
+
+        return Promise.all([
+          this._writeFile(`${this._outputBase}.theme.min.css`, output.compressed, license),
+          this._writeFile(`${this._outputBase}.theme.css`, output.source, license)
+        ]).then(() => data);
+      });
   }
-
-  /** Promise wrapper around mkdirp */
-  private _makeDirectory(path: string): Promise<string> {
-    return new Promise((resolve, reject) => {
-      fse.mkdirp(path, error => error ? reject(error) : resolve(path));
-    });
-  };
 
   /** Generates the license string */
   private _getLicense(modules: string[]): string {
@@ -193,8 +219,17 @@ export class MaterialTools {
   }
 
   /** Writes a given content with the associated license to a new file */
-  private _writeFile(destination: string, content: string, license = ''): void {
-    fse.writeFileSync(destination, license + content);
+  private _writeFile(destination: string, content: string, license = ''): Promise<string> {
+    return new Promise((resolve, reject) => {
+      fse.mkdirp(path.dirname(destination), error => {
+        if (error) {
+          reject(error);
+        } else {
+          fse.writeFileSync(destination, license + content);
+          resolve(destination);
+        }
+      });
+    });
   }
 }
 
