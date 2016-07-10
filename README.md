@@ -27,9 +27,8 @@ Developers interested in custom builds should use **material-tools** to generate
 #### CLI usage
 
 
-To create a custom Angular Material build with the command-line interface (CLI), you can pass the following [options](#options) as CLI arguments. 
+To create a custom Angular Material build with the command-line interface (CLI), you can pass the following [options](#options) as CLI arguments. All possible options in the CLI can be listed with the command:
 
-All possible options in the CLI can be listed with the command:
   - `material-tools --help`
 
 |          Name           |    Type    |                             Description                                    |
@@ -42,7 +41,7 @@ All possible options in the CLI can be listed with the command:
 | `mainFilename`          | `string`   | Name of the entry file that will be loaded to figure out the dependencies. |
 | `destinationFilename`   | `string`   | Name to be used as a base for the output files.                            |
 
-**Note:** The options can also be set in a JSON file whose path can be passed to the tools module.
+> **Note:** The options can also be set in a JSON file whose path can be passed to the tools module.
 
 
 **Examples**
