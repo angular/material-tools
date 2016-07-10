@@ -8,6 +8,8 @@ Developers interested in custom builds should use **material-tools** to generate
 *  using only 1 specific theme, 
 *  using only the Layout API
 
+> Currently, only Angular Material 1.x is supported. Angular Material v2 support may be added in the future.
+
 ## Quick Links
 - [Installation](#installation)
 - [CLI Usage](#cli-usage)
