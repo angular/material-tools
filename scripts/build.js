@@ -17,7 +17,7 @@ buildConfig.copyFiles.forEach(pattern => {
   let files = glob(pattern, { cwd: PROJECT_ROOT });
 
   files.forEach(file => {
-    fse.copySync(file, path.join(OUTPUT_DIRECTORY, file));
+    fse.copySync(path.join(PROJECT_ROOT, file), path.join(OUTPUT_DIRECTORY, file));
   });
 });
 
