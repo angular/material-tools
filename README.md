@@ -1,10 +1,19 @@
 # angular-material-tools
-Build tools for Angular Material
 
-### Quick Links
+[Angular-Material](http://github.com/angular/material) deploys standard builds to [github.com/angular/bower-material](http://github.com/angular/bower-material). The **standard** build contains all material components, all themes, and all layout features.... for easy installs and usages.
+
+Developers interested in custom builds should use **material-tools** to generate the desired builds:
+
+*  using only a subset of components, 
+*  using only 1 specific theme, and
+*  using only the Layout API
+
+## Quick Links
 - [Installation](#installation)
 - [CLI Usage](#cli-usage)
 - [NodeJS Usage](#nodejs-usage)
+
+--- 
 
 ### Installation
 - `npm install angular-material-tools --save`
