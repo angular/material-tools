@@ -14,12 +14,11 @@ Developers interested in custom builds should use **material-tools** to generate
 - [NodeJS Usage](#nodejs-usage)
 
 
-### Installation
+## Installation
+
 - `npm install angular-material-tools --save`
 
-----
-
-### Usage
+## Usage
 
 `material-tools` can be easily used from the **command-line** or from your own custom **NodeJS** code. The build tools also include a CLI, which can be used by installing the tools globally.
 - `npm install -g angular-material-tools`
