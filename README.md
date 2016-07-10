@@ -13,7 +13,6 @@ Developers interested in custom builds should use **material-tools** to generate
 - [CLI Usage](#cli-usage)
 - [NodeJS Usage](#nodejs-usage)
 
---- 
 
 ### Installation
 - `npm install angular-material-tools --save`
