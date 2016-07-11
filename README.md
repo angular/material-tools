@@ -14,7 +14,7 @@ Developers interested in custom builds should use **material-tools** to generate
 - [Installation](#installation)
 - [CLI Usage](#cli-usage)
 - [NodeJS Usage](#nodejs-usage)
-
+- [NodeJS + TypeScript Usage](#ts-usage)
 
 ## Installation
 
@@ -78,39 +78,13 @@ const successHandler = () => console.log('Build was successful.');
 const errorHandler = (error) => console.error(error);
 
 // Build all of the files.
-tools.build().then(successHandler, errorHandler);
+tools.build().then(successHandler, errorHandler);       // Build all JS/CSS/themes
 
-// Only build the JS.
-tools.buildJS().then(successHandler, errorHandler);
-
-// Only build the theme.
-tools.buildTheme().then(successHandler, errorHandler);
-
-// Only build the CSS
-tools.buildCSS().then(successHandler, errorHandler);
+tools.buildJS().then(successHandler, errorHandler);     // Only build the JS.
+tools.buildTheme().then(successHandler, errorHandler);  // Only build the theme.
+tools.buildCSS().then(successHandler, errorHandler);    // Only build the CSS
 ```
 
-**Examples**
-
-A quick way to explore NodeJS usages is to run `debug.ts` with [ts-node](https://github.com/TypeStrong/ts-node)
-
-> To compile and run TypeScript code in NodeJS, use `ts-node`:
-```bash
-npm install -g ts-node
-# Install a TypeScript compiler (requires `typescript` by default).
-npm install -g typescript
-```
-
-```bash
-ts-node debug.ts
-```
-
-which will generate the output:
-
-```console
-[17:38:53]: Successfully built list, core, animate, layout, gestures, theming, palette, datepicker, icon, virtualRepeat, showHide.
-
-```
 
 ### Output
 |                   File                   |                                   Description                                        |
@@ -123,6 +97,30 @@ which will generate the output:
 | `angular-material.layout-attributes.css` | Standalone Layout stylesheet with attribute selectors                                |
 
 ----
+
+#### NodeJS + TypeScript Usage
+
+A quick way to explore NodeJS usages is to run `debug.ts` with [ts-node](https://github.com/TypeStrong/ts-node); which should be installed with:
+
+```bash
+npm install -g ts-node
+# Install a TypeScript compiler (requires `typescript` by default).
+npm install -g typescript
+```
+
+Then use the command-line to directly run the `debug.ts` sample:
+
+```bash
+ts-node debug.ts
+```
+
+which will generate the output:
+
+```console
+[17:38:53]: Successfully built list, core, animate, layout, gestures, theming, palette, 
+            datepicker, icon, virtualRepeat, showHide.
+```
+
 
 ## Authors
 * [Paul Gschwendtner](https://github.com/DevVersion)
