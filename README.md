@@ -90,6 +90,28 @@ tools.buildTheme().then(successHandler, errorHandler);
 tools.buildCSS().then(successHandler, errorHandler);
 ```
 
+**Examples**
+
+A quick way to explore NodeJS usages is to run `debug.ts` with [ts-node](https://github.com/TypeStrong/ts-node)
+
+> To compile and run TypeScript code in NodeJS, use `ts-node`:
+```bash
+npm install -g ts-node
+# Install a TypeScript compiler (requires `typescript` by default).
+npm install -g typescript
+```
+
+```bash
+ts-node debug.ts
+```
+
+which will generate the output:
+
+```console
+[17:38:53]: Successfully built list, core, animate, layout, gestures, theming, palette, datepicker, icon, virtualRepeat, showHide.
+
+```
+
 ### Output
 |                   File                   |                                   Description                                        |
 | ---------------------------------------- | ------------------------------------------------------------------------------------ |
