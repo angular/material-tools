@@ -1,8 +1,8 @@
 # angular-material-tools
 
-[Angular-Material](http://github.com/angular/material) deploys standard builds to NPM and Bower using the [Bower-Material](http://github.com/angular/bower-material) deployment repository. The **standard** builds contain all material components, all themes, and all layout features.... packaged for easy installs and usages.
+[Angular-Material](http://github.com/angular/material) deploys standard builds to NPM and Bower using the [Bower-Material](http://github.com/angular/bower-material) deployment repository. The **standard** build contains all material components, all themes, and all layout features.... packaged for easy installs and usages.
 
-Developers interested in custom builds should use **material-tools** to generate their own custom [Angular-Material v1.x](http://github.com/angular/material) builds:
+Now developers can use `material-tools` to generate their own custom [Angular-Material v1.x](http://github.com/angular/material) builds:
 
 *  using only a subset of components, 
 *  using only 1 specific theme, 
