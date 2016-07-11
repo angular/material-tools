@@ -44,6 +44,7 @@ To create a custom Angular Material build with the command-line interface (CLI),
 
 > **Note:** The options can also be set in a JSON file whose path can be passed to the tools module.
 
+<br/>
 
 **Examples**
 ```bash
