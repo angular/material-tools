@@ -31,6 +31,9 @@ Now developers can use `material-tools` to generate their own custom [Angular-Ma
 To create a custom Angular Material build with the command-line interface (CLI), you can pass the following [options](#options) as CLI arguments. All possible options in the CLI can be listed with the command:
 
   - `material-tools --help`
+  
+  
+##### Options
 
 |          Name           |    Type    |                             Description                                    |
 | ----------------------- | ---------- | -------------------------------------------------------------------------- |
