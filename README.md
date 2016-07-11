@@ -32,7 +32,8 @@ To create a custom Angular Material build with the command-line interface (CLI),
 
   - `material-tools --help`
   
-  
+<br/>
+
 ##### Options
 
 |          Name           |    Type    |                             Description                                    |
