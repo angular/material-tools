@@ -14,7 +14,7 @@ Developers interested in custom builds should use **material-tools** to generate
 - [Installation](#installation)
 - [CLI Usage](#cli-usage)
 - [NodeJS Usage](#nodejs-usage)
-- [NodeJS + TypeScript Usage](#ts-usage)
+- [NodeJS with TypeScript Usage](#ts-usage)
 
 ## Installation
 
@@ -55,6 +55,8 @@ When a version is not specified, the CLI will automatically use the installed An
 material-tools -d ./output -m list
 ```
 
+<br/>
+
 ----
 
 #### NodeJS usage
@@ -86,7 +88,7 @@ tools.buildCSS().then(successHandler, errorHandler);    // Only build the CSS
 ```
 
 
-### Output
+##### Output
 |                   File                   |                                   Description                                        |
 | ---------------------------------------- | ------------------------------------------------------------------------------------ |
 | `angular-material.js`                    | Contains the modules that you specified, as well as their dependencies.              |
@@ -96,9 +98,11 @@ tools.buildCSS().then(successHandler, errorHandler);    // Only build the CSS
 | `angular-material.layouts.css`           | Standalone Layout stylesheet with class selectors                                    |
 | `angular-material.layout-attributes.css` | Standalone Layout stylesheet with attribute selectors                                |
 
+<br/>
+
 ----
 
-#### NodeJS + TypeScript Usage
+#### NodeJS with TypeScript Usage
 
 A quick way to explore NodeJS usages is to run `debug.ts` with [ts-node](https://github.com/TypeStrong/ts-node); which should be installed with:
 
