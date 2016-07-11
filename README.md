@@ -104,10 +104,11 @@ tools.buildCSS().then(successHandler, errorHandler);    // Only build the CSS
 
 #### NodeJS with TypeScript Usage
 
-A quick way to explore NodeJS usages is to run `debug.ts` with [ts-node](https://github.com/TypeStrong/ts-node); which should be installed with:
+A quick way to explore NodeJS usages is to *directly* run Typescript without precompiling processes. Developers can use [ts-node](https://github.com/TypeStrong/ts-node) which is installed with:
 
 ```bash
 npm install -g ts-node
+
 # Install a TypeScript compiler (requires `typescript` by default).
 npm install -g typescript
 ```
