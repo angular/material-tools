@@ -1,8 +1,8 @@
-import {DefaultConfig} from './common/DefaultConfig';
+import {DefaultConfig} from '../common/DefaultConfig';
 
 const merge = require('merge');
 
-const DEFAULT_OPTIONS = DefaultConfig;
+const DEFAULT_OPTIONS = DefaultConfig.options;
 const MAIN_GROUP = 'Arguments:';
 const OPTIONAL_GROUP = 'Optional arguments:';
 const LOGGING_GROUP = 'Logging arguments:';
