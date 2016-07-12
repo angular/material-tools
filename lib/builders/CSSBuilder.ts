@@ -16,18 +16,7 @@ export class CSSBuilder {
   /**
    * Generates minified and non-minified version of the CSS, based on the specified build data.
    */
-  static build(buildData: MaterialToolsData, isValidBuild = true): MaterialToolsCSS {
-
-    if (isValidBuild) {
-
-      let classLayout = buildData.files.layout.filter(file => file.indexOf('attributes') === -1)[0];
-
-      return this._buildOutput(
-        buildData,
-        this._loadStyles(buildData.files.css),
-        this._loadStyles(buildData.files.css.concat(classLayout))
-      );
-    }
+  static build(buildData: MaterialToolsData): MaterialToolsCSS {
 
     // Compile the `core` module without the layout.
     // By default the `core` module includes the layout.

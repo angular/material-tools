@@ -12,7 +12,6 @@ export class MaterialBuilder {
 
   protected _themeBuilder: ThemeBuilder;
   protected _outputBase: string;
-  protected _isValidBuild = false;
 
   constructor(protected _options: MaterialToolsOptions) {
     if (this._options.theme) {
@@ -31,7 +30,6 @@ export class MaterialBuilder {
       .then(versionData => {
         // Update the resolved version, in case it was `node`.
         this._options.version = versionData.version;
-        this._isValidBuild = versionData.isValidBuild;
 
         return {
           versionData: versionData,
@@ -64,7 +62,7 @@ export class MaterialBuilder {
    * Outputs the CSS, based on the options.
    */
   _buildCSS(buildData: MaterialToolsData): MaterialToolsCSS {
-    return CSSBuilder.build(buildData, this._isValidBuild);
+    return CSSBuilder.build(buildData);
   }
 
   /**
@@ -75,23 +73,16 @@ export class MaterialBuilder {
       return;
     }
 
-    let themeStylesheet = null;
+    let baseSCSSFiles = DefaultConfig.baseSCSSFiles.concat(DefaultConfig.baseThemeFiles);
 
-    // In Post v1.1.0 versions, we could just load the styles and build the themes.
-    if (this._isValidBuild) {
-      themeStylesheet = this._themeBuilder.build(CSSBuilder._loadStyles(buildData.files.themes));
-    } else {
-      let baseSCSSFiles = DefaultConfig.baseSCSSFiles.concat(DefaultConfig.baseThemeFiles);
+    let scssFiles = buildData.files.scss
+      .filter(file => baseSCSSFiles.indexOf(path.basename(file)) !== -1);
 
-      let scssFiles = buildData.files.scss
-        .filter(file => baseSCSSFiles.indexOf(path.basename(file)) !== -1);
+    let scssBaseContent = CSSBuilder._loadStyles(scssFiles);
+    let themeSCSS = CSSBuilder._loadStyles(buildData.files.themes);
+    let themeCSS = CSSBuilder._compileSCSS(scssBaseContent + themeSCSS);
 
-      let scssBaseContent = CSSBuilder._loadStyles(scssFiles);
-      let themeSCSS = CSSBuilder._loadStyles(buildData.files.themes);
-      let themeCSS = CSSBuilder._compileSCSS(scssBaseContent + themeSCSS);
-
-      themeStylesheet = this._themeBuilder.build(themeCSS);
-    }
+    let themeStylesheet = this._themeBuilder.build(themeCSS);
 
     return CSSBuilder._buildStylesheet(themeStylesheet, buildData.license);
   }

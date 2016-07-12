@@ -66,9 +66,9 @@ export class LocalResolver {
     return Promise.all([
       this.resolveExtension(modules, 'js', jsModules),
       this.resolveExtension(modules, 'css', jsModules, false),
-      this.resolveThemes(modules, _package.isValidBuild ? jsModules : sourceComponents),
+      this.resolveThemes(modules, sourceComponents),
       this.resolvePattern('/*.+(layouts|layout-attributes).css', layoutModules, false),
-      _package.isValidBuild ? [] : this.resolveSCSS(modules, sourceRoot),
+      this.resolveSCSS(modules, sourceRoot),
       this.resolvePattern('/LICENSE', _package.module, false)
     ])
     .then(results => {

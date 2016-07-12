@@ -11,8 +11,7 @@ describe('Local Resolver', () => {
     root: root,
     module: path.join(root, 'module'),
     source: path.resolve(root, 'source'),
-    version: '1.1.0',
-    isValidBuild: true
+    version: '1.1.0-rc.5'
   };
 
   it('should resolve the JS and CSS files', done => {
@@ -40,7 +39,7 @@ describe('Local Resolver', () => {
     LocalResolver.resolve(tooltip, versionData).then(files => {
       reduceToFilenames(files);
 
-      expect(files.themes).toContain('tooltip-default-theme.css');
+      expect(files.themes).toContain('tooltip-default-theme.scss');
 
       done();
     }, done.fail);

@@ -15,26 +15,16 @@ export class PackageResolver {
    */
   static resolve(version: string, cacheRoot: string): Promise<MaterialToolsPackage> {
     let localSourcePath = '';
-    let directoryPromise: Promise<any> = null;
 
     if (version === 'local') {
-      let retrievedData = this._retrieveLocalVersion();
       // Update the resolving version to the retrieved local version.
-      version = retrievedData.version;
-      localSourcePath = retrievedData.path;
+      version = this._retrieveLocalVersion();
     }
 
-    // In Post v1.1.0, Angular Material has changed it's build process, to fix incorrect
-    // outputs to the bower-material repository. That's why Post v1.1.0 versions are different.
-    let isValidBuild = this._validateVersion(version, !!localSourcePath);
+    // Run validators for the current version
+    this._validateVersion(version);
 
-    if (localSourcePath && isValidBuild) {
-      directoryPromise = Promise.resolve({ module: localSourcePath });
-    } else {
-      directoryPromise = this._isExisting(path.join(path.resolve(cacheRoot), version));
-    }
-
-    return directoryPromise
+    return this._isExisting(path.join(path.resolve(cacheRoot), version))
       .then(this._resolveDirectories)
       .then(directories => {
         Logger.info('Using Angular Material version from cache.');
@@ -42,9 +32,8 @@ export class PackageResolver {
         return {
           root: localSourcePath || path.join(directories.module, '..'),
           module: directories.module,
-          source: directories.source || '',
-          version: version,
-          isValidBuild: isValidBuild
+          source: directories.source,
+          version: version
         };
       })
       .catch(directories => {
@@ -52,14 +41,13 @@ export class PackageResolver {
 
         return Promise.all([
           VersionDownloader.getModuleVersion(version, directories.module),
-          isValidBuild ? '' : VersionDownloader.getSourceVersion(version, directories.source)
+          VersionDownloader.getSourceVersion(version, directories.source)
         ]).then(downloadPaths => {
           return {
             root: localSourcePath || path.join(directories.module, '..'),
             module: downloadPaths[0],
             source: downloadPaths[1],
-            version: version,
-            isValidBuild: isValidBuild
+            version: version
           };
         });
 
@@ -75,32 +63,19 @@ export class PackageResolver {
   }
 
   /** Validates the current resolving version and shows warnings if necessary */
-  private static _validateVersion(version: string, useLocalVersion = false): boolean {
-
-    let versionNumber = Utils.extractVersionNumber(version);
-    let isValidBuild = versionNumber >= Utils.extractVersionNumber('1.1.0');
-
-    if (versionNumber < Utils.extractVersionNumber('1.0.0')) {
+  private static _validateVersion(version: string) {
+    if (Utils.extractVersionNumber(version) < Utils.extractVersionNumber('1.0.0')) {
       Logger.warn(
         'Material-Tools: You are loading an unsupported version. ' +
         'Only >= v1.0.0 versions are fully supported.'
       );
     }
-
-    if (!isValidBuild && useLocalVersion) {
-      Logger.warn(
-        'Material-Tools: When using `local` as the version, the tools will ' +
-        'only use the local sources if the version is later than v1.1.0'
-      );
-    }
-
-    return isValidBuild;
   }
 
   /**
    * Retrieves the local installed Angular Material version form the current PWD.
    */
-  private static _retrieveLocalVersion(): { path: string, version: string } {
+  private static _retrieveLocalVersion(): string {
     // Create a Node module which runs at the current process working directory.
     let _cliModule = new NodeModule(process.cwd());
     _cliModule.paths = NodeModule._nodeModulePaths(process.cwd());
@@ -111,10 +86,7 @@ export class PackageResolver {
     let packageFile = path.join(resolvedModule, 'package.json');
 
     // Load the version from the local installed Angular Material dependency.
-    return {
-      path: resolvedModule,
-      version: require(packageFile)['version']
-    };
+    return require(packageFile)['version'];
   }
 
   /**
@@ -139,6 +111,5 @@ export type MaterialToolsPackage = {
   root: string
   module: string,
   source?: string,
-  version: string,
-  isValidBuild: boolean
+  version: string
 }
