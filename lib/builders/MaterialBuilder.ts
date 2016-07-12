@@ -15,7 +15,7 @@ export class MaterialBuilder {
 
   constructor(protected _options: MaterialToolsOptions) {
     if (this._options.theme) {
-      this._themeBuilder = new ThemeBuilder(this._options.theme);
+      this._themeBuilder = new ThemeBuilder(this._options.theme, this._options.palettes);
     }
 
     this._outputBase = path.join(this._options.destination, this._options.destinationFilename);

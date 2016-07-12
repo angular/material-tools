@@ -1,6 +1,6 @@
 import * as path from 'path';
 import {CSSBuilder, MaterialToolsCSS} from './builders/CSSBuilder';
-import {MdTheme} from './builders/ThemeBuilder';
+import {MdTheme, MdPaletteDefinition} from './builders/ThemeBuilder';
 import {Utils} from './common/Utils';
 import {MaterialToolsFiles} from './resolvers/FileResolver';
 import {DefaultConfig} from './common/DefaultConfig';
@@ -170,6 +170,7 @@ export interface MaterialToolsOptions {
   modules?: string[];
   version?: string;
   theme?: MdTheme | MdTheme[];
+  palettes?: MdPaletteDefinition;
   mainFilename?: string;
   cache?: string;
   destinationFilename?: string;

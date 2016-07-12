@@ -1,5 +1,6 @@
 import {VirtualContext} from '../virtual_context/VirtualContext';
 import {DefaultConfig} from '../common/DefaultConfig';
+import {Utils} from '../common/Utils';
 
 const merge = require('merge');
 
@@ -11,7 +12,10 @@ export class ThemeBuilder {
   private _generateThemes: Function;
   private _virtualContext: VirtualContext;
 
-  constructor(theme: MdTheme | MdTheme[]) {
+  /**
+   * Instantiates the Theme Builder with the specified themes and possible palettes.
+   */
+  constructor(theme: MdTheme | MdTheme[], palettes?: MdPaletteDefinition) {
 
     // Create a virtual context, to isolate the script which modifies the globals
     // to be able to mock a Browser Environment.
@@ -25,7 +29,7 @@ export class ThemeBuilder {
       strictMode: true
     })['injector'];
 
-    this._buildThemingService([].concat(theme), injector);
+    this._buildThemingService([].concat(theme), palettes || {}, injector);
   }
 
 
@@ -57,18 +61,20 @@ export class ThemeBuilder {
    *
    * Instantiate the `$mdTheming` service after the provider has been configured.
    */
-  private _buildThemingService(themes: MdTheme[], injector: any) {
+  private _buildThemingService(themes: MdTheme[], palettes: MdPaletteDefinition, injector: any) {
     let _colorPalettes = injector['$mdColorPalette'];
 
     this._$mdThemingProvider = injector['$mdTheming'](_colorPalettes);
     this._$mdThemeCSS = injector['$MD_THEME_CSS'];
 
-    themes.forEach(theme => this.registerTheme(theme));
+    themes.forEach(theme => this._registerTheme(theme));
+    Utils.forEach(palettes, (palette, name) => this._registerPalette(name, palette));
 
     this._$mdTheming = this._$mdThemingProvider['$get']();
   }
 
-  private registerTheme(theme: MdTheme) {
+  /** Registers a theme in the $mdTheming provider */
+  private _registerTheme(theme: MdTheme) {
     // Apply defaults theme palettes to current theme.
     theme = merge({}, DefaultConfig.theme, theme);
 
@@ -82,6 +88,11 @@ export class ThemeBuilder {
     if (theme.dark) {
       themeRef.dark();
     }
+  }
+
+  /** Registers a palette in the $mdTheming provider */
+  private _registerPalette(paletteName: string, palette: MdPalette) {
+    this._$mdThemingProvider.definePalette(paletteName, palette);
   }
 
   /**
@@ -98,6 +109,7 @@ export class ThemeBuilder {
 /** Mocked interface of the $mdThemingProvider */
 interface MdThemingProvider {
   theme: (themeName, inheritFrom?) => MdThemeBuilder;
+  definePalette: (paletteName: string, palette: MdPalette) => void;
 }
 
 /** Angular Material Theme Builder interface */
@@ -119,4 +131,29 @@ export interface MdTheme {
   dark?: boolean;
 }
 
+/** Angular Material Palette registry */
+export interface MdPaletteDefinition {
+  [paletteName: string]: MdPalette;
+}
 
+/** Angular Material Palette map */
+export interface MdPalette {
+  50: string;
+  100: string;
+  200: string;
+  300: string;
+  400: string;
+  500: string;
+  600: string;
+  700: string;
+  800: string;
+  900: string;
+  A100: string;
+  A200: string;
+  A400: string;
+  A700: string;
+  contrastDefaultColor?: string;
+  contrastDarkColors?: string[];
+  contrastLightColors?: string[];
+  contrastStrongLightColors?: string[];
+}
