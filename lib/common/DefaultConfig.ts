@@ -14,5 +14,15 @@ export const DefaultConfig = {
     accentPalette: 'pink',
     warnPalette: 'deep-orange',
     backgroundPalette: 'grey'
-  }
+  },
+
+  /** Manual compilation configuration */
+  baseSCSSFiles: [
+    'variables.scss',
+    'mixins.scss'
+  ],
+
+  baseThemeFiles: [
+    'themes.scss'
+  ]
 };

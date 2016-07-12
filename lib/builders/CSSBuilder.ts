@@ -1,4 +1,6 @@
-import {MaterialToolsData, MaterialToolsOutput} from '../MaterialTools';
+import {MaterialToolsData} from '../MaterialTools';
+import {DefaultConfig} from '../common/DefaultConfig';
+import {MaterialToolsOutput} from './MaterialBuilder';
 
 const cleanCSS = require('clean-css');
 const fse = require('fs-extra');
@@ -7,31 +9,31 @@ const sass = require('node-sass');
 const postcss = require('postcss');
 const autoprefixer = require('autoprefixer');
 
-// TODO(devversion): combine into baseSCSS config
-const BASE_SCSS_REGEX = /(variables|mixins).scss/;
+const BASE_SCSS_REGEX = new RegExp(`(${DefaultConfig.baseSCSSFiles.join('|')})`);
 
 export class CSSBuilder {
 
   /**
    * Generates minified and non-minified version of the CSS, based on the specified build data.
    */
-  static build(data: MaterialToolsData, isValidBuild = true): MaterialToolsCSS {
+  static build(buildData: MaterialToolsData, isValidBuild = true): MaterialToolsCSS {
 
     if (isValidBuild) {
 
-      let classLayout = data.files.layout.filter(file => file.indexOf('attributes') === -1)[0];
+      let classLayout = buildData.files.layout.filter(file => file.indexOf('attributes') === -1)[0];
 
-      return {
-        noLayout: this._buildStylesheet(this._loadStyles(data.files.css)),
-        layout: this._buildStylesheet(this._loadStyles(data.files.css.concat(classLayout)))
-      };
+      return this._buildOutput(
+        buildData,
+        this._loadStyles(buildData.files.css),
+        this._loadStyles(buildData.files.css.concat(classLayout))
+      );
     }
 
     // Compile the `core` module without the layout.
     // By default the `core` module includes the layout.
     let coreNoLayout = this._compileSCSS(
       this._loadStyles(
-        data.files.scss
+        buildData.files.scss
           .sort(path => BASE_SCSS_REGEX.test(path) ? -1 : 1)
           .filter(path => path.indexOf('core') !== -1)
       )
@@ -39,19 +41,20 @@ export class CSSBuilder {
 
     // CSS for the components, without any layouts or structure.
     let componentCSS = this._loadStyles(
-      data.files.css.filter(path => path.indexOf('core.css') === -1)
+      buildData.files.css.filter(path => path.indexOf('core.css') === -1)
     );
 
-    return {
-      noLayout: this._buildStylesheet(coreNoLayout + componentCSS),
-      layout: this._buildStylesheet(this._loadStyles(data.files.css))
-    };
+    return this._buildOutput(
+      buildData,
+      coreNoLayout + componentCSS,
+      this._loadStyles(buildData.files.css)
+    );
   }
 
   /**
    * Generates a minified and non-minified version of the specified stylesheet.
    */
-  static _buildStylesheet(styleSheet: string): MaterialToolsOutput {
+  static _buildStylesheet(styleSheet: string, license?: string): MaterialToolsOutput {
     let compressed = new cleanCSS({
       // Strip the licensing info from the original file. It'll be re-added by the MaterialTools.
       keepSpecialComments: 0
@@ -59,7 +62,8 @@ export class CSSBuilder {
 
     return {
       source: this._beautifyStylesheet(styleSheet),
-      compressed: compressed.styles
+      compressed: compressed.styles,
+      license: license
     };
   }
 
@@ -92,9 +96,22 @@ export class CSSBuilder {
       autosemicolon: true
     });
   }
+
+  /** Builds an output object for the generated CSS from the build data. */
+  private static _buildOutput(data: MaterialToolsData, noLayout: string,
+                              layout: string): MaterialToolsCSS {
+    return {
+      withoutLayout: this._buildStylesheet(noLayout, data.license),
+      withLayout: this._buildStylesheet(layout, data.license),
+      layoutFiles: data.files.layout,
+      license: data.license
+    };
+  }
 }
 
 export type MaterialToolsCSS = {
-  noLayout: MaterialToolsOutput,
-  layout: MaterialToolsOutput
+  withoutLayout: MaterialToolsOutput,
+  withLayout: MaterialToolsOutput
+  layoutFiles: string[];
+  license?: string;
 }

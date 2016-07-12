@@ -1,4 +1,5 @@
-import {MaterialToolsOutput, MaterialToolsData} from '../MaterialTools';
+import {MaterialToolsData} from '../MaterialTools';
+import {MaterialToolsOutput} from './MaterialBuilder';
 
 const fse = require('fs-extra');
 const uglify = require('uglify-js');
@@ -20,7 +21,8 @@ export class JSBuilder {
     return {
       source: source,
       compressed: compressed.code,
-      map: compressed.map
+      map: compressed.map,
+      license: data.license
     };
   }
 
