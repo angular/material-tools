@@ -13,15 +13,8 @@ registerOptions(yargs)
 registerCommands(yargs);
 
 let options = yargs.argv;
-let command = options._[0];
-let tools = new MaterialTools(options.config || options);
-let commandMap = {
-  css: tools.buildCSS,
-  js: tools.buildJS,
-  theme: tools.buildTheme
-};
 
-(commandMap[command] || tools.build)
-  .call(tools)
+new MaterialTools(options.config || options)
+  .build(options._[0])
   .then(data => Logger.log(`Successfully built ${data.dependencies._flat.join(', ')}.`))
   .catch(error => Logger.error(error.stack || error));

@@ -8,6 +8,12 @@ import {MaterialBuilder, MaterialToolsOutput} from './builders/MaterialBuilder';
 
 const fse = require('fs-extra');
 
+const buildCommandMap = {
+  css: 'buildCSS',
+  js: 'buildJS',
+  theme: 'buildTheme'
+};
+
 export class MaterialTools extends MaterialBuilder {
 
   constructor(_options: MaterialToolsOptions | string) {
@@ -35,15 +41,19 @@ export class MaterialTools extends MaterialBuilder {
   }
 
   /**
-   * Builds all of the files.
+   * Builds all of the files or a subset of files.
    */
-  build(): Promise<MaterialToolsData> {
+  build(...buildTypes): Promise<MaterialToolsData> {
     return this._getData().then((buildData: MaterialToolsData) => {
-      return Promise.all([
-        this.buildJS(buildData),
-        this.buildCSS(buildData),
-        this.buildTheme(buildData)
-      ]).then(() => {
+      let commands = buildTypes
+        .filter(name => !!buildCommandMap[name])
+        .map(key => this[buildCommandMap[key]](buildData));
+
+      if (!commands.length) {
+        Utils.forEach(buildCommandMap, methodName => commands.push(this[methodName](buildData)));
+      }
+
+      return Promise.all(commands).then(() => {
         if (buildData.files.license) {
           // We don't have to wait for the license to be copied over.
           this._writeFile(

@@ -92,11 +92,14 @@ let tools = new MaterialTools({
 const successHandler = () => console.log('Build was successful.');
 const errorHandler = (error) => console.error(error);
 
-tools.build().then(successHandler).catch(errorHandler);       // Build all JS/CSS/themes
+tools.build().then(successHandler).catch(errorHandler);         // Build all JS/CSS/themes
 
-tools.buildJS().then(successHandler).catch(errorHandler);     // Only build the JS.
-tools.buildTheme().then(successHandler).catch(errorHandler);  // Only build the theme.
-tools.buildCSS().then(successHandler).catch(errorHandler);    // Only build the CSS
+tools.build('js').then(successHandler).catch(errorHandler);     // Only build the JS.
+tools.build('theme').then(successHandler).catch(errorHandler);  // Only build the theme.
+tools.build('css').then(successHandler).catch(errorHandler);    // Only build the CSS
+
+// You can also build a subset of files.
+tools.build('css', 'js');   // Builds both the CSS and the JS.
 ```
 
 
