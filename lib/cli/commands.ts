@@ -34,12 +34,14 @@ export function registerCommands(yargs: any): any {
     }, args => {
       // Turn the flat theme arguments into a theme object.
       args.theme = {
-        primaryPalette: args.primaryPalette,
-        accentPalette: args.accentPalette,
-        warnPalette: args.warnPalette,
-        backgroundPalette: args.backgroundPalette,
         dark: !!args.dark
       };
+
+      ['primaryPalette', 'accentPalette', 'warnPalette', 'backgroundPalette'].forEach(name => {
+        if (typeof args[name] !== 'undefined') {
+          args.theme[name] = args[name];
+        }
+      });
     });
 
   return yargs;
