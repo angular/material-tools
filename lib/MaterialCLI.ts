@@ -14,37 +14,14 @@ registerCommands(yargs);
 
 let options = yargs.argv;
 let command = options._[0];
+let tools = new MaterialTools(options.config || options);
+let commandMap = {
+  css: tools.buildCSS,
+  js: tools.buildJS,
+  theme: tools.buildTheme
+};
 
-if (command === 'theme') {
-  options.theme = {
-    primaryPalette: options.primaryPalette,
-    accentPalette: options.accentPalette,
-    warnPalette: options.warnPalette,
-    backgroundPalette: options.backgroundPalette,
-    dark: !!options.dark
-  };
-}
-
-const tools = new MaterialTools(options.config || options);
-let promise = null;
-
-switch (command) {
-  case 'css':
-    promise = tools.buildCSS();
-    break;
-
-  case 'js':
-    promise = tools.buildJS();
-    break;
-
-  case 'theme':
-    promise = tools.buildTheme();
-    break;
-
-  default:
-    promise = tools.build();
-    break;
-}
-promise
+(commandMap[command] || tools.build)
+  .call(tools)
   .then(data => Logger.log(`Successfully built ${data.dependencies._flat.join(', ')}.`))
   .catch(error => Logger.error(error.stack || error));

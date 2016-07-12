@@ -6,10 +6,14 @@ const PALETTE_OPTIONS = {
   'background-palette': 'Background palette color.'
 };
 
+// Yargs requires that all commands be marked as strict individually.
+const markAsStrict = command => command.strict();
+
 export function registerCommands(yargs: any): any {
   yargs
-    .command('css', 'Builds only the CSS files.', command => command.strict())
-    .command('js', 'Builds only the JS files.', command => command.strict())
+    .command('', 'Default command. Builds all of the files.', markAsStrict)
+    .command('css', 'Builds only the CSS files.', markAsStrict)
+    .command('js', 'Builds only the JS files.', markAsStrict)
     .command('theme', 'Builds the theme files.', command => {
       Object.keys(PALETTE_OPTIONS).forEach(key => {
         command.option(key, {
@@ -26,7 +30,16 @@ export function registerCommands(yargs: any): any {
         group: THEMING_GROUP
       });
 
-      return command.strict();
+      return markAsStrict(command);
+    }, args => {
+      // Turn the flat theme arguments into a theme object.
+      args.theme = {
+        primaryPalette: args.primaryPalette,
+        accentPalette: args.accentPalette,
+        warnPalette: args.warnPalette,
+        backgroundPalette: args.backgroundPalette,
+        dark: !!args.dark
+      };
     });
 
   return yargs;
