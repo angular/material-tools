@@ -6,11 +6,12 @@ const merge = require('merge');
 export class ThemeBuilder {
 
   private _$mdTheming: any;
+  private _$mdThemingProvider: MdThemingProvider;
   private _$mdThemeCSS: string;
   private _generateThemes: Function;
   private _virtualContext: VirtualContext;
 
-  constructor(theme: MdTheme) {
+  constructor(theme: MdTheme | MdTheme[]) {
 
     // Create a virtual context, to isolate the script which modifies the globals
     // to be able to mock a Browser Environment.
@@ -24,9 +25,7 @@ export class ThemeBuilder {
       strictMode: true
     })['injector'];
 
-    theme = merge({}, DefaultConfig.theme, theme);
-
-    this._buildThemingService(theme, injector);
+    this._buildThemingService([].concat(theme), injector);
   }
 
 
@@ -58,25 +57,33 @@ export class ThemeBuilder {
    *
    * Instantiate the `$mdTheming` service after the provider has been configured.
    */
-  private _buildThemingService(theme: MdTheme, injector: any) {
+  private _buildThemingService(themes: MdTheme[], injector: any) {
     let _colorPalettes = injector['$mdColorPalette'];
-    let $mdThemingProvider: MdThemingProvider = injector['$mdTheming'](_colorPalettes);
 
+    this._$mdThemingProvider = injector['$mdTheming'](_colorPalettes);
     this._$mdThemeCSS = injector['$MD_THEME_CSS'];
 
-    let defaultTheme = $mdThemingProvider
-      .theme('default')
+    themes.forEach(theme => this.registerTheme(theme));
+
+    this._$mdTheming = this._$mdThemingProvider['$get']();
+  }
+
+  private registerTheme(theme: MdTheme) {
+    // Apply defaults theme palettes to current theme.
+    theme = merge({}, DefaultConfig.theme, theme);
+
+    let themeRef = this._$mdThemingProvider
+      .theme(theme.name || 'default')
       .primaryPalette(theme.primaryPalette)
       .accentPalette(theme.accentPalette)
       .warnPalette(theme.warnPalette)
       .backgroundPalette(theme.backgroundPalette);
 
     if (theme.dark) {
-      defaultTheme.dark();
+      themeRef.dark();
     }
-
-    this._$mdTheming = $mdThemingProvider['$get']();
   }
+
   /**
    * Function will be used to intercept Angular's Run Phase.
    */
@@ -104,6 +111,7 @@ interface MdThemeBuilder {
 
 /** Angular Material Theme definition */
 export interface MdTheme {
+  name?: string;
   primaryPalette?: string;
   accentPalette?: string;
   warnPalette?: string;

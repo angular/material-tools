@@ -121,8 +121,8 @@ export class MaterialTools extends MaterialBuilder {
       .then(data => this._buildTheme(data))
       .then((output: MaterialToolsOutput) => {
         return Promise.all([
-          this._writeFile(`${this._outputBase}.theme.min.css`, output.compressed, output.license),
-          this._writeFile(`${this._outputBase}.theme.css`, output.source, output.license)
+          this._writeFile(`${this._outputBase}.themes.min.css`, output.compressed, output.license),
+          this._writeFile(`${this._outputBase}.themes.css`, output.source, output.license)
         ]);
       });
   }
@@ -159,7 +159,7 @@ export interface MaterialToolsOptions {
   destination?: string;
   modules?: string[];
   version?: string;
-  theme?: MdTheme;
+  theme?: MdTheme | MdTheme[];
   mainFilename?: string;
   cache?: string;
   destinationFilename?: string;
