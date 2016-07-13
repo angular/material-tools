@@ -50,13 +50,13 @@ function processThemeArgs(args) {
     .sort((key, prevKey) => args[prevKey].length - args[key].length)[0];
 
   if (largestPalette) {
-    /*
-      Goes through the colors and creates new themes by matching them to their index.
-      E.g. { primaryPalette: ['red', 'green'], accentPalette: ['blue', 'yellow'], turns into
-      [
-        { primaryPalette: 'red', accentPalette: 'blue' },
-        { primaryPalette: green, accentPalette: 'yellow' }
-      ]
+    /**
+     * Goes through the colors and creates new themes by matching them to their index.
+     * E.g. { primaryPalette: ['red', 'green'], accentPalette: ['blue', 'yellow'], turns into
+     * [
+     *   { primaryPalette: 'red', accentPalette: 'blue' },
+     *   { primaryPalette: green, accentPalette: 'yellow' }
+     * ]
      */
     for (let i = 0; i < args[largestPalette].length; i++) {
       let newTheme = {
