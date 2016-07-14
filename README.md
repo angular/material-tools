@@ -1,4 +1,4 @@
-# angular-material-tools
+# angular-material-tools [![Build Status](https://travis-ci.org/angular/material-tools.svg?branch=master)](https://travis-ci.org/angular/material-tools)
 
 [Angular-Material](http://github.com/angular/material) deploys standard builds to NPM and Bower using the [Bower-Material](http://github.com/angular/bower-material) deployment repository.
 
