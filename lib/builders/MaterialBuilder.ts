@@ -14,8 +14,12 @@ export class MaterialBuilder {
   protected _outputBase: string;
 
   constructor(protected _options: MaterialToolsOptions) {
-    if (this._options.theme) {
-      this._themeBuilder = new ThemeBuilder(this._options.theme, this._options.palettes);
+    if (this._options.theme || this._options.themes) {
+      let themes = []
+        .concat(this._options.theme || [])
+        .concat(this._options.themes || []);
+
+      this._themeBuilder = new ThemeBuilder(themes, this._options.palettes);
     }
 
     this._outputBase = path.join(this._options.destination, this._options.destinationFilename);

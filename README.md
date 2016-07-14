@@ -14,9 +14,10 @@ Now developers can use `material-tools` to generate their own custom [Angular-Ma
 
 ## Quick Links
 - [Installation](#installation)
+- [Available Options](#options)
 - [CLI Usage](#cli-usage)
 - [NodeJS Usage](#nodejs-usage)
-- [Theming](#theming)
+- [Theme Building](#theming)
 - [Development Environment](#development)
 
 ## Installation
@@ -28,36 +29,38 @@ Now developers can use `material-tools` to generate their own custom [Angular-Ma
 `material-tools` can be easily used from the **command-line** or from your own custom **NodeJS** code. The build tools also include a CLI, which can be used by installing the tools globally.
 - `npm install -g angular-material-tools`
 
-#### CLI usage
+### Options
 
-To create a custom Angular Material build with the command-line interface (CLI), you can pass the following [options](#options) as CLI arguments. All possible options in the CLI can be listed with the command:
+|          Name           |    Type     |                             Description                                    |
+| ----------------------- | ----------- | -------------------------------------------------------------------------- |
+| `destination` (*)       | `string`    | Target location for the Material build.                                    |
+| `modules`               | `string[]`  | Modules that should be part of the build.<br/> All modules will be built if nothing is specified.                                                                                                           |
+| `version`               | `string`    | Version of Angular Material.<br/> If set to local, it will take the local installed Angular Material version from the node modules                                                                               |
+| `theme`                 | `MdTheme`   | Material Theme to be used to generate a static theme stylesheet.           |
+| `themes`                | `MdTheme[]` | Multiple Material Themes, which are used to generated a static stylesheet. |
+| `cache`                 | `string`    | Directory for caching the downloads                                        |
+| `mainFilename`          | `string`    | Name of the entry file that will be loaded to figure out the dependencies. |
+| `destinationFilename`   | `string`    | Name to be used as a base for the output files.                            |
+
+> **Note:** The options can be set in a JSON file whose path can be passed to the CLI or API.
+
+
+### CLI usage
+
+To create a custom Angular Material build with the command-line interface (CLI), you can pass the [options](#options) as CLI arguments.
+
+All possible options in the CLI can be listed with the command:
 
   - `material-tools --help`
 
 The CLI includes the following commands:
 
-|                Name                 |              Arguments              |                             Description                                     |
-| ----------------------------------- | ----------------------------------- | --------------------------------------------------------------------------- |
-| `<arguments>`                       | Everything from [options](#options) | Default command that builds all files.                                      |
-| `material-tools js <arguments>`     | Everything from [options](#options) | Only builds the JS files.                                                   |
-| `material-tools css <arguments>`    | Everything from [options](#options) | Only builds the CSS files                                                   |
-| `material-tools theme <arguments>`  | Everything from [options](#options) <br/> `--primary-palette` <br/> `--accent-palette` <br/> `--warn-palette` <br/> `--background-palette` <br/> `--dark` | Only builds the theme files.             |
-
-
-##### Options
-
-|          Name           |    Type    |                             Description                                    |
-| ----------------------- | ---------- | -------------------------------------------------------------------------- |
-| `destination` (*)       | `string`   | Target location for the Material build.                                    |
-| `modules`               | `string[]` | Modules that should be part of the build.<br/> All modules will be built if nothing is specified.                                                                                                          |
-| `version`               | `string`   | Version of Angular Material.<br/> If set to local, it will take the local installed Angular Material version from the node modules                                                                              |
-| `theme`                 | `MdTheme`  | Palettes, which will be used to generate a static theme stylesheet.        |
-| `cache`                 | `string`   | Directory for caching the downloads                                        |
-| `mainFilename`          | `string`   | Name of the entry file that will be loaded to figure out the dependencies. |
-| `destinationFilename`   | `string`   | Name to be used as a base for the output files.                            |
-
-> **Note:** The options can also be set in a JSON file whose path can be passed to the tools module.
-
+|                Name                 |              Arguments              |                    Description                 |
+| ----------------------------------- | ----------------------------------- | ---------------------------------------------- |
+| `<arguments>`                       | Everything from [options](#options) | Default command that builds all files.         |
+| `material-tools js <arguments>`     | Everything from [options](#options) | Only builds the JS files.                      |
+| `material-tools css <arguments>`    | Everything from [options](#options) | Only builds the CSS files                      |
+| `material-tools theme <arguments>`  | Everything from [options](#options) <br/><br/> `--primary-palette` <br/> `--accent-palette` <br/> `--warn-palette` <br/> `--background-palette` <br/> `--dark` | Only builds the theme files. |
 
 **Examples**
 ```bash
@@ -69,11 +72,9 @@ When a version is not specified, the CLI will automatically use the installed An
 material-tools -d ./output -m list
 ```
 
-<br/>
-
 ----
 
-#### NodeJS usage
+### NodeJS usage
 
 ```js
 const MaterialTools = require('angular-material-tools');
@@ -103,8 +104,8 @@ tools.build('css').then(successHandler).catch(errorHandler);    // Only build th
 tools.build('css', 'js');   // Builds both the CSS and the JS.
 ```
 
+**Output**
 
-##### Output
 |                   File                   |                                   Description                                        |
 | ---------------------------------------- | ------------------------------------------------------------------------------------ |
 | `angular-material.js`                    | Contains the modules that you specified, as well as their dependencies.              |
@@ -114,10 +115,9 @@ tools.build('css', 'js');   // Builds both the CSS and the JS.
 | `angular-material.layouts.css`           | Standalone Layout stylesheet with class selectors                                    |
 | `angular-material.layout-attributes.css` | Standalone Layout stylesheet with attribute selectors                                |
 
-
 ----
 
-#### Theming
+### Theming
 Developers are able to easily build a static theme stylesheet
 
 ```js
@@ -135,7 +135,7 @@ Developers are able to easily build a static theme stylesheet
 In some cases you may want to have multiple themes in your application.
 ```js
 {
-  theme: [{
+  themes: [{
     name: 'firstTheme',
     primaryPalette: 'red'
   }, {
@@ -177,7 +177,7 @@ It is also possible to use [custom palettes](https://material.angularjs.org/late
 }
 ```
 
-#### Development
+### Development
 
 If you've cloned the repo, a quick way to explore NodeJS usages is to *directly* run TypeScript without precompiling processes. Developers can use [ts-node](https://github.com/TypeStrong/ts-node) which is installed with:
 

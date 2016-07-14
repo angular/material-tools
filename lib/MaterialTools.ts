@@ -169,10 +169,12 @@ export interface MaterialToolsOptions {
   destination?: string;
   modules?: string[];
   version?: string;
-  theme?: MdTheme | MdTheme[];
   palettes?: MdPaletteDefinition;
   mainFilename?: string;
   cache?: string;
   destinationFilename?: string;
+  /* Theming Options */
+  theme?: MdTheme;
+  themes?: MdTheme[];
 }
 
