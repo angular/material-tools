@@ -1,4 +1,4 @@
-import {Logger} from '../common/logger';
+import {Logger} from '../common/Logger';
 import {VirtualContext} from '../virtual_context/VirtualContext';
 
 export class DependencyResolver {

@@ -1,4 +1,4 @@
-import {Logger} from '../lib/common/logger';
+import {Logger} from '../lib/common/Logger';
 import {Utils} from '../lib/common/Utils';
 
 describe('Utils', () => {
@@ -7,17 +7,17 @@ describe('Utils', () => {
 
     it('should correctly compare versions', () => {
       expect(Utils.extractVersionNumber('1.1.0'))
-        .toBeGreaterThan(Utils.extractVersionNumber('1.0.9'))
+        .toBeGreaterThan(Utils.extractVersionNumber('1.0.9'));
     });
 
     it('should correctly compare new release candidates versions', () => {
       expect(Utils.extractVersionNumber('1.1.0-rc.5'))
-        .toBeGreaterThan(Utils.extractVersionNumber('1.1.0-rc.4'))
+        .toBeGreaterThan(Utils.extractVersionNumber('1.1.0-rc.4'));
     });
 
     it('should correctly compare old release candidates versions', () => {
       expect(Utils.extractVersionNumber('1.1.0-rc-5'))
-        .toBeGreaterThan(Utils.extractVersionNumber('1.1.0-rc-4'))
+        .toBeGreaterThan(Utils.extractVersionNumber('1.1.0-rc-4'));
     });
 
     it('should correctly compare older versions', () => {
@@ -27,7 +27,7 @@ describe('Utils', () => {
 
     it('should correctly compare release candiates with major releases', () => {
       expect(Utils.extractVersionNumber('1.0.0'))
-        .toBeLessThan(Utils.extractVersionNumber('1.1.0-rc.5'))
+        .toBeLessThan(Utils.extractVersionNumber('1.1.0-rc.5'));
     });
 
     it('should should not throw if a version that does not match the pattern', () => {

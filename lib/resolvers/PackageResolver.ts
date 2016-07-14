@@ -1,7 +1,7 @@
 import * as path from 'path';
 import * as fs from 'fs';
-import {Logger} from '../common/logger';
-import {Utils} from '../common/utils';
+import {Logger} from '../common/Logger';
+import {Utils} from '../common/Utils';
 import {VersionDownloader} from '../common/VersionDownloader';
 
 const NodeModule = require('module');
