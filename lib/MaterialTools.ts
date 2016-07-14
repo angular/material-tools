@@ -11,7 +11,8 @@ const fse = require('fs-extra');
 const buildCommandMap = {
   css: 'buildCSS',
   js: 'buildJS',
-  theme: 'buildTheme'
+  theme: 'buildTheme',
+  themes: 'buildTheme'
 };
 
 export class MaterialTools extends MaterialBuilder {

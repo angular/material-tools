@@ -60,7 +60,8 @@ The CLI includes the following commands:
 | `<arguments>`                       | Everything from [options](#options) | Default command that builds all files.         |
 | `material-tools js <arguments>`     | Everything from [options](#options) | Only builds the JS files.                      |
 | `material-tools css <arguments>`    | Everything from [options](#options) | Only builds the CSS files                      |
-| `material-tools theme <arguments>`  | Everything from [options](#options) <br/><br/> `--primary-palette` <br/> `--accent-palette` <br/> `--warn-palette` <br/> `--background-palette` <br/> `--dark` | Only builds the theme files. |
+| `material-tools theme <arguments>`  | Everything from [options](#options) <br/><br/> `--name` <br/> `--primary-palette` <br/> `--accent-palette` <br/> `--warn-palette` <br/> `--background-palette` <br/> `--dark` | Builds the theme files for a single theme. |
+| `material-tools themes <arguments>`  | Everything from [options](#options) <br/><br/> `--name` <br/> `--primary-palette` <br/> `--accent-palette` <br/> `--warn-palette` <br/> `--background-palette` <br/> `--dark` | Builds the theme files for an array of themes. |
 
 **Examples**
 ```bash

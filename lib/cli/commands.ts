@@ -12,39 +12,81 @@ const PALETTE_OPTIONS = {
 // Yargs requires that all commands be marked as strict individually.
 const markAsStrict = command => command.strict();
 
+/**
+ * Registers all of the available commands.
+ */
 export function registerCommands(yargs: any): any {
   yargs
     .command('', 'Default command. Builds all of the files.', markAsStrict)
     .command('css', 'Builds only the CSS files.', markAsStrict)
     .command('js', 'Builds only the JS files.', markAsStrict)
-    .command('theme', 'Builds the theme files.', command => {
-      Object.keys(PALETTE_OPTIONS).forEach(key => {
-        let argConfig = PALETTE_OPTIONS[key];
-
-        command.option(key, {
-          alias: argConfig.alias,
-          describe: argConfig.desc,
-          group: THEMING_GROUP,
-          type: 'array',
-          requiresArg: true
-        });
-      });
-
-      command.option('dark', {
-        describe: 'Whether to generate a dark theme.',
-        group: THEMING_GROUP
-      });
-
-      return markAsStrict(command);
-    }, processThemeArgs);
+    .command('theme',
+      'Builds the theme files for a single theme.',
+      registerThemeArgs('string'),
+      processSingleThemeArgs
+    )
+    .command('themes',
+      'Builds the theme files for multiple themes.',
+      registerThemeArgs('array'),
+      processMultipleThemeArgs
+    );
 
   return yargs;
 }
 
 /**
- * Turns the specified theme options into an array, expected by the theming builder.
+ * Registers the theme command arguments.
  */
-function processThemeArgs(args) {
+function registerThemeArgs(argsType): Function {
+  return command => {
+    Utils.forEach(PALETTE_OPTIONS, (config, key) => {
+      command.option(key, {
+        alias: config.alias,
+        describe: config.desc,
+        group: THEMING_GROUP,
+        type: argsType,
+        requiresArg: true
+      });
+    });
+
+    command.option('dark', {
+      describe: 'Whether to generate a dark theme.',
+      group: THEMING_GROUP
+    });
+
+    return markAsStrict(command);
+  };
+}
+
+/**
+ * Turns the theme command arguments into a theme object.
+ */
+function processSingleThemeArgs(args) {
+  args.theme = {
+    dark: !!args.dark
+  };
+
+  Utils.forEach(PALETTE_OPTIONS, (value, key) => {
+    if (args[key]) {
+      args.theme[Utils.dashToCamel(key)] = args[key];
+    }
+  });
+}
+
+/**
+ * Turns the specified theme options into an array of themes. Yargs returns the theme options as:
+ * {
+ *   primaryPalette: ['red', 'green'],
+ *   accentPalette: ['blue', 'yellow']
+ * }
+ *
+ * This method turns them into:
+ * [
+ *   { primaryPalette: 'red', accentPalette: 'blue' },
+ *   { primaryPalette: green, accentPalette: 'yellow' }
+ * ]
+ */
+function processMultipleThemeArgs(args) {
   const themeArgs = Object.keys(PALETTE_OPTIONS).map(key => Utils.dashToCamel(key));
   let themes = [];
 
@@ -57,14 +99,7 @@ function processThemeArgs(args) {
     .sort((key, prevKey) => args[prevKey].length - args[key].length)[0];
 
   if (largestPalette) {
-    /**
-     * Goes through the colors and creates new themes by matching them to their index.
-     * E.g. { primaryPalette: ['red', 'green'], accentPalette: ['blue', 'yellow'], turns into
-     * [
-     *   { primaryPalette: 'red', accentPalette: 'blue' },
-     *   { primaryPalette: green, accentPalette: 'yellow' }
-     * ]
-     */
+    // Goes through the colors and creates new themes by matching them to their index.
     for (let i = 0; i < args[largestPalette].length; i++) {
       let newTheme = {
         dark: !!args.dark
@@ -87,5 +122,5 @@ function processThemeArgs(args) {
     });
   }
 
-  args.theme = themes;
+  args.themes = themes;
 };
