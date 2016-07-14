@@ -1,5 +1,7 @@
 /** RegEx to retrieve the digits of a ngMaterial version. */
 const VERSION_DIGIT_REGEX = /([0-9]{1,3})\.([0-9]{1,3})\.([0-9]{1,3})(?:-rc(?:.|-)([0-9]{1,3}))?/;
+const DASH_TO_CAMEL_REGEX = /\W+(.)/g;
+
 
 /**
  * Common utility functions for the Material Tools.
@@ -49,6 +51,14 @@ export class Utils {
     }
   }
 
+  /**
+   * Converts a dash-cased string to camelCase.
+   */
+  static dashToCamel(str: string): string {
+    return str.replace(DASH_TO_CAMEL_REGEX, function(x, chr) {
+       return chr.toUpperCase();
+    });
+  }
 }
 
 

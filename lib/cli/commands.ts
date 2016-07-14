@@ -1,9 +1,12 @@
+import {Utils} from '../common/Utils';
+
 const THEMING_GROUP = 'Theming arguments:';
 const PALETTE_OPTIONS = {
-  'primary-palette': 'Primary palette color.',
-  'accent-palette': 'Accent palette color.',
-  'warn-palette': 'Warning palette color.',
-  'background-palette': 'Background palette color.'
+  'name':                 { desc: 'Name for the theme.' },
+  'primary-palette':      { desc: 'Primary palette color.', alias: 'primary' },
+  'accent-palette':       { desc: 'Accent palette color.', alias: 'accent' },
+  'warn-palette':         { desc: 'Warning palette color.', alias: 'warn' },
+  'background-palette':   { desc: 'Background palette color.', alias: 'background' }
 };
 
 // Yargs requires that all commands be marked as strict individually.
@@ -16,9 +19,11 @@ export function registerCommands(yargs: any): any {
     .command('js', 'Builds only the JS files.', markAsStrict)
     .command('theme', 'Builds the theme files.', command => {
       Object.keys(PALETTE_OPTIONS).forEach(key => {
+        let argConfig = PALETTE_OPTIONS[key];
+
         command.option(key, {
-          alias: key.split('-').shift(),
-          describe: PALETTE_OPTIONS[key],
+          alias: argConfig.alias,
+          describe: argConfig.desc,
           group: THEMING_GROUP,
           type: 'array',
           requiresArg: true
@@ -36,17 +41,19 @@ export function registerCommands(yargs: any): any {
   return yargs;
 }
 
-/** Turns the specified theme options into an array, expected by the theming builder. */
+/**
+ * Turns the specified theme options into an array, expected by the theming builder.
+ */
 function processThemeArgs(args) {
-  const availablePalettes = ['primaryPalette', 'accentPalette', 'warnPalette', 'backgroundPalette'];
+  const themeArgs = Object.keys(PALETTE_OPTIONS).map(key => Utils.dashToCamel(key));
   let themes = [];
 
-  // Filter out the theme-specific keys from the rest.
-  let definedPalettes = Object.keys(args)
-    .filter(key => availablePalettes.indexOf(key) !== -1);
+  // Filter out the defined, theme-specific keys from the rest.
+  let definedArgs = Object.keys(args)
+    .filter(key => args[key] && themeArgs.indexOf(key) !== -1);
 
   // Find the palette with the most colors to be used as a reference.
-  let largestPalette = definedPalettes
+  let largestPalette = definedArgs
     .sort((key, prevKey) => args[prevKey].length - args[key].length)[0];
 
   if (largestPalette) {
@@ -63,7 +70,7 @@ function processThemeArgs(args) {
         dark: !!args.dark
       };
 
-      definedPalettes.forEach(palette => {
+      definedArgs.forEach(palette => {
         let value = args[palette][i];
 
         if (value) {

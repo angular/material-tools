@@ -107,4 +107,18 @@ describe('Utils', () => {
 
   });
 
+  describe('dashToCamel function', () => {
+    it('should convert dash-cased strings to camelCase', () => {
+      expect(Utils.dashToCamel('dash-cased')).toBe('dashCased');
+    });
+
+    it('should should not change strings that are already camel cased', () => {
+      expect(Utils.dashToCamel('camelCased')).toBe('camelCased');
+    });
+
+    it('should should not change single words', () => {
+      expect(Utils.dashToCamel('something')).toBe('something');
+    });
+  });
+
 });
