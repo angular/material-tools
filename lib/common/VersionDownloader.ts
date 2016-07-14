@@ -1,5 +1,5 @@
 import * as zlib from 'zlib';
-import {Logger} from './logger';
+import {Logger} from './Logger';
 
 const request = require('request');
 const tar = require('tar-fs');
