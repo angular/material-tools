@@ -1,5 +1,5 @@
 import * as path from 'path';
-import {LocalResolver} from '../lib/resolvers/FileResolver';
+import {LocalResolver} from '../lib/resolvers/LocalResolver';
 
 const merge = require('merge');
 
