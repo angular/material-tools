@@ -11,6 +11,10 @@
     "tslint": "tslint -c tslint.json lib/**/*.ts",
     "build": "node scripts/build.js"
   },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/angular/material-tools.git"
+  },
   "dependencies": {
     "autoprefixer": "^6.3.7",
     "clean-css": "^3.4.18",
