@@ -1,4 +1,4 @@
-#!/usr/bin/env bash
+#!/bin/bash
 
 if [[ "$MODE" == "TESTS" ]]; then
   npm run test

@@ -6,12 +6,13 @@ node_js:
 branches:
   only:
   - master
+
 cache:
   directories:
     - "node_modules"
     - ".material-cache"
 
-env
+env:
   matrix:
   - MODE=TESTS
   - MODE=VERSIONS
