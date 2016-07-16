@@ -2,7 +2,7 @@ import * as path from 'path';
 import {CSSBuilder, MaterialToolsCSS} from './builders/CSSBuilder';
 import {MdTheme, MdPaletteDefinition} from './builders/ThemeBuilder';
 import {Utils} from './common/Utils';
-import {MaterialToolsFiles} from './resolvers/FileResolver';
+import {MaterialToolsFiles} from './resolvers/LocalResolver';
 import {DefaultConfig} from './common/DefaultConfig';
 import {MaterialBuilder, MaterialToolsOutput} from './builders/MaterialBuilder';
 

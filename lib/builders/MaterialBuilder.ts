@@ -3,7 +3,7 @@ import {MaterialToolsData, MaterialToolsOptions} from '../MaterialTools';
 import {ThemeBuilder} from './ThemeBuilder';
 import {PackageResolver} from '../resolvers/PackageResolver';
 import {DependencyResolver} from '../resolvers/DependencyResolver';
-import {LocalResolver} from '../resolvers/FileResolver';
+import {LocalResolver} from '../resolvers/LocalResolver';
 import {JSBuilder} from './JSBuilder';
 import {CSSBuilder, MaterialToolsCSS} from './CSSBuilder';
 import {DefaultConfig} from '../common/DefaultConfig';
