@@ -1,5 +1,5 @@
-import {VirtualContext} from '../lib/virtual_context/VirtualContext';
 import * as path from 'path';
+import {VirtualContext} from '../lib/virtual_context/VirtualContext';
 import {BrowserWindow} from '../lib/virtual_context/MockBrowser';
 
 describe('virtual context', () => {
