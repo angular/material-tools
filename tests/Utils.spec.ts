@@ -108,6 +108,7 @@ describe('Utils', () => {
   });
 
   describe('dashToCamel function', () => {
+
     it('should convert dash-cased strings to camelCase', () => {
       expect(Utils.dashToCamel('dash-cased')).toBe('dashCased');
     });

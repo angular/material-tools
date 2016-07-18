@@ -1,3 +1,4 @@
+import * as path from 'path';
 import {createSandboxRequire} from '../lib/virtual_context/SandboxRequire';
 
 describe('sandbox require', () => {
@@ -24,6 +25,14 @@ describe('sandbox require', () => {
     let secondExports = require('./fixtures/virtual-context/fake-virtual-context-exports');
 
     expect(secondExports.length).toBe(51);
+  });
+
+  it('should export the resolve function', () => {
+    let require = createSandboxRequire(__filename, {});
+
+    let globPath = require.resolve('glob');
+
+    expect(path.extname(globPath)).toBe('.js');
   });
 
   it('should not use the cache if disabled', () => {
