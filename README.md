@@ -1,14 +1,11 @@
 # angular-material-tools [![Build Status](https://travis-ci.org/angular/material-tools.svg?branch=master)](https://travis-ci.org/angular/material-tools)
 
-[Angular-Material](http://github.com/angular/material) deploys standard builds to NPM and Bower using the [Bower-Material](http://github.com/angular/bower-material) deployment repository.
+NodeJS/TypeScript/CLI tool that generates custom [Angular-Material v1.x](http://github.com/angular/material) builds, consisting of:
 
-The **standard** build contains all material components, all themes, and all layout features... packaged for easy installs and usages.
-
-Now developers can use `material-tools` to generate their own custom [Angular-Material v1.x](http://github.com/angular/material) builds:
-
-*  Using only a subset of components.
-*  Using only 1 specific theme.
-*  Using only the Layout API.
+*  JS files for a set Material components.
+*  CSS for a set of components.
+*  Static theme files.
+*  Layout CSS, separated from the specific component styling.
 
 > Support for Angular Material v2 may be added in the future.
 
