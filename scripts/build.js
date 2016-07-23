@@ -1,9 +1,9 @@
 'use strict';
 
-const exec = require('child_process').execSync;
 const glob = require('glob').sync;
 const fse = require('fs-extra');
 const path = require('path');
+const ts = require('typescript');
 
 const buildConfig = require('../build.json');
 
@@ -26,13 +26,24 @@ let sourceFiles = buildConfig.tsFiles
   .map(pattern => glob(pattern, { cwd: PROJECT_ROOT }))
   .reduce((array, item) => array.concat(item), []);
 
-try {
-  exec(`node ${TSC_BIN} --declaration ${sourceFiles.join(' ')} --outDir ${OUTPUT_DIRECTORY}`, {
-    cwd: PROJECT_ROOT
-  });
+/**
+ * TypeScript Compilation with Language Service.
+ */
+let tsProject = ts.convertCompilerOptionsFromJson(require('../tsconfig.json').compilerOptions);
+let tsProgram = ts.createProgram(sourceFiles, tsProject.options);
+let emitResult = tsProgram.emit();
 
-  console.log("Build: Successfully compiled the TypeScript files into ES5.");
-} catch (e) {
-  console.error("Error: An error occurred while compiling the TypeScript files into ES5.");
-  throw e;
+let compileErrors = ts.getPreEmitDiagnostics(tsProgram).concat(emitResult.diagnostics);
+
+compileErrors.forEach(diagnostic => {
+  let lineResults = diagnostic.file.getLineAndCharacterOfPosition(diagnostic.start);
+  let errorMessage = ts.flattenDiagnosticMessageText(diagnostic.messageText, '\n');
+  console.error(`${diagnostic.file.fileName}@${lineResults.line + 1}: ${errorMessage}`);
+});
+
+if (emitResult.emitSkipped) {
+  console.error('Build: An error occurred while compiling the project.');
+  process.exit(1);
+} else {
+  console.log(`Build: Successfully compiled the project.`);
 }
