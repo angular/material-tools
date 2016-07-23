@@ -41,9 +41,9 @@ compileErrors.forEach(diagnostic => {
   console.error(`${diagnostic.file.fileName}@${lineResults.line + 1}: ${errorMessage}`);
 });
 
-if (!emitResult.emitSkipped) {
-  console.log(`Build: Successfully compiled the project.`);
-} else {
+if (emitResult.emitSkipped) {
   console.error('Build: An error occurred while compiling the project.');
   process.exit(1);
+} else {
+  console.log(`Build: Successfully compiled the project.`);
 }
