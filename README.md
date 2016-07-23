@@ -1,6 +1,6 @@
 # angular-material-tools [![Build Status](https://travis-ci.org/angular/material-tools.svg?branch=master)](https://travis-ci.org/angular/material-tools)
 
-NodeJS/TypeScript/CLI tool that generates custom [Angular-Material v1.x](http://github.com/angular/material) builds, consisting of:
+Tool that generates custom [Angular-Material v1.x](http://github.com/angular/material) builds, consisting of:
 
 *  JS files for a set Material components.
 *  CSS for a set of components.
@@ -90,7 +90,7 @@ let tools = new MaterialTools({
 });
 
 const successHandler = () => console.log('Build was successful.');
-const errorHandler = (error) => console.error(error);
+const errorHandler = error => console.error(error);
 
 tools.build().then(successHandler).catch(errorHandler);         // Build all JS/CSS/themes
 
