@@ -57,7 +57,7 @@ export class PackageResolver {
       // Fetch the latest version remotely.
       return this._retrieveLatestVersion();
     } else if (version === 'local') {
-      // Update the resolving version to the retrieved local version.
+      // Figure out the version, based on the node_modules.
       return Promise.resolve(this._retrieveLocalVersion());
     }
 
