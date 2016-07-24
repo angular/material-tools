@@ -65,7 +65,7 @@ The CLI includes the following commands:
 material-tools --destination ./output --modules list datepicker autocomplete --version 1.0.0
 ```
 
-When a version is not specified, the CLI will automatically use the installed Angular Material version from your local `node_modules` directories.
+When a version is not specified, the CLI will automatically use the installed Angular Material version from your local `node_modules` directory.
 ```bash
 material-tools -d ./output -m list
 ```
