@@ -114,6 +114,7 @@ export class PackageResolver {
       return execSync('npm view angular-material version --silent').toString().trim();
     } catch (e) {
       Logger.error('Failed to retrieve latest version.');
+      Logger.info(e.stack || e);
     }
 
     return '';
