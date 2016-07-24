@@ -53,17 +53,15 @@ export class PackageResolver {
    * Processes the different version types.
    */
   private static _resolveVersion(version: string): Promise<string> {
-    return new Promise((resolve, reject) => {
-      if (version === 'latest') {
-        // Fetch the latest version remotely.
-        this._retrieveLatestVersion().then(resolve, reject);
-      } else if (version === 'local') {
-        // Update the resolving version to the retrieved local version.
-        resolve(this._retrieveLocalVersion());
-      } else {
-        resolve(version);
-      }
-    });
+    if (version === 'latest') {
+      // Fetch the latest version remotely.
+      return this._retrieveLatestVersion();
+    } else if (version === 'local') {
+      // Update the resolving version to the retrieved local version.
+      return Promise.resolve(this._retrieveLocalVersion());
+    }
+
+    return Promise.resolve(version);
   }
 
   /** Creates the directory paths for the cached versions */

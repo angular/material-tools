@@ -32,7 +32,7 @@ Tool that generates custom [Angular-Material v1.x](http://github.com/angular/mat
 | ----------------------- | ----------- | -------------------------------------------------------------------------- |
 | `destination` (*)       | `string`    | Target location for the Material build.                                    |
 | `modules`               | `string[]`  | Modules that should be part of the build.<br/> All modules will be built if nothing is specified.                                                                                                           |
-| `version`               | `string`    | Version of Angular Material.<br/> If set to `local`, it will take the local installed Angular Material version from the node modules. If set to `latest`, the latest version will be downloaded.                                                           |
+| `version`               | `string`    | Version of Angular Material.<br/> If set to `local`, it will take the local installed Angular Material version from the node modules. <br/> If set to `latest`, the latest version will be downloaded.                                                           |
 | `theme`                 | `MdTheme`   | Material Theme to be used to generate a static theme stylesheet.           |
 | `themes`                | `MdTheme[]` | Multiple Material Themes, which are used to generated a static stylesheet. |
 | `cache`                 | `string`    | Directory for caching the downloads                                        |
