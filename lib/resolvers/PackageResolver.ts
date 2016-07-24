@@ -5,7 +5,7 @@ import {Utils} from '../common/Utils';
 import {VersionDownloader} from '../common/VersionDownloader';
 
 const NodeModule = require('module');
-const request = require('request');
+const execSync = require('child_process').execSync;
 
 export class PackageResolver {
 
@@ -15,53 +15,44 @@ export class PackageResolver {
    * Returns a promise which resolves with the retrieved directories.
    */
   static resolve(version: string, cacheRoot: string): Promise<MaterialToolsPackage> {
-    return this._resolveVersion(version).then(targetVersion => {
-      // Run validators for the current version
-      this._validateVersion(targetVersion);
-
-      return this._isExisting(path.join(path.resolve(cacheRoot), targetVersion))
-        .then(this._resolveDirectories)
-        .then(directories => {
-          Logger.info('Using Angular Material version from cache.');
-
-          return {
-            root: path.join(directories.module, '..'),
-            module: directories.module,
-            source: directories.source,
-            version: targetVersion
-          };
-        })
-        .catch(directories => {
-          directories = this._resolveDirectories(directories);
-
-          return Promise.all([
-            VersionDownloader.getModuleVersion(targetVersion, directories.module),
-            VersionDownloader.getSourceVersion(targetVersion, directories.source)
-          ]).then(downloadPaths => {
-            return {
-              root: path.join(directories.module, '..'),
-              module: downloadPaths[0],
-              source: downloadPaths[1],
-              version: targetVersion
-            };
-          });
-        });
-    });
-  }
-
-  /**
-   * Processes the different version types.
-   */
-  private static _resolveVersion(version: string): Promise<string> {
     if (version === 'latest') {
       // Fetch the latest version remotely.
-      return this._retrieveLatestVersion();
+      version = this._retrieveLatestVersion();
     } else if (version === 'local') {
       // Figure out the version, based on the node_modules.
-      return Promise.resolve(this._retrieveLocalVersion());
+      version = this._retrieveLocalVersion();
     }
 
-    return Promise.resolve(version);
+    // Run validators for the current version
+    this._validateVersion(version);
+
+    return this._isExisting(path.join(path.resolve(cacheRoot), version))
+      .then(this._resolveDirectories)
+      .then(directories => {
+        Logger.info('Using Angular Material version from cache.');
+
+        return {
+          root: path.join(directories.module, '..'),
+          module: directories.module,
+          source: directories.source,
+          version: version
+        };
+      })
+      .catch(directories => {
+        directories = this._resolveDirectories(directories);
+
+        return Promise.all([
+          VersionDownloader.getModuleVersion(version, directories.module),
+          VersionDownloader.getSourceVersion(version, directories.source)
+        ]).then(downloadPaths => {
+          return {
+            root: path.join(directories.module, '..'),
+            module: downloadPaths[0],
+            source: downloadPaths[1],
+            version: version
+          };
+        });
+      });
   }
 
   /** Creates the directory paths for the cached versions */
@@ -118,20 +109,14 @@ export class PackageResolver {
   /**
    * Retrieves the latest Angular Material version remotely.
    */
-  private static _retrieveLatestVersion(): Promise<string> {
-    return new Promise((resolve, reject) => {
-      request('http://material.angularjs.org/docs.json', (error, response, body) => {
-        if (error || response.statusCode !== 200) {
-          let reason = error ||
-            `Failed to retrieve Material version list. Status code: ${response.statusCode}`;
+  private static _retrieveLatestVersion(): string {
+    try {
+      return execSync('npm view angular-material version --silent').toString().trim();
+    } catch (e) {
+      Logger.error('Failed to retrieve latest version.');
+    }
 
-          reject(reason);
-          Logger.error(reason);
-        } else {
-          resolve(JSON.parse(body)['versions'][0]);
-        }
-      });
-    });
+    return '';
   }
 }
 
