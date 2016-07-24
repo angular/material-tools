@@ -5,6 +5,7 @@ import {Utils} from '../common/Utils';
 import {VersionDownloader} from '../common/VersionDownloader';
 
 const NodeModule = require('module');
+const execSync = require('child_process').execSync;
 
 export class PackageResolver {
 
@@ -14,10 +15,11 @@ export class PackageResolver {
    * Returns a promise which resolves with the retrieved directories.
    */
   static resolve(version: string, cacheRoot: string): Promise<MaterialToolsPackage> {
-    let localSourcePath = '';
-
-    if (version === 'local') {
-      // Update the resolving version to the retrieved local version.
+    if (version === 'latest') {
+      // Fetch the latest version remotely.
+      version = this._retrieveLatestVersion();
+    } else if (version === 'local') {
+      // Figure out the version, based on the node_modules.
       version = this._retrieveLocalVersion();
     }
 
@@ -30,7 +32,7 @@ export class PackageResolver {
         Logger.info('Using Angular Material version from cache.');
 
         return {
-          root: localSourcePath || path.join(directories.module, '..'),
+          root: path.join(directories.module, '..'),
           module: directories.module,
           source: directories.source,
           version: version
@@ -44,13 +46,12 @@ export class PackageResolver {
           VersionDownloader.getSourceVersion(version, directories.source)
         ]).then(downloadPaths => {
           return {
-            root: localSourcePath || path.join(directories.module, '..'),
+            root: path.join(directories.module, '..'),
             module: downloadPaths[0],
             source: downloadPaths[1],
             version: version
           };
         });
-
       });
   }
 
@@ -105,6 +106,19 @@ export class PackageResolver {
     });
   }
 
+  /**
+   * Retrieves the latest Angular Material version remotely.
+   */
+  private static _retrieveLatestVersion(): string {
+    try {
+      return execSync('npm view angular-material version --silent').toString().trim();
+    } catch (e) {
+      Logger.error('Failed to retrieve latest version.');
+      Logger.info(e.stack);
+    }
+
+    return '';
+  }
 }
 
 export type MaterialToolsPackage = {
