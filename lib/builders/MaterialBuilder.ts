@@ -15,11 +15,9 @@ export class MaterialBuilder {
 
   constructor(protected _options: MaterialToolsOptions) {
     if (this._options.theme || this._options.themes) {
-      let themes = []
+      this._options.themes = []
         .concat(this._options.theme || [])
         .concat(this._options.themes || []);
-
-      this._themeBuilder = new ThemeBuilder(themes, this._options.palettes);
     }
 
     this._outputBase = path.join(this._options.destination, this._options.destinationFilename);
@@ -32,15 +30,23 @@ export class MaterialBuilder {
     return PackageResolver
       .resolve(this._options.version, this._options.cache)
       .then(versionData => {
+        let entryPoint = path.join(versionData.module, this._options.mainFilename);
+
         // Update the resolved version, in case it was `node`.
         this._options.version = versionData.version;
 
+        // Initialize the theming builder dynamically, because it needs the resolved filename.
+        if (this._options.themes && !this._themeBuilder) {
+          this._themeBuilder = new ThemeBuilder(
+            this._options.themes,
+            this._options.palettes,
+            entryPoint
+          );
+        }
+
         return {
           versionData: versionData,
-          dependencies: DependencyResolver.resolve(
-            path.join(versionData.module, this._options.mainFilename),
-            this._options.modules
-          )
+          dependencies: DependencyResolver.resolve(entryPoint, this._options.modules)
         };
       })
       .then(data => {

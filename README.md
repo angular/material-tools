@@ -75,6 +75,8 @@ material-tools -d ./output -m list
 ### NodeJS usage
 
 ```js
+'use strict';
+
 const MaterialTools = require('angular-material-tools');
 
 let tools = new MaterialTools({
