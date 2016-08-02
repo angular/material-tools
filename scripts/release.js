@@ -13,6 +13,7 @@ process.chdir(__dirname);
 
 const ROOT = path.resolve('..');
 const AUTHORIZED = ['angularcore', 'crisbeto', 'devversion'];
+const OUT_DIR = path.join(ROOT, config.outDir);
 
 // Initialization
 showHeader();
@@ -35,11 +36,16 @@ function init() {
   log();
   info(`> Creating release for v${version}...`);
 
-  updateVersion(version);
-  createCommit(`release(): publish v${version}`, ['package.json']);
-  info('> Updated version inside of package.json');
+  if (pkg.version !== version) {
+    updateVersion(version);
+    createCommit(`release(): publish v${version}`, ['package.json']);
 
-  fse.removeSync(path.join(ROOT, config.outDir));
+    info('> Updated version inside of package.json');
+  } else {
+    info('> Keeping existing version inside of package.json');
+  }
+
+  fse.removeSync(OUT_DIR);
   info('> Deleted distribution folder.');
 
   let hasBuilt = buildDistribution();
@@ -51,6 +57,9 @@ function init() {
   } else {
     info('> Successfully built the source files.');
   }
+
+  copyFiles(['README.md']);
+  info('> Copied project description into distribution folder.');
 
   if (tagRelease(version)) {
     info('> Created git tag for new version.');
@@ -162,6 +171,12 @@ function publishPackage() {
 function buildDistribution() {
   let result = spawn('node', ['./build.js']);
   return !result.stderr.toString().trim();
+}
+
+function copyFiles(files) {
+  files.forEach(file => {
+    fse.copySync(path.join(ROOT, file), path.join(OUT_DIR, file))
+  })
 }
 
 function createCommit(message, files) {
