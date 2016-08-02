@@ -15,11 +15,12 @@ export class ThemeBuilder {
   /**
    * Instantiates the Theme Builder with the specified themes and possible palettes.
    */
-  constructor(theme: MdTheme | MdTheme[], palettes?: MdPaletteDefinition) {
+  constructor(theme: MdTheme | MdTheme[], palettes?: MdPaletteDefinition, file?: string) {
 
     // Create a virtual context, to isolate the script which modifies the globals
     // to be able to mock a Browser Environment.
     this._virtualContext = new VirtualContext({
+      $$moduleName: file,
       $$interception: {
         run: this._onAngularRunFn.bind(this)
       }
