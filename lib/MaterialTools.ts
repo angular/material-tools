@@ -5,6 +5,7 @@ import {Utils} from './common/Utils';
 import {MaterialToolsFiles} from './resolvers/LocalResolver';
 import {DefaultConfig} from './common/DefaultConfig';
 import {MaterialBuilder, MaterialToolsOutput} from './builders/MaterialBuilder';
+import {MaterialToolsPackage} from './resolvers/PackageResolver';
 
 const fse = require('fs-extra');
 
@@ -124,7 +125,7 @@ export class MaterialTools extends MaterialBuilder {
    * Returns a promise, which resolves at finish with the given destination paths.
    */
   buildTheme(buildData?: MaterialToolsData): Promise<string[]> {
-    if (!this._themeBuilder) {
+    if (!this._themes) {
       return;
     }
 
@@ -163,6 +164,7 @@ export interface MaterialToolsData {
   files: MaterialToolsFiles;
   dependencies: any;
   license: string;
+  package: MaterialToolsPackage;
 }
 
 /** Valid options for the Material Tools */

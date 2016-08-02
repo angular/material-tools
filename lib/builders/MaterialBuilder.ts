@@ -1,6 +1,6 @@
 import * as path from 'path';
 import {MaterialToolsData, MaterialToolsOptions} from '../MaterialTools';
-import {ThemeBuilder} from './ThemeBuilder';
+import {ThemeBuilder, MdTheme} from './ThemeBuilder';
 import {PackageResolver} from '../resolvers/PackageResolver';
 import {DependencyResolver} from '../resolvers/DependencyResolver';
 import {LocalResolver} from '../resolvers/LocalResolver';
@@ -11,18 +11,17 @@ import {DefaultConfig} from '../common/DefaultConfig';
 export class MaterialBuilder {
 
   protected _themeBuilder: ThemeBuilder;
+  protected _themes: MdTheme[];
   protected _outputBase: string;
 
   constructor(protected _options: MaterialToolsOptions) {
+    this._outputBase = path.join(this._options.destination, this._options.destinationFilename);
+
     if (this._options.theme || this._options.themes) {
-      let themes = []
+      this._themes = []
         .concat(this._options.theme || [])
         .concat(this._options.themes || []);
-
-      this._themeBuilder = new ThemeBuilder(themes, this._options.palettes);
     }
-
-    this._outputBase = path.join(this._options.destination, this._options.destinationFilename);
   }
 
   /**
@@ -48,7 +47,8 @@ export class MaterialBuilder {
           return {
             files: files,
             dependencies: data.dependencies,
-            license: this._getLicense(data.dependencies._flat)
+            license: this._getLicense(data.dependencies._flat),
+            package: data.versionData
           };
         });
       });
@@ -73,7 +73,12 @@ export class MaterialBuilder {
    * Outputs a static theme stylesheet, based on the specified options
    */
   _buildTheme(buildData: MaterialToolsData): MaterialToolsOutput {
-    if (!this._themeBuilder) {
+
+    // When the ThemeBuilder is not initialized and theme definitions are specified.
+    if (!this._themeBuilder && this._themes) {
+      let moduleName = path.join(buildData.package.module, this._options.mainFilename);
+      this._themeBuilder = new ThemeBuilder(this._themes, this._options.palettes, moduleName);
+    } else if (!this._themeBuilder) {
       return;
     }
 
