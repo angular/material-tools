@@ -106,21 +106,34 @@ function getLatestTag() {
 }
 
 function incrementVersion(version) {
-  let digits = version
-    .split('.')
-    .map(digit => parseInt(digit));
+
+  let digits = version.split('.').map(digit => {
+    return /^\d+$/.test(digit) ? parseInt(digit) : digit;
+  });
 
   let index = digits.length - 1;
 
   while (index !== -1) {
-    let newDigit = digits[index] + 1;
-    if (newDigit > 9) {
-      digits[index] = 0;
-      index -= 1;
+    let currentIndex = index;
+    let currentDigit = digits[currentIndex];
+
+    if (typeof currentDigit !== 'number') {
+      index--;
+      continue;
+    }
+
+    // Increase the digit for the next version.
+    currentDigit++;
+
+    if (currentDigit > 9) {
+      currentDigit = 0;
+      index--;
     } else {
-      digits[index] = newDigit;
       index = -1;
     }
+
+    // Update the changed digit.
+    digits[currentIndex] = currentDigit;
   }
 
   return digits.join('.');
