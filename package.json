@@ -9,7 +9,8 @@
     "test": "node scripts/run-tests.js",
     "test:versions": "node scripts/test-versions.js",
     "tslint": "tslint -c tslint.json lib/**/*.ts",
-    "build": "node scripts/build.js"
+    "build": "node scripts/build.js",
+    "release": "node scripts/release.js"
   },
   "repository": {
     "type": "git",
