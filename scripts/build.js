@@ -24,7 +24,8 @@ buildConfig.copyFiles.forEach(pattern => {
 // Retrieve all source files.
 let sourceFiles = buildConfig.tsFiles
   .map(pattern => glob(pattern, { cwd: PROJECT_ROOT }))
-  .reduce((array, item) => array.concat(item), []);
+  .reduce((array, item) => array.concat(item), [])
+  .map(file => path.join(PROJECT_ROOT, file));
 
 /**
  * TypeScript Compilation with Language Service.
