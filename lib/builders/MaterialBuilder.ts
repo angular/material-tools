@@ -11,17 +11,12 @@ import {DefaultConfig} from '../common/DefaultConfig';
 export class MaterialBuilder {
 
   protected _themeBuilder: ThemeBuilder;
-  protected _themes: MdTheme[];
   protected _outputBase: string;
 
   constructor(protected _options: MaterialToolsOptions) {
     this._outputBase = path.join(this._options.destination, this._options.destinationFilename);
 
-    if (this._options.theme || this._options.themes) {
-      this._themes = []
-        .concat(this._options.theme || [])
-        .concat(this._options.themes || []);
-    }
+
   }
 
   /**
@@ -73,13 +68,15 @@ export class MaterialBuilder {
    * Outputs a static theme stylesheet, based on the specified options
    */
   _buildTheme(buildData: MaterialToolsData): MaterialToolsOutput {
-    if (!this._themes) {
+    if (!this._options.theme && !this._options.themes) {
       return;
     }
 
     if (!this._themeBuilder) {
+      let themes = (this._options.themes || []).concat(this._options.theme || []);
       let moduleName = this._getModuleEntry(buildData.package);
-      this._themeBuilder = new ThemeBuilder(this._themes, this._options.palettes, moduleName);
+
+      this._themeBuilder = new ThemeBuilder(themes, this._options.palettes, moduleName);
     }
 
     let baseSCSSFiles = DefaultConfig.baseSCSSFiles.concat(DefaultConfig.baseThemeFiles);

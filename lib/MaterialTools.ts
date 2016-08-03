@@ -125,7 +125,7 @@ export class MaterialTools extends MaterialBuilder {
    * Returns a promise, which resolves at finish with the given destination paths.
    */
   buildTheme(buildData?: MaterialToolsData): Promise<string[]> {
-    if (!this._themes) {
+    if (!this._options.theme && !this._options.themes) {
       return;
     }
 
