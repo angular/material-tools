@@ -1,7 +1,7 @@
 import * as path from 'path';
 import {MaterialToolsData, MaterialToolsOptions} from '../MaterialTools';
 import {ThemeBuilder, MdTheme} from './ThemeBuilder';
-import {PackageResolver} from '../resolvers/PackageResolver';
+import {PackageResolver, MaterialToolsPackage} from '../resolvers/PackageResolver';
 import {DependencyResolver} from '../resolvers/DependencyResolver';
 import {LocalResolver} from '../resolvers/LocalResolver';
 import {JSBuilder} from './JSBuilder';
@@ -37,7 +37,7 @@ export class MaterialBuilder {
         return {
           versionData: versionData,
           dependencies: DependencyResolver.resolve(
-            path.join(versionData.module, this._options.mainFilename),
+            this._getModuleEntry(versionData),
             this._options.modules
           )
         };
@@ -76,7 +76,7 @@ export class MaterialBuilder {
 
     // When the ThemeBuilder is not initialized and theme definitions are specified.
     if (!this._themeBuilder && this._themes) {
-      let moduleName = path.join(buildData.package.module, this._options.mainFilename);
+      let moduleName = this._getModuleEntry(buildData.package);
       this._themeBuilder = new ThemeBuilder(this._themes, this._options.palettes, moduleName);
     } else if (!this._themeBuilder) {
       return;
@@ -115,6 +115,11 @@ export class MaterialBuilder {
     lines.push(' */', '\n');
 
     return lines.join('\n');
+  }
+
+  /** Retrieves the module entry path from the specified package. */
+  private _getModuleEntry(toolsPackage: MaterialToolsPackage) {
+    return path.join(toolsPackage.module, this._options.mainFilename);
   }
 }
 
