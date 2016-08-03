@@ -1,6 +1,6 @@
 import * as path from 'path';
 import {MaterialToolsData, MaterialToolsOptions} from '../MaterialTools';
-import {ThemeBuilder, MdTheme} from './ThemeBuilder';
+import {ThemeBuilder} from './ThemeBuilder';
 import {PackageResolver, MaterialToolsPackage} from '../resolvers/PackageResolver';
 import {DependencyResolver} from '../resolvers/DependencyResolver';
 import {LocalResolver} from '../resolvers/LocalResolver';
