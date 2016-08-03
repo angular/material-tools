@@ -73,13 +73,13 @@ export class MaterialBuilder {
    * Outputs a static theme stylesheet, based on the specified options
    */
   _buildTheme(buildData: MaterialToolsData): MaterialToolsOutput {
+    if (!this._themes) {
+      return;
+    }
 
-    // When the ThemeBuilder is not initialized and theme definitions are specified.
-    if (!this._themeBuilder && this._themes) {
+    if (!this._themeBuilder) {
       let moduleName = this._getModuleEntry(buildData.package);
       this._themeBuilder = new ThemeBuilder(this._themes, this._options.palettes, moduleName);
-    } else if (!this._themeBuilder) {
-      return;
     }
 
     let baseSCSSFiles = DefaultConfig.baseSCSSFiles.concat(DefaultConfig.baseThemeFiles);
