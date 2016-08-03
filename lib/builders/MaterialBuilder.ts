@@ -1,7 +1,7 @@
 import * as path from 'path';
 import {MaterialToolsData, MaterialToolsOptions} from '../MaterialTools';
 import {ThemeBuilder} from './ThemeBuilder';
-import {PackageResolver} from '../resolvers/PackageResolver';
+import {PackageResolver, MaterialToolsPackage} from '../resolvers/PackageResolver';
 import {DependencyResolver} from '../resolvers/DependencyResolver';
 import {LocalResolver} from '../resolvers/LocalResolver';
 import {JSBuilder} from './JSBuilder';
@@ -14,15 +14,9 @@ export class MaterialBuilder {
   protected _outputBase: string;
 
   constructor(protected _options: MaterialToolsOptions) {
-    if (this._options.theme || this._options.themes) {
-      let themes = []
-        .concat(this._options.theme || [])
-        .concat(this._options.themes || []);
-
-      this._themeBuilder = new ThemeBuilder(themes, this._options.palettes);
-    }
-
     this._outputBase = path.join(this._options.destination, this._options.destinationFilename);
+
+
   }
 
   /**
@@ -38,7 +32,7 @@ export class MaterialBuilder {
         return {
           versionData: versionData,
           dependencies: DependencyResolver.resolve(
-            path.join(versionData.module, this._options.mainFilename),
+            this._getModuleEntry(versionData),
             this._options.modules
           )
         };
@@ -48,7 +42,8 @@ export class MaterialBuilder {
           return {
             files: files,
             dependencies: data.dependencies,
-            license: this._getLicense(data.dependencies._flat)
+            license: this._getLicense(data.dependencies._flat),
+            package: data.versionData
           };
         });
       });
@@ -73,8 +68,15 @@ export class MaterialBuilder {
    * Outputs a static theme stylesheet, based on the specified options
    */
   _buildTheme(buildData: MaterialToolsData): MaterialToolsOutput {
-    if (!this._themeBuilder) {
+    if (!this._options.theme && !this._options.themes) {
       return;
+    }
+
+    if (!this._themeBuilder) {
+      let themes = (this._options.themes || []).concat(this._options.theme || []);
+      let moduleName = this._getModuleEntry(buildData.package);
+
+      this._themeBuilder = new ThemeBuilder(themes, this._options.palettes, moduleName);
     }
 
     let baseSCSSFiles = DefaultConfig.baseSCSSFiles.concat(DefaultConfig.baseThemeFiles);
@@ -110,6 +112,11 @@ export class MaterialBuilder {
     lines.push(' */', '\n');
 
     return lines.join('\n');
+  }
+
+  /** Retrieves the module entry path from the specified package. */
+  private _getModuleEntry(toolsPackage: MaterialToolsPackage) {
+    return path.join(toolsPackage.module, this._options.mainFilename);
   }
 }
 

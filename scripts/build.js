@@ -5,15 +5,11 @@ const fse = require('fs-extra');
 const path = require('path');
 const ts = require('typescript');
 
-const buildConfig = require('../build.json');
-
-// We run the Typescript Compiler from the node modules because we want to be consistent
-// with the compiler version.
-const TSC_BIN = './node_modules/typescript/bin/tsc';
+const BUILD_CONFIG = require('../build.json');
 const PROJECT_ROOT = path.join(__dirname, '..');
-const OUTPUT_DIRECTORY = path.resolve(PROJECT_ROOT, buildConfig.outDir);
+const OUTPUT_DIRECTORY = path.resolve(PROJECT_ROOT, BUILD_CONFIG.outDir);
 
-buildConfig.copyFiles.forEach(pattern => {
+BUILD_CONFIG.copyFiles.forEach(pattern => {
   let files = glob(pattern, { cwd: PROJECT_ROOT });
 
   files.forEach(file => {
@@ -22,7 +18,7 @@ buildConfig.copyFiles.forEach(pattern => {
 });
 
 // Retrieve all source files.
-let sourceFiles = buildConfig.tsFiles
+let sourceFiles = BUILD_CONFIG.tsFiles
   .map(pattern => glob(pattern, { cwd: PROJECT_ROOT }))
   .reduce((array, item) => array.concat(item), [])
   .map(file => path.join(PROJECT_ROOT, file));
@@ -30,7 +26,13 @@ let sourceFiles = buildConfig.tsFiles
 /**
  * TypeScript Compilation with Language Service.
  */
-let tsProject = ts.convertCompilerOptionsFromJson(require('../tsconfig.json').compilerOptions);
+let compilerOptions = require('../tsconfig.json').compilerOptions;
+let tsProject = ts.convertCompilerOptionsFromJson(compilerOptions);
+
+// Overwrite several options to properly output the distribution files.
+tsProject.options.rootDir = PROJECT_ROOT;
+tsProject.options.outDir = OUTPUT_DIRECTORY;
+
 let tsProgram = ts.createProgram(sourceFiles, tsProject.options);
 let emitResult = tsProgram.emit();
 
