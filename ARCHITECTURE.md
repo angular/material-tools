@@ -71,4 +71,4 @@ The overwriting of the `globals` is important to be able to run an Angular appli
 
 > That's why the Virtual Context is also responsible for mocking the most necessary parts of a browser to run an Angular application.
 
-<img src="https://cloud.githubusercontent.com/assets/4987015/17678625/2e07fa6a-6338-11e6-9fe6-e6ee54dec53e.png" width="270">
+<img src="https://cloud.githubusercontent.com/assets/4987015/17678625/2e07fa6a-6338-11e6-9fe6-e6ee54dec53e.png" height="210">
