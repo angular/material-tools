@@ -24,7 +24,7 @@ all required files.
 At the end all generated output files will be written to a given folder or can be also accessed from NodeJS 
 > Each output file will be also available with `compressed` / `minified` content.
 
-<img src="https://cloud.githubusercontent.com/assets/4987015/17671967/0c55b916-631a-11e6-9d79-d99dd50f630a.png">
+![Tools Lifecycle](https://cloud.githubusercontent.com/assets/4987015/17671967/0c55b916-631a-11e6-9d79-d99dd50f630a.png)
 
 ### How to run Angular in NodeJS
 
@@ -67,6 +67,8 @@ A minimal `require` method has been created inside of the plain V8 context, whic
 It plays such a big role in Material Tools, because it allows us to completely isolate our changes from the original NodeJS context
 and also allows us to overwrite the `globals` as mentioned previously.
 
-The overwriting of the `globals` is important to be able to run an Angular application in NodeJS.<br/>
+The overwriting of the `globals` is important to be able to run an Angular application in NodeJS.
+
 > That's why the Virtual Context is also responsible for mocking the most necessary parts of a browser to run an Angular application.
 
+<img src="https://cloud.githubusercontent.com/assets/4987015/17678625/2e07fa6a-6338-11e6-9fe6-e6ee54dec53e.png" width="270">
