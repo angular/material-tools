@@ -5,7 +5,7 @@ More insight information about the way `material-tools` works.
 - [How does it work](#how-does-it-work)
 - [How to run Angular in NodeJS](#how-to-run-angular-in-nodejs)
 - [Why are some files manually compiled](#why-are-some-type-of-files-compiled-manually) 
-- [Virtual Context](#virtual-context)
+- [Under-the-Hood: Understanding the Virtual Context](#under-the-hood-understanding-the-virtual-context)
 
 ### How does it work
 Material Tools allows developers to build a custom version of [Angular Material 1.x](http://www.github.com/angular/material).
@@ -51,8 +51,8 @@ without the `layouts` included.
 
 To work around this issue, we have to manually compile the `core` module with explicitly excluding the `layout` stylesheets.
 
-### Virtual Context
-Material Tools places a high value on o the isolation of the modified NodeJS environment.
+### Under-the-Hood: Understanding the Virtual Context
+Material Tools places a high value on on the isolation of the modified NodeJS environment.
 
 The Virtual Context allows the tools to run specific code completely isolated in 
 another [V8](https://developers.google.com/v8/) context. <br/>
