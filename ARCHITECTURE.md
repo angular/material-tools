@@ -33,15 +33,15 @@ To be able to run an Angular module in NodeJS the tools need to mock a browser e
 
 > Material Tools does only mock the most necessary parts of the browser so the mock is as small as possible.
 
-This mock will be applied to the global `window` variable, which is normally used by a browser.<br/>
-The global `window` variable is then bound to the NodeJS `globals`, which is shared between all files.
+This created mock will then be assigned to the global `window` variable.
+> The global `window` variable is bound to the NodeJS `globals`, which is shared between all files.
 
-This can lead to situations, where the tools are interfering with the users build process.
+This can lead to situations, where the tools are interfering with the user's build process.
 
-- The mock is polutting the `globals` of NodeJS.
+- The mock is polluting the `globals` of NodeJS.
 - The NodeJS [module](https://nodejs.org/api/modules.html) cache will be polluted with wrong exports.
 
-Read more how we solved that issue with the [Virtual Context](#under-the-hood-understanding-the-virtual-context)
+Read more about the way we solved that issue with the [Virtual Context](#under-the-hood-understanding-the-virtual-context)
 
 ### Why are some type of files compiled manually
 
@@ -57,13 +57,14 @@ Material Tools places a high value on on the isolation of the modified NodeJS en
 
 The Virtual Context allows the tools to run specific code completely isolated in 
 another [V8](https://developers.google.com/v8/) context. <br/>
-It is not only isolating the given code. It also provides a minimistic NodeJS environment.
+It is not only isolating the given code. It also provides a minimalistic NodeJS environment.
 
 > It is also possible to require other files from the Virtual Context without leaving the isolated context.<br/>
 
 A minimal `require` method has been created inside of the plain V8 context, which supports:
 - Nesting of the isolated context
-- Overwriting and nesting of the context `globals`.
+- Creating / Overwriting context global variables (e.g `window`)
+- Enabling [strict mode](https://developer.mozilla.org/en/docs/Web/JavaScript/Reference/Strict_mode)
 
 It plays such a big role in Material Tools, because it allows us to completely isolate our changes from the original NodeJS context
 and also allows us to overwrite the `globals` as mentioned previously.
