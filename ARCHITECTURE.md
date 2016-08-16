@@ -2,14 +2,14 @@
 More insight information about the way `material-tools` works.
 
 #### Quick Links
-- [How does it work](#how-does-it-work)
+- [Creating a custom Material Build](#creating-a-custom-material-build)
+- [Creating a static theme stylesheet](#creating-a-static-theme-stylesheet)
 - [How to run Angular in NodeJS](#how-to-run-angular-in-nodejs)
 - [Why are some files manually compiled](#why-are-some-type-of-files-compiled-manually)
 - [Under-the-Hood: Understanding the Virtual Context](#under-the-hood-understanding-the-virtual-context)
-- [Under-the-Hood: How to generate a static theme](#under-the-hood-how-to-generate-a-static-theme)
 
-### How does it work
-Material Tools allows developers to build a custom version of [Angular Material 1.x](http://www.github.com/angular/material).
+### Creating a custom Material Build
+Material Tools allows developers to build a subset of the [Angular Material 1.x](http://www.github.com/angular/material) framework with specific components.
 
 As a developer you could just specifiy the given [components](https://github.com/angular/material/tree/master/src/components) 
 and `material-tools` will run Angular Material in the `NodeJS` environment.
@@ -26,6 +26,30 @@ At the end all generated output files will be written to a given folder or can b
 > Each output file will be also available with `compressed` / `minified` content.
 
 ![Tools Lifecycle](https://cloud.githubusercontent.com/assets/4987015/17671967/0c55b916-631a-11e6-9d79-d99dd50f630a.png)
+
+### Creating a static theme stylesheet
+Another great feature of Material Tools is the generation of a static theme stylesheet.
+
+You may have noticed that in Angular Material the generation of the themes inside of the browser could damage the performance.
+Especially storing the generated styles in `<style>` elements in the documents head is not really efficient. 
+
+> The browser is not able to make any optimizations and it also takes a while to be able to see the styles in action.
+
+This issue can be easily solved by having a static theme stylesheet.
+
+<img height="250" src="https://cloud.githubusercontent.com/assets/4987015/17679920/f8713b40-633d-11e6-8092-d60e69e8bf86.PNG">
+
+
+To be able to build a static theme stylesheet the tools need to be able to access the [`$mdTheming`](https://github.com/angular/material/tree/master/src/core/services/theming) service.
+
+As part of the [Virtual Context](#under-the-hood-understanding-the-virtual-context), we also hook into the AngularJS prototype to build our own injector, which includes all `services`, `directives`, `providers` and more.
+
+This allows us to access the `$mdThemingProvider`, which is responsible for configurating the theme.
+Once the theme is configured we instantiate our service by calling the `$get` method of the provider.
+
+After instantiating the `$mdTheming` service we could run the theme generation and hook into the mocked `document.head` 
+
+The head will contain the generated theme styles as `<style>` elements, which will be extraced then.
 
 ### How to run Angular in NodeJS
 
@@ -74,27 +98,3 @@ The overwriting of the `globals` is important to be able to run an Angular appli
 > That's why the Virtual Context is also responsible for mocking the most necessary parts of a browser to run an Angular application.
 
 <img src="https://cloud.githubusercontent.com/assets/4987015/17678625/2e07fa6a-6338-11e6-9fe6-e6ee54dec53e.png" height="210">
-
-### Under-the-Hood: How to generate a static theme
-Another great feature of Material Tools is the generation of a static theme stylesheet.
-
-You may have noticed that in Angular Material the generation of the themes inside of the browser could damage the performance.
-Especially storing the generated styles in `<style>` elements in the documents head is not really efficient. 
-
-> The browser is not able to make any optimizations and it also takes a while to be able to see the styles in action.
-
-This issue can be easily solved by having a static theme stylesheet.
-
-<img height="250" src="https://cloud.githubusercontent.com/assets/4987015/17679920/f8713b40-633d-11e6-8092-d60e69e8bf86.PNG">
-
-
-To be able to build a static theme stylesheet the tools need to be able to access the [`$mdTheming`](https://github.com/angular/material/tree/master/src/core/services/theming) service.
-
-As part of the [Virtual Context](#under-the-hood-understanding-the-virtual-context), we also hook into the AngularJS prototype to build our own injector, which includes all `services`, `directives`, `providers` and more.
-
-This allows us to access the `$mdThemingProvider`, which is responsible for configurating the theme.
-Once the theme is configured we instantiate our service by calling the `$get` method of the provider.
-
-After instantiating the `$mdTheming` service we could run the theme generation and hook into the mocked `document.head` 
-
-The head will contain the generated theme styles as `<style>` elements, which will be extraced then.
