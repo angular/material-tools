@@ -23,7 +23,9 @@ all required files.
 > Read more [why some files need to be compiled manually](#why-are-some-type-of-files-compiled-manually).
 
 At the end all generated output files will be written to a given folder or can be also accessed from NodeJS 
-> Each output file will be also available with `compressed` / `minified` content.
+> Each output file will be also available with `compressed` / `minified` content.<br/>
+> Read more about the 
+[files, which will be generated](https://github.com/angular/material-tools/tree/docs/architecture-md#output-files)
 
 ![Tools Lifecycle](https://cloud.githubusercontent.com/assets/4987015/17671967/0c55b916-631a-11e6-9d79-d99dd50f630a.png)
 
