@@ -102,7 +102,7 @@ tools.build('css').then(successHandler).catch(errorHandler);    // Only build th
 tools.build('css', 'js');   // Builds both the CSS and the JS.
 ```
 
-**Output**
+#### Output Files
 
 |                   File                   |                                   Description                                        |
 | ---------------------------------------- | ------------------------------------------------------------------------------------ |
