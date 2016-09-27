@@ -81,10 +81,10 @@ export class ThemeBuilder {
 
     let themeRef = this._$mdThemingProvider
       .theme(theme.name || 'default')
-      .primaryPalette(theme.primaryPalette)
-      .accentPalette(theme.accentPalette)
-      .warnPalette(theme.warnPalette)
-      .backgroundPalette(theme.backgroundPalette);
+      .primaryPalette(theme.primaryPalette, theme.primaryPaletteHues)
+      .accentPalette(theme.accentPalette, theme.accentPaletteHues)
+      .warnPalette(theme.warnPalette, theme.warnPaletteHues)
+      .backgroundPalette(theme.backgroundPalette, theme.backgroundPaletteHues);
 
     if (theme.dark) {
       themeRef.dark();
@@ -115,10 +115,10 @@ interface MdThemingProvider {
 
 /** Angular Material Theme Builder interface */
 interface MdThemeBuilder {
-  primaryPalette: (value) => MdThemeBuilder;
-  accentPalette: (value) => MdThemeBuilder;
-  warnPalette: (value) => MdThemeBuilder;
-  backgroundPalette: (value) => MdThemeBuilder;
+  primaryPalette: (name, hue?: IThemeHues) => MdThemeBuilder;
+  accentPalette: (name, hue?: IThemeHues) => MdThemeBuilder;
+  warnPalette: (name, hue?: IThemeHues) => MdThemeBuilder;
+  backgroundPalette: (name, hue?: IThemeHues) => MdThemeBuilder;
   dark: () => MdThemeBuilder;
 }
 
@@ -126,10 +126,22 @@ interface MdThemeBuilder {
 export interface MdTheme {
   name?: string;
   primaryPalette?: string;
+  primaryPaletteHues?: IThemeHues;
   accentPalette?: string;
+  accentPaletteHues?: IThemeHues;
   warnPalette?: string;
+  warnPaletteHues?: IThemeHues;
   backgroundPalette?: string;
+  backgroundPaletteHues?: IThemeHues;
   dark?: boolean;
+}
+
+/** Angular Material Theme hue registry */
+export interface IThemeHues {
+    default?: string;
+    'hue-1'?: string;
+    'hue-2'?: string;
+    'hue-3'?: string;
 }
 
 /** Angular Material Palette registry */
