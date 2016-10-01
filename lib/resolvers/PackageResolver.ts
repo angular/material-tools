@@ -6,6 +6,7 @@ import {VersionDownloader} from '../common/VersionDownloader';
 
 const NodeModule = require('module');
 const execSync = require('child_process').execSync;
+const getFsConstant = name => fs.constants ? fs.constants[name] : fs[name];
 
 export class PackageResolver {
 
@@ -96,7 +97,7 @@ export class PackageResolver {
    */
   private static _isExisting(path: string): Promise<string> {
     return new Promise((resolve, reject) => {
-      fs.access(path, fs.constants.R_OK | fs.constants.W_OK, doesNotExist => {
+      fs.access(path, getFsConstant('R_OK') | getFsConstant('W_OK'), doesNotExist => {
         if (doesNotExist) {
           reject(path);
         } else {
