@@ -7,6 +7,9 @@ import {VersionDownloader} from '../common/VersionDownloader';
 const NodeModule = require('module');
 const execSync = require('child_process').execSync;
 
+// Cross-version compatibility function for pre Node v6 versions.
+const getFsConstant = name => fs.constants ? fs.constants[name] : fs[name];
+
 export class PackageResolver {
 
   /**
@@ -96,7 +99,7 @@ export class PackageResolver {
    */
   private static _isExisting(path: string): Promise<string> {
     return new Promise((resolve, reject) => {
-      fs.access(path, fs.R_OK | fs.W_OK, doesNotExist => {
+      fs.access(path, getFsConstant('R_OK') | getFsConstant('W_OK'), doesNotExist => {
         if (doesNotExist) {
           reject(path);
         } else {

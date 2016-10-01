@@ -54,17 +54,6 @@ describe('virtual context', () => {
       expect(numbers.length).toBe(50);
     });
 
-
-    it('should throw an error when strict mode is disabled', () => {
-      let filePath = __dirname + '/fixtures/virtual-context/fake-virtual-context-strict-mode.js';
-
-      // The virtual context will throw an error, because the file uses block-scoped declarations
-      // outside of strict mode.
-      expect(() => {
-        this.virtualContext.run(filePath);
-      }).toThrow();
-    });
-
   });
 
 });

@@ -58,11 +58,14 @@ describe('Local Resolver', () => {
 
   it('should reject for an invalid file path', done => {
     let versionDataCopy = merge({}, versionData, { module: './some/random/path/' });
-    LocalResolver.resolve(tooltip, versionDataCopy).then(done.fail, done);
+
+    LocalResolver.resolve(tooltip, versionDataCopy)
+      .then(() => done.fail(), done);
   });
 
   it('should reject for an unexisting module', done => {
-    LocalResolver.resolve(['time-machine'], versionData).then(done.fail, done);
+    LocalResolver.resolve(['time-machine'], versionData)
+      .then(() => done.fail(), done);
   });
 
   it('should resolve, even if it did not find any CSS', done => {
@@ -75,7 +78,8 @@ describe('Local Resolver', () => {
   });
 
   it('should reject if it did not find any js', done => {
-    LocalResolver.resolve(['noJS'], versionData).then(done.fail, done);
+    LocalResolver.resolve(['noJS'], versionData)
+      .then(() => done.fail(), done);
   });
 
   // Util that strips the directories so they're easier to match

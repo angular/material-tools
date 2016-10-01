@@ -5,12 +5,24 @@
     "target": "es5",
     "sourceMap": true,
     "moduleResolution": "node",
-    "outDir": "./dist"
+    "outDir": "./dist",
+    "typeRoots": ["./node_modules/@types"],
+    "types": [
+      "clean-css",
+      "es6-promise",
+      "fs-extra",
+      "node",
+      "source-map",
+      "uglify-js",
+      "yargs",
+      "jasmine"
+    ]
   },
-  "files": [
-    "typings/index.d.ts"
+  "filesGlob": [
+    "src/**/*.ts"
   ],
   "exclude": [
-    "node_modules"
+    "node_modules",
+    "tests"
   ]
 }
