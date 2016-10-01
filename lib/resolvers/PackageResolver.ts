@@ -96,7 +96,7 @@ export class PackageResolver {
    */
   private static _isExisting(path: string): Promise<string> {
     return new Promise((resolve, reject) => {
-      fs.access(path, fs.R_OK | fs.W_OK, doesNotExist => {
+      fs.access(path, fs.constants.R_OK | fs.constants.W_OK, doesNotExist => {
         if (doesNotExist) {
           reject(path);
         } else {
