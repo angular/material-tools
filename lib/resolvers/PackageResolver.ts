@@ -6,6 +6,8 @@ import {VersionDownloader} from '../common/VersionDownloader';
 
 const NodeModule = require('module');
 const execSync = require('child_process').execSync;
+
+// Cross-version compatibility function for pre Node v6 versions.
 const getFsConstant = name => fs.constants ? fs.constants[name] : fs[name];
 
 export class PackageResolver {
