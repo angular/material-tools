@@ -93,6 +93,16 @@ export class ThemeBuilder {
 
   /** Registers a palette in the $mdTheming provider */
   private _registerPalette(paletteName: string, palette: MdPalette) {
+
+    if (palette.extends) {
+      const basePalette = palette.extends;
+
+      // Sanitize the palette to fulfill the $mdTheming service requirements
+      this._sanitizePalette(palette);
+
+      palette = this._$mdThemingProvider.extendPalette(basePalette, palette);
+    }
+
     this._$mdThemingProvider.definePalette(paletteName, palette);
   }
 
@@ -105,12 +115,21 @@ export class ThemeBuilder {
     }
   }
 
+  /**
+   * Sanitizes the palette definition from unnecessary overflow, which can lead to errors in the
+   * $mdTheming service.
+   */
+  private _sanitizePalette(palette: MdPalette) {
+    delete palette.extends;
+  }
+
 }
 
 /** Mocked interface of the $mdThemingProvider */
 interface MdThemingProvider {
   theme: (themeName, inheritFrom?) => MdThemeBuilder;
   definePalette: (paletteName: string, palette: MdPalette) => void;
+  extendPalette: (paletteName: string, palette: MdPalette) => MdPalette;
 }
 
 /** Angular Material Theme Builder interface */
@@ -156,20 +175,21 @@ export interface MdPaletteDefinition {
 
 /** Angular Material Palette map */
 export interface MdPalette {
-  50: string;
-  100: string;
-  200: string;
-  300: string;
-  400: string;
-  500: string;
-  600: string;
-  700: string;
-  800: string;
-  900: string;
-  A100: string;
-  A200: string;
-  A400: string;
-  A700: string;
+  extends: string;
+  50?: string;
+  100?: string;
+  200?: string;
+  300?: string;
+  400?: string;
+  500?: string;
+  600?: string;
+  700?: string;
+  800?: string;
+  900?: string;
+  A100?: string;
+  A200?: string;
+  A400?: string;
+  A700?: string;
   contrastDefaultColor?: string;
   contrastDarkColors?: string[];
   contrastLightColors?: string[];

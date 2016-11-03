@@ -3,11 +3,21 @@ import {Logger} from './lib/common/Logger';
 
 let tools = new MaterialTools({
   destination: './tmp',
-  version: '1.1.0-rc.5',
-  modules: ['list', 'datepicker'],
+  version: '1.1.1',
+  modules: ['button', 'list', 'datepicker'],
   theme: {
-    primaryPalette: 'indigo',
+    primaryPalette: 'darkerRed',
     accentPalette: 'purple'
+  },
+  palettes: {
+    darkerRed: {
+      extends: 'red',
+      50: 'FBE9E7',
+      100: 'FFCCBC',
+      200: 'FFAB91',
+      300: 'FF8A65',
+      contrastDefaultColor: 'dark'
+    }
   }
 });
 
