@@ -175,6 +175,24 @@ It is also possible to use [custom palettes](https://material.angularjs.org/late
 }
 ```
 
+Sometimes you want to create a custom palette which is based on another one. 
+> Material Tools provides an easy way to extend palettes.
+
+```js
+{
+  theme: {
+    primaryPalette: 'darkerRed',
+    accentPalette: 'blue'
+  },
+  palettes: {
+    'darkerRed': {
+      extends: 'red',
+      contrastDefaultColor: 'dark'
+    }
+  }
+}
+```
+
 ### Development
 
 If you've cloned the repo, a quick way to explore NodeJS usages is to *directly* run TypeScript without precompiling processes. Developers can use [ts-node](https://github.com/TypeStrong/ts-node) which is installed with:
