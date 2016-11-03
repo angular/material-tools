@@ -190,7 +190,7 @@ export interface MdPalette {
   A200?: string;
   A400?: string;
   A700?: string;
-  contrastDefaultColor?: string;
+  contrastDefaultColor?: 'light' | 'dark';
   contrastDarkColors?: string[];
   contrastLightColors?: string[];
   contrastStrongLightColors?: string[];
