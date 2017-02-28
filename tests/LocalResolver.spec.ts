@@ -5,7 +5,7 @@ const merge = require('merge');
 
 describe('Local Resolver', () => {
 
-  const tooltip = ['tooltip'];
+  const components = ['tooltip', 'core'];
   const root = path.resolve('./tests/fixtures/local-resolver/');
   const versionData = {
     root: root,
@@ -15,7 +15,7 @@ describe('Local Resolver', () => {
   };
 
   it('should resolve the JS and CSS files', done => {
-    LocalResolver.resolve(tooltip, versionData).then(files => {
+    LocalResolver.resolve(components, versionData).then(files => {
       reduceToFilenames(files);
 
       expect(files.js).toContain('tooltip.js');
@@ -26,7 +26,7 @@ describe('Local Resolver', () => {
   });
 
   it('should not include themes in the CSS', done => {
-    LocalResolver.resolve(tooltip, versionData).then(files => {
+    LocalResolver.resolve(components, versionData).then(files => {
       reduceToFilenames(files);
 
       expect(files.css).not.toContain('tooltip-default-theme.css');
@@ -35,8 +35,9 @@ describe('Local Resolver', () => {
     }, done.fail);
   });
 
+
   it('should have the themes separately', done => {
-    LocalResolver.resolve(tooltip, versionData).then(files => {
+    LocalResolver.resolve(components, versionData).then(files => {
       reduceToFilenames(files);
 
       expect(files.themes).toContain('tooltip-default-theme.scss');
@@ -45,8 +46,18 @@ describe('Local Resolver', () => {
     }, done.fail);
   });
 
+
+  it('should have core theme file', done => {
+    LocalResolver.resolve(components, versionData).then(files => {
+      reduceToFilenames(files);
+      expect(files.themes).toContain('core-theme.scss');
+
+      done();
+    }, done.fail);
+  });
+
   it('should not pick up the minified files', done => {
-    LocalResolver.resolve(tooltip, versionData).then(files => {
+    LocalResolver.resolve(components, versionData).then(files => {
       reduceToFilenames(files);
 
       expect(files.js).not.toContain('tooltip.min.js');
@@ -59,7 +70,7 @@ describe('Local Resolver', () => {
   it('should reject for an invalid file path', done => {
     let versionDataCopy = merge({}, versionData, { module: './some/random/path/' });
 
-    LocalResolver.resolve(tooltip, versionDataCopy)
+    LocalResolver.resolve(components, versionDataCopy)
       .then(() => done.fail(), done);
   });
 

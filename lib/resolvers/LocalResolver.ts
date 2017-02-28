@@ -67,6 +67,7 @@ export class LocalResolver {
       this.resolveExtension(modules, 'js', jsModules),
       this.resolveExtension(modules, 'css', jsModules, false),
       this.resolveThemes(modules, sourceComponents),
+      this.resolveThemes(modules, sourceRoot),
       this.resolvePattern('/*.+(layouts|layout-attributes).css', layoutModules, false),
       this.resolveSCSS(modules, sourceRoot),
       this.resolvePattern('/LICENSE', _package.module, false)
@@ -76,10 +77,10 @@ export class LocalResolver {
         root: _package.root,
         js: results[0],
         css: results[1],
-        themes: results[2],
-        layout: results[3],
-        scss: results[4],
-        license: results[5][0]
+        themes: results[2].concat(results[3]),
+        layout: results[4],
+        scss: results[5],
+        license: results[6][0]
       };
     });
   }
