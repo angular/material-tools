@@ -15,7 +15,10 @@ export class JSBuilder {
     let source = [mainModule, '', raw].join('\n');
     let compressed = uglify.minify(source, {
       fromString: true,
-      outSourceMap: filename
+      outSourceMap: filename,
+      // Suppress "WARN: Output exceeds 32000 characters" warnings from UglifyJS 2.x
+      // Those warnings can be safely ignored and shouldn't show up in the CLI.
+      output: {'max_line_len': Number.MAX_VALUE }
     });
 
     return {

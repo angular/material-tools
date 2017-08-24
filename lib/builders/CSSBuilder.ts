@@ -103,4 +103,4 @@ export type MaterialToolsCSS = {
   withLayout: MaterialToolsOutput
   layoutFiles: string[];
   license?: string;
-}
+};

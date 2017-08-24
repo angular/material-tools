@@ -3,7 +3,6 @@
 require('ts-node/register');
 
 const request = require('request');
-const PackageResolver = require('../lib/resolvers/PackageResolver').PackageResolver;
 const MaterialTools = require('../lib/MaterialTools').MaterialTools;
 const extractVersionNumber = require('../lib/common/Utils').Utils.extractVersionNumber;
 
