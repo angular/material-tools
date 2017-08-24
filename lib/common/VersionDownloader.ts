@@ -10,7 +10,7 @@ const EXTENSION = '.tar.gz';
 
 export class VersionDownloader {
 
-  private static _downloadFile(url: string, destination: string) {
+  private static _downloadFile(url: string, destination: string): Promise<string> {
     Logger.info(`Downloading ${url}.`);
 
     return new Promise((resolve, reject) => {
