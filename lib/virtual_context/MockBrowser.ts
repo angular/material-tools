@@ -26,7 +26,7 @@ export class BrowserNode {
 
   appendChild = child => {
     this.children.push(child);
-  };
+  }
 
   insertBefore = this.appendChild;
 }

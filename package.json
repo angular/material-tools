@@ -7,7 +7,7 @@
   "scripts": {
     "test": "node scripts/run-tests.js",
     "test:versions": "node scripts/test-versions.js",
-    "tslint": "tslint -c tslint.json lib/**/*.ts",
+    "tslint": "tslint -c tslint.json -p ./",
     "build": "node scripts/build.js",
     "release": "node scripts/release.js"
   },

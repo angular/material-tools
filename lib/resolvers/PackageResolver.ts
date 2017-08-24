@@ -97,13 +97,13 @@ export class PackageResolver {
    * Checks whether the given path is available in the file system.
    * Returns a promise which resolves / rejects with the given path.
    */
-  private static _isExisting(path: string): Promise<string> {
+  private static _isExisting(filePath: string): Promise<string> {
     return new Promise((resolve, reject) => {
-      fs.access(path, getFsConstant('R_OK') | getFsConstant('W_OK'), doesNotExist => {
+      fs.access(filePath, getFsConstant('R_OK') | getFsConstant('W_OK'), doesNotExist => {
         if (doesNotExist) {
           reject(path);
         } else {
-          resolve(path);
+          resolve(filePath);
         }
       });
     });
@@ -129,4 +129,4 @@ export type MaterialToolsPackage = {
   module: string,
   source?: string,
   version: string
-}
+};

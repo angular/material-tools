@@ -123,4 +123,4 @@ function processMultipleThemeArgs(args) {
   }
 
   args.themes = themes;
-};
+}
