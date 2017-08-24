@@ -101,7 +101,7 @@ export class PackageResolver {
     return new Promise((resolve, reject) => {
       fs.access(filePath, getFsConstant('R_OK') | getFsConstant('W_OK'), doesNotExist => {
         if (doesNotExist) {
-          reject(path);
+          reject(filePath);
         } else {
           resolve(filePath);
         }

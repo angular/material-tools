@@ -2,9 +2,14 @@
 
 require('ts-node/register');
 
+// Enable verbose logging by adding the "--verbose" command line argument to the current
+// process.
+process.argv.push('--verbose');
+
 const request = require('request');
 const MaterialTools = require('../lib/MaterialTools').MaterialTools;
 const extractVersionNumber = require('../lib/common/Utils').Utils.extractVersionNumber;
+const Logger = require('../lib/common/Logger').Logger;
 
 const SUPPORTED_VERSION = extractVersionNumber('1.0.0');
 
@@ -19,14 +24,15 @@ request('http://material.angularjs.org/docs.json', (error, response, body) => {
   }
 });
 
-function onVersionsRetrieved(versions) {
+async function onVersionsRetrieved(versions) {
+  Logger.log(`Retrieved versions from AngularJS Material docs (${versions.length}x)`);
 
-  let versionTasks = versions.map(version => runVersion(version));
+  for (let version of versions) {
+    await runVersion(version);
+  }
 
-  Promise.all(versionTasks).then(() => {
-    console.log("Test: Successfully tested the tool against all supported versions.");
-    process.exit(0);
-  });
+  Logger.log("Successfully tested the tool against all supported versions.");
+  process.exit(0);
 }
 
 function runVersion(version) {
@@ -43,12 +49,10 @@ function runVersion(version) {
   });
 
   return tools.build()
-    .then(() => {
-      console.log(`Test: Successfully built ${version}`);
-    })
+    .then(() => Logger.log(`Successfully built ${version}.`))
     .catch(error => {
-      console.error(`Test: An error occurred while building ${version}`);
-      console.error(error.stack || error);
+      Logger.error(`Test: An error occurred while building ${version}`);
+      Logger.error(error.stack || error);
       process.exit(1);
     });
 }

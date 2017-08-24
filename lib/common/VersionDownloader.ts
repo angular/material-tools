@@ -14,13 +14,8 @@ export class VersionDownloader {
     Logger.info(`Downloading ${url}.`);
 
     return new Promise((resolve, reject) => {
-      let rejectPromise = error => {
-        Logger.error(error);
-        reject(error);
-      };
-
       let stream = request(url)
-        .on('error', rejectPromise)
+        .on('error', reject)
         .on('response', response => {
           if (response.statusCode === 200) {
             stream
@@ -31,14 +26,13 @@ export class VersionDownloader {
                   return header;
                 }
               }))
-              .on('error', rejectPromise)
               .on('finish', () => {
                 resolve(destination);
                 stream.destroy();
                 Logger.info(`Downloaded ${url} successfuly.`);
               });
           } else {
-            rejectPromise(`Failed to download ${url}. Status code: ${response.statusCode}.`);
+            reject(`Failed to download ${url}. Status code: ${response.statusCode}.`);
             stream.destroy();
           }
         });
