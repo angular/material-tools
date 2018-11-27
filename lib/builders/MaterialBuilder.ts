@@ -32,17 +32,17 @@ export class MaterialBuilder {
         let deps = DependencyResolver.resolve(
           this._getModuleEntry(versionData),
           this._options.modules
-        )
+        );
 
         if (this._options.excludeModules) {
             // Remove modules that were explicitly flagged to be excluded from the build
-            deps._flat = deps._flat.filter(dep => this._options.excludeModules.indexOf(dep) === -1)
+            deps._flat = deps._flat.filter(dep => this._options.excludeModules.indexOf(dep) === -1);
             deps._mainModule.dependencies = deps._mainModule.dependencies.filter(
                 dep => !this._options.excludeModules.some(
                     // E.g. match 'animate' in 'material.core.animate'
                     _module => dep.indexOf(_module) !== -1
                 )
-            )
+            );
         }
 
         return {
