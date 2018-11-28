@@ -1,7 +1,7 @@
 {
   "name": "angular-material-tools",
   "version": "1.0.0-beta.8",
-  "description": "Build tools for Angular Material",
+  "description": "Build tools for AngularJS Material",
   "main": "index.js",
   "license": "MIT",
   "scripts": {
