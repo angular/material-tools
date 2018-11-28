@@ -55,7 +55,7 @@ export class ThemeBuilder {
 
   /**
    * Instantiate the $mdTheming service by calling the provider function with
-   * the default color palettes of Angular Material.
+   * the default color palettes of AngularJS Material.
    *
    * Register the specified theme in the `$mdThemingProvider` by overwriting the default theme.
    * Using the default theme allows users to use the static stylesheet without doing anything.
@@ -107,7 +107,7 @@ export class ThemeBuilder {
   }
 
   /**
-   * Function will be used to intercept Angular's Run Phase.
+   * Function will be used to intercept AngularJS' Run Phase.
    */
   private _onAngularRunFn(runFn) {
     if (runFn.name === 'generateAllThemes') {
@@ -132,7 +132,7 @@ interface MdThemingProvider {
   extendPalette: (paletteName: string, palette: MdPalette) => MdPalette;
 }
 
-/** Angular Material Theme Builder interface */
+/** AngularJS Material Theme Builder interface */
 interface MdThemeBuilder {
   primaryPalette: (name, hue?: MdThemeHues) => MdThemeBuilder;
   accentPalette: (name, hue?: MdThemeHues) => MdThemeBuilder;
@@ -141,7 +141,7 @@ interface MdThemeBuilder {
   dark: () => MdThemeBuilder;
 }
 
-/** Angular Material Theme definition */
+/** AngularJS Material Theme definition */
 export interface MdTheme {
   name?: string;
   dark?: boolean;
@@ -160,7 +160,7 @@ export interface MdTheme {
   backgroundPaletteHues?: MdThemeHues;
 }
 
-/** Angular Material Theme hue registry */
+/** AngularJS Material Theme hue registry */
 export interface MdThemeHues {
   'default'?: string;
   'hue-1'?: string;
@@ -168,12 +168,12 @@ export interface MdThemeHues {
   'hue-3'?: string;
 }
 
-/** Angular Material Palette registry */
+/** AngularJS Material Palette registry */
 export interface MdPaletteDefinition {
   [paletteName: string]: MdPalette;
 }
 
-/** Angular Material Palette map */
+/** AngularJS Material Palette map */
 export interface MdPalette {
   extends: string;
   50?: string;

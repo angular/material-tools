@@ -34,7 +34,7 @@ export function registerOptions(yargs: any): any {
   }))
   .option('version', addDefaults({
     alias: 'v',
-    describe: 'Angular Material version.',
+    describe: 'AngularJS Material version.',
     default: DEFAULT_OPTIONS.version
   }));
 

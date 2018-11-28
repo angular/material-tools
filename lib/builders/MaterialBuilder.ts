@@ -96,7 +96,7 @@ export class MaterialBuilder {
   /** Generates the license string */
   private _getLicense(modules: string[]): string {
     let lines = [
-      'Angular Material Design',
+      'AngularJS Material Design',
       'https://github.com/angular/material',
       '@license MIT',
       'v' + this._options.version,
