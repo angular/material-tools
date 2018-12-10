@@ -61,7 +61,7 @@ export function registerOptions(yargs: any): any {
     group: OPTIONAL_GROUP
   }))
   .option('exclude-main-module', {
-    describe: 'Exclude code for main Angular Material module with list of dependencies.',
+    describe: 'Exclude code for main AngularJS Material module with list of dependencies.',
     boolean: true,
     group: OPTIONAL_GROUP
   });
