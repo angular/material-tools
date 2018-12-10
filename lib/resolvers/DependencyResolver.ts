@@ -5,7 +5,7 @@ export class DependencyResolver {
 
   /**
    * Determines the dependencies and parent dependencies of the specified
-   * Angular `modules` within a `file`.
+   * AngularJS `modules` within a `file`.
    */
   static resolve(file: string, modules?: string[], mainModule?: string): any {
 

@@ -49,9 +49,9 @@ export class VersionDownloader {
   }
 
   /**
-   * Fetches the specified version from the Angular Material Repository and
+   * Fetches the specified version from the AngularJS Material Repository and
    * stores it in the specified destination.
-   * @returns {Promise.<String>} Path of the downloaded Angular Material version.
+   * @returns {Promise.<String>} Path of the downloaded AngularJS Material version.
    */
   static getSourceVersion(version: string, destination: string): Promise<string> {
     return this._downloadFile(SOURCE_REPO + version + EXTENSION, destination);

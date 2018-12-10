@@ -1,13 +1,13 @@
 # angular-material-tools [![Build Status](https://travis-ci.org/angular/material-tools.svg?branch=master)](https://travis-ci.org/angular/material-tools)
 
-Tool that generates custom [Angular-Material v1.x](http://github.com/angular/material) builds, consisting of:
+Tool that generates custom [AngularJS Material](http://github.com/angular/material) builds, consisting of:
 
 *  JS files for a set Material components.
 *  CSS for a set of components.
 *  Static theme files.
 *  Layout CSS, separated from the specific component styling.
 
-> Support for Angular Material v2 may be added in the future.
+> Support for Angular Material may be added in the future.
 
 ## Quick Links
 - [Installation](#installation)
@@ -23,7 +23,8 @@ Tool that generates custom [Angular-Material v1.x](http://github.com/angular/mat
 
 ## Usage
 
-`material-tools` can be easily used from the **command-line** or from your own custom **NodeJS** code. The build tools also include a CLI, which can be used by installing the tools globally.
+`material-tools` can be easily used from the **command-line** or from your own custom **NodeJS** code. 
+The build tools also include a CLI, which can be used by installing the tools globally.
 - `npm install -g angular-material-tools`
 
 ### Options
@@ -34,7 +35,7 @@ Tool that generates custom [Angular-Material v1.x](http://github.com/angular/mat
 | `modules`               | `string[]`  | Modules that should be part of the build.<br/> All modules will be built if nothing is specified.                                                                                                           |
 | `exclude-modules`               | `string[]`  | Modules that should be excluded from the build.<br/> Use to exclude e.g. core modules when building a bundle that should get lazy-loaded.                                                                                                           |
 | `exclude-main-module`               | `boolean`  | Set to `true` to exclude the code for the Angular Material main module. Use when building a bundle that will get lazy-loaded and extend an already existing main module.                                                                 |
-| `version`               | `string`    | Version of Angular Material.<br/> If set to `local`, it will take the local installed Angular Material version from the node modules. <br/> If set to `latest`, the latest version will be downloaded.                                                           |
+| `version`               | `string`    | Version of AngularJS Material.<br/> If set to `local`, it will take the local installed Angular Material version from the node modules. <br/> If set to `latest`, the latest version will be downloaded.                                                           |
 | `theme`                 | `MdTheme`   | Material Theme to be used to generate a static theme stylesheet.           |
 | `themes`                | `MdTheme[]` | Multiple Material Themes, which are used to generated a static stylesheet. |
 | `cache`                 | `string`    | Directory for caching the downloads                                        |
@@ -46,7 +47,8 @@ Tool that generates custom [Angular-Material v1.x](http://github.com/angular/mat
 
 ### CLI usage
 
-To create a custom Angular Material build with the command-line interface (CLI), you can pass the [options](#options) as CLI arguments.
+To create a custom AngularJS Material build with the command-line interface (CLI), you can pass the
+[options](#options) as CLI arguments.
 
 All possible options in the CLI can be listed with the command:
 
@@ -67,7 +69,8 @@ The CLI includes the following commands:
 material-tools --destination ./output --modules list datepicker autocomplete --version 1.0.0
 ```
 
-When a version is not specified, the CLI will automatically use the installed Angular Material version from your local `node_modules` directory.
+When a version is not specified, the CLI will automatically use the installed AngularJS Material version from
+your local `node_modules` directory.
 ```bash
 material-tools -d ./output -m list
 ```

@@ -35,7 +35,7 @@ export class JSBuilder {
   }
 
   /**
-   * Builds a javascript snippet, which registers a new Angular Module with
+   * Builds a javascript snippet, which registers a new AngularJS Module with
    * the required dependencies.
    */
   private static _buildMainModule(mainModule: { rawName: string, dependencies: string[] }): string {

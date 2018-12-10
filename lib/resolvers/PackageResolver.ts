@@ -32,7 +32,7 @@ export class PackageResolver {
     return this._isExisting(path.join(path.resolve(cacheRoot), version))
       .then(this._resolveDirectories)
       .then(directories => {
-        Logger.info('Using Angular Material version from cache.');
+        Logger.info('Using AngularJS Material version from cache.');
 
         return {
           root: path.join(directories.module, '..'),
@@ -77,7 +77,7 @@ export class PackageResolver {
   }
 
   /**
-   * Retrieves the local installed Angular Material version form the current PWD.
+   * Retrieves the local installed AngularJS Material version form the current PWD.
    */
   private static _retrieveLocalVersion(): string {
     // Create a Node module which runs at the current process working directory.
@@ -89,7 +89,7 @@ export class PackageResolver {
 
     let packageFile = path.join(resolvedModule, 'package.json');
 
-    // Load the version from the local installed Angular Material dependency.
+    // Load the version from the local installed AngularJS Material dependency.
     return require(packageFile)['version'];
   }
 
@@ -110,7 +110,7 @@ export class PackageResolver {
   }
 
   /**
-   * Retrieves the latest Angular Material version remotely.
+   * Retrieves the latest AngularJS Material version remotely.
    */
   private static _retrieveLatestVersion(): string {
     try {
