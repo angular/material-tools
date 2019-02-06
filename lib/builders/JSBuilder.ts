@@ -3,6 +3,7 @@ import {MaterialToolsOutput} from './MaterialBuilder';
 
 const fse = require('fs-extra');
 const uglify = require('uglify-js');
+const path = require('path');
 
 export class JSBuilder {
   /**
@@ -13,6 +14,10 @@ export class JSBuilder {
     let mainModule = this._buildMainModule(data.dependencies._mainModule);
     let raw = data.files.js.map(path => fse.readFileSync(path).toString()).join('\n');
     let source = [mainModule, '', raw].join('\n');
+
+    // Create source map filename from given minified filename
+    filename = path.basename(filename).replace(/\.min\.js/, '.map')
+
     let compressed = uglify.minify(source, {
       fromString: true,
       outSourceMap: filename,
