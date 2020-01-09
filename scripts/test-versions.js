@@ -11,10 +11,10 @@ const MaterialTools = require('../lib/MaterialTools').MaterialTools;
 const extractVersionNumber = require('../lib/common/Utils').Utils.extractVersionNumber;
 const Logger = require('../lib/common/Logger').Logger;
 
-const SUPPORTED_VERSION = extractVersionNumber('1.0.0');
+const SUPPORTED_VERSION = extractVersionNumber('1.1.20');
 
 request('http://material.angularjs.org/docs.json', (error, response, body) => {
-  if (!error && response.statusCode == 200) {
+  if (!error && response.statusCode === 200) {
     let versions = JSON.parse(body)['versions'];
 
     versions = versions

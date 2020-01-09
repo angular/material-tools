@@ -98,7 +98,7 @@ export class ThemeBuilder {
       const basePalette = palette.extends;
 
       // Sanitize the palette to fulfill the $mdTheming service requirements
-      this._sanitizePalette(palette);
+      ThemeBuilder._sanitizePalette(palette);
 
       palette = this._$mdThemingProvider.extendPalette(basePalette, palette);
     }
@@ -119,7 +119,7 @@ export class ThemeBuilder {
    * Sanitizes the palette definition from unnecessary overflow, which can lead to errors in the
    * $mdTheming service.
    */
-  private _sanitizePalette(palette: MdPalette) {
+  private static _sanitizePalette(palette: MdPalette) {
     delete palette.extends;
   }
 

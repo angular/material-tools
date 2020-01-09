@@ -12,7 +12,7 @@ const readline = require('readline-sync');
 process.chdir(__dirname);
 
 const ROOT = path.resolve('..');
-const AUTHORIZED = ['angularcore', 'crisbeto', 'devversion'];
+const AUTHORIZED = ['angularcore', 'crisbeto', 'devversion', 'splaktar'];
 const OUT_DIR = path.join(ROOT, config.outDir);
 
 // Initialization

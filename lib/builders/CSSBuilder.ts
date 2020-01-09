@@ -72,7 +72,7 @@ export class CSSBuilder {
 
 
     let prefixer = autoprefixer({
-      browsers: ['last 2 versions', 'last 4 Android versions']
+      overrideBrowserslist: ['last 2 versions', 'last 4 Android versions']
     });
 
     return postcss(prefixer).process(compiled).css;

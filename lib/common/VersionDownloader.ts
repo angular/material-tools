@@ -29,7 +29,7 @@ export class VersionDownloader {
               .on('finish', () => {
                 resolve(destination);
                 stream.destroy();
-                Logger.info(`Downloaded ${url} successfuly.`);
+                Logger.info(`Downloaded ${url} successfully.`);
               });
           } else {
             reject(`Failed to download ${url}. Status code: ${response.statusCode}.`);
