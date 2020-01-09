@@ -3,7 +3,7 @@ import {Logger} from './lib/common/Logger';
 
 let tools = new MaterialTools({
   destination: './tmp',
-  version: '1.1.1',
+  version: '1.1.21',
   modules: ['button', 'list', 'datepicker'],
   theme: {
     primaryPalette: 'darkerRed',

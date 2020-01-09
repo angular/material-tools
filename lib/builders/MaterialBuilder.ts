@@ -15,8 +15,6 @@ export class MaterialBuilder {
 
   constructor(protected _options: MaterialToolsOptions) {
     this._outputBase = path.join(this._options.destination, this._options.destinationFilename);
-
-
   }
 
   /**
