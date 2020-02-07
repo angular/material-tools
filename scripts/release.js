@@ -72,12 +72,14 @@ function init() {
   success('> Successfully built a release.');
   log();
 
-  let shouldPublish = prompt('Do you want to publish the new version to NPM? (yes)') === 'yes';
+  let response = prompt('Do you want to publish the new version to NPM? (yes)');
+  let shouldPublish = response === 'yes' || response === '';
 
   if (shouldPublish) {
+    let oneTimePassword = prompt('Enter your NPM one-time password: ');
     info('> Publishing to NPM...');
 
-    if (publishPackage()) {
+    if (publishPackage(oneTimePassword)) {
       success('> Successfully published package to NPM.');
     } else {
       error('An error occurred while publishing to NPM');
@@ -158,8 +160,13 @@ function updateVersion(newVersion) {
   fse.writeFileSync('../package.json', JSON.stringify(pkg, null, 2));
 }
 
-function publishPackage() {
-  let result = exec('npm publish', {
+/**
+ * @param {string} oneTimePassword NPM 2fa token
+ * @return {boolean}
+ */
+function publishPackage(oneTimePassword) {
+  const publishCommand = oneTimePassword ? `npm publish --otp=${oneTimePassword}` : 'npm publish';
+  let result = exec(publishCommand, {
     cwd: path.join(ROOT, config.outDir)
   }).toString().toLowerCase().trim();
 
