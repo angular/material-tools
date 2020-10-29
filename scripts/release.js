@@ -167,7 +167,7 @@ function updateVersion(newVersion) {
 function publishPackage(oneTimePassword) {
   const publishCommand = oneTimePassword ? `npm publish --otp=${oneTimePassword}` : 'npm publish';
   let result = exec(publishCommand, {
-    cwd: path.join(ROOT, config.outDir)
+    cwd: OUT_DIR
   }).toString().toLowerCase().trim();
 
   // Due to https://github.com/nodejs/node-v0.x-archive/issues/2318
