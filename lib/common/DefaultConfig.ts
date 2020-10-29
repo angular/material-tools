@@ -18,8 +18,8 @@ export const DefaultConfig = {
 
   /** Manual compilation configuration */
   baseSCSSFiles: [
-    'variables.scss',
-    'mixins.scss'
+    '_variables.scss',
+    '_mixins.scss'
   ],
 
   baseThemeFiles: [
