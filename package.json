@@ -1,6 +1,6 @@
 {
   "name": "angular-material-tools",
-  "version": "1.0.0-rc.2",
+  "version": "1.0.0-rc.3",
   "description": "Build tools for AngularJS Material",
   "main": "index.js",
   "license": "MIT",
