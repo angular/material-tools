@@ -34,11 +34,11 @@ function init() {
   let version = prompt(`Version (${proposedVersion}):`) || proposedVersion;
 
   log();
-  info(`> Creating release for v${version}...`);
+  info(`> Creating release for ${version}...`);
 
   if (pkg.version !== version) {
     updateVersion(version);
-    createCommit(`release(): publish v${version}`, ['package.json']);
+    createCommit(`release(): publish ${version}`, ['package.json']);
 
     info('> Updated version inside of package.json');
   } else {
@@ -151,7 +151,7 @@ function incrementVersion(version) {
 }
 
 function tagRelease(newVersion) {
-  let result = spawn('git', ['tag', `v${newVersion}`, '-f']);
+  let result = spawn('git', ['tag', `${newVersion}`, '-f']);
   return !result.stderr.toString().trim();
 }
 
