@@ -2,12 +2,10 @@
 
 Tool that generates custom [AngularJS Material](http://github.com/angular/material) builds, consisting of:
 
-*  JS files for a set Material components.
-*  CSS for a set of components.
-*  Static theme files.
-*  Layout CSS, separated from the specific component styling.
-
-> Support for Angular Material may be added in the future.
+*  JS files for a set Material components
+*  CSS for a set of components
+*  Static theme files
+*  Layout CSS, separated from the specific component styling
 
 ## Quick Links
 - [Installation](#installation)

@@ -98,10 +98,10 @@ export class MaterialBuilder {
       'https://github.com/angular/material',
       '@license MIT',
       'v' + this._options.version,
-      'Built with: material-tools',
+      'Built with: angular-material-tools',
       'Includes modules: ' + modules.join(', '),
       '',
-      `Copyright ${new Date().getFullYear()} Google Inc. All Rights Reserved.`,
+      `Copyright ${new Date().getFullYear()} Google LLC. All Rights Reserved.`,
       'Use of this source code is governed by an MIT-style license that can be ' +
       'found in the LICENSE file at http://material.angularjs.org/LICENSE.'
     ].map(line => ' * ' + line);
