@@ -50,7 +50,7 @@ export class ThemeBuilder {
 
     return styleElements
       .map(element => element.children[0]['data'])
-      .reduce((styleSheet, part) => styleSheet + part);
+      .reduce((styleSheet, part) => styleSheet + part, '');
   }
 
   /**
