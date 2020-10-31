@@ -1,22 +1,25 @@
 ## Architecture 
+
 More insight information about the way `material-tools` works.
 
 #### Quick Links
+
 - [Creating a custom Material Build](#creating-a-custom-material-build)
 - [Creating a static theme stylesheet](#creating-a-static-theme-stylesheet)
-- [How to run AngularJS in NodeJS](#how-to-run-angular-in-nodejs)
+- [How to run AngularJS in NodeJS](#how-to-run-angularjs-in-nodejs)
 - [Why are some files manually compiled](#why-are-some-type-of-files-compiled-manually)
 - [Under-the-Hood: Understanding the Virtual Context](#under-the-hood-understanding-the-virtual-context)
 
 ### Creating a custom Material Build
-Material Tools allows developers to build a subset of the
+
+Material Tools for AngularJS Material allows developers to build a subset of the
 [AngularJS Material](http://www.github.com/angular/material) framework with specific components.
 
-As a developer you could just specifiy the given
-[components](https://github.com/angular/material/tree/master/src/components)
-and `material-tools` will run AngularJS Material in the `NodeJS` environment.
+As a developer you could just specify the given
+[components](https://github.com/angular/material/tree/master/src/components) and `material-tools` will run
+AngularJS Material in the `NodeJS` environment.
 
-> Read more about [running an AngularJS module in NodeJS](#how-to-run-angular-in-nodejs)
+> Read more about [running an AngularJS module in NodeJS](#how-to-run-angularjs-in-nodejs)
 
 The tools will then resolve all dependencies of the specified modules and fetch
 all required files.
@@ -32,18 +35,19 @@ At the end all generated output files will be written to a given folder or can b
 ![Tools Lifecycle](https://cloud.githubusercontent.com/assets/4987015/17671967/0c55b916-631a-11e6-9d79-d99dd50f630a.png)
 
 ### Creating a static theme stylesheet
-Another great feature of Material Tools is the generation of a static theme stylesheet.
+
+Another great feature of Material Tools for AngularJS Material is the generation of a static theme stylesheet.
 
 You may have noticed that in AngularJS Material the generation of the themes inside of the browser could
 damage the performance. Especially storing the generated styles in `<style>` elements in the documents head
 is not really efficient. 
 
-> The browser is not able to make any optimizations and it also takes a while to be able to see the styles in
+> The browser is not able to make any optimizations, and it also takes a while to be able to see the styles in
   action.
 
-This issue can be easily solved by having a static theme stylesheet.
+This issue can be solved by having a static theme stylesheet.
 
-<img height="250" src="https://cloud.githubusercontent.com/assets/4987015/17679920/f8713b40-633d-11e6-8092-d60e69e8bf86.PNG">
+<img height="250" alt="theme generation flow chart" src="https://cloud.githubusercontent.com/assets/4987015/17679920/f8713b40-633d-11e6-8092-d60e69e8bf86.PNG">
 
 
 To be able to build a static theme stylesheet the tools need to be able to access the
@@ -53,22 +57,24 @@ As part of the [Virtual Context](#under-the-hood-understanding-the-virtual-conte
 AngularJS prototype to build our own injector, which includes all `services`, `directives`, `providers` and
 more.
 
-This allows us to access the `$mdThemingProvider`, which is responsible for configurating the theme.
-Once the theme is configured we instantiate our service by calling the `$get` method of the provider.
+This allows us to access the `$mdThemingProvider`, which is responsible for configuring the theme.
+Once you configure the theme, we instantiate our service by calling the `$get` method of the provider.
 
 After instantiating the `$mdTheming` service we could run the theme generation and hook into the mocked
 `document.head` 
 
-The head will contain the generated theme styles as `<style>` elements, which will be extraced then.
+The head will contain the generated theme styles as `<style>` elements, which will be extracted then.
 
 ### How to run AngularJS in NodeJS
 
-To be able to run an AngularJS module in NodeJS the tools need to mock a browser environment.
+To be able to run an AngularJS module in NodeJS, the tools need to mock a browser environment.
 
-> Material Tools does only mock the most necessary parts of the browser so the mock is as small as possible.
+> Material Tools for AngularJS Material only mocks the most necessary parts of the browser.
+> This keeps the mock as small as possible.
 
-This created mock will then be assigned to the global `window` variable.
-> The global `window` variable is bound to the NodeJS `globals`, which is shared between all files.
+Material Tools for AngularJS Material assigns this created mock to the global `window` variable.
+
+> NodeJS binds the global `window` variable to `globals`, which is shared between all files.
 
 This can lead to situations, where the tools are interfering with the user's build process.
 
@@ -80,8 +86,8 @@ Read more about the way we solved that issue with the
 
 ### Why are some type of files compiled manually
 
-Some developers are expecting Material Tools to export the AngularJS Material stylesheet without the layouts
-included by default.
+Some developers are expecting Material Tools for AngularJS Material to export the AngularJS Material
+stylesheet without the layouts included by default.
 
 Since the `core` module of AngularJS Material always includes the `layouts` by default, we are not able to
 retrieve the `core` module without the `layouts` included.
@@ -90,26 +96,27 @@ To work around this issue, we have to manually compile the `core` module with ex
 `layout` stylesheets.
 
 ### Under-the-Hood: Understanding the Virtual Context
-Material Tools places a high value on on the isolation of the modified NodeJS environment.
+
+Material Tools for AngularJS Material places a high value on the isolation of the modified NodeJS environment.
 
 The Virtual Context allows the tools to run specific code completely isolated in 
 another [V8](https://developers.google.com/v8/) context. <br/>
-It is not only isolating the given code. It also provides a minimalistic NodeJS environment.
+This not only isolates the given code, it also provides a minimalistic NodeJS environment.
 
-> It is also possible to require other files from the Virtual Context without leaving the isolated context.
+> You can `require` other files from the Virtual Context without leaving the isolated context.
 
 A minimal `require` method has been created inside of the plain V8 context, which supports:
 - Nesting of the isolated context
 - Creating / Overwriting context global variables (e.g `window`)
 - Enabling [strict mode](https://developer.mozilla.org/en/docs/Web/JavaScript/Reference/Strict_mode)
 
-It plays such a big role in Material Tools, because it allows us to completely isolate our changes from the
-original NodeJS context and also allows us to overwrite the `globals` as mentioned previously.
+The Virtual Context plays an important role in Material Tools for AngularJS Material, because it allows us to
+completely isolate our changes from the original NodeJS context. It also allows us to overwrite the `globals`,
+as mentioned.
 
-The overwriting of the `globals` is important to be able to run an AngularJS application in NodeJS.
+Overwriting the `globals` is important when running an AngularJS application in NodeJS.
 
 > That's why the Virtual Context is also responsible for mocking the most necessary parts of a browser to
   run an AngularJS application.
 
-<img src="https://cloud.githubusercontent.com/assets/4987015/17678625/2e07fa6a-6338-11e6-9fe6-e6ee54dec53e.png"
- height="210">
+<img alt="graphic showing how the NodeJS context is connected to the virtual context" src="https://cloud.githubusercontent.com/assets/4987015/17678625/2e07fa6a-6338-11e6-9fe6-e6ee54dec53e.png" height="210">

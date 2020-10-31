@@ -57,5 +57,8 @@
   "contributors": [
     "Paul Gschwendtner <paulgschwendtner@gmail.com>",
     "Kristiyan Kostadinov <crisbeto@abv.bg> (http://crisbeto.com/)"
+  ],
+  "maintainers": [
+    "Michael Prentice <splaktar@gmail.com>"
   ]
 }
