@@ -4,6 +4,10 @@
   "description": "Build tools for AngularJS Material",
   "main": "index.js",
   "license": "MIT",
+  "engines": {
+    "npm": "6",
+    "node": "10"
+  },
   "scripts": {
     "test": "node scripts/run-tests.js",
     "test:versions": "node scripts/test-versions.js",

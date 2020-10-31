@@ -1,4 +1,4 @@
-# angular-material-tools [![Build Status](https://travis-ci.org/angular/material-tools.svg?branch=master)](https://travis-ci.org/angular/material-tools)
+# angular-material-tools
 
 Tool that generates custom [AngularJS Material](http://github.com/angular/material) builds, consisting of:
 
