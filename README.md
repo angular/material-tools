@@ -62,10 +62,10 @@ The CLI includes the following commands:
 
 **Examples**
 ```bash
-material-tools --destination ./output --modules list datepicker autocomplete --version 1.0.0
+material-tools --destination ./output --modules list datepicker autocomplete --version 1.2.1
 ```
 
-When a version is not specified, the CLI will automatically use the installed AngularJS Material version from
+If you do not specify a version, the CLI will automatically use the installed AngularJS Material version from
 your local `node_modules` directory.
 ```bash
 material-tools -d ./output -m list
@@ -80,7 +80,7 @@ const MaterialTools = require('angular-material-tools');
 
 let tools = new MaterialTools({
   destination: './output',
-  version: '1.0.0',
+  version: '1.2.1',
   modules: ['menu', 'checkbox'],
   theme: {
     primaryPalette: 'indigo',
@@ -122,7 +122,7 @@ Developers are able to easily build a static theme stylesheet
 ```js
 {
   destination: './myBuild',
-  version: '1.1.0-rc.5',
+  version: '1.2.1',
   modules: ['list'],
   theme: {
     primaryPalette: 'blue',
@@ -144,7 +144,8 @@ In some cases you may want to have multiple themes in your application.
 }
 ```
 
-It is also possible to use [custom palettes](https://material.angularjs.org/latest/Theming/03_configuring_a_theme) for your static theme.
+It is also possible to use [custom palettes](https://material.angularjs.org/latest/Theming/03_configuring_a_theme)
+for your static theme.
 
 ```js
 {
@@ -177,7 +178,7 @@ It is also possible to use [custom palettes](https://material.angularjs.org/late
 ```
 
 Sometimes you want to create a custom palette which is based on another one. 
-> Material Tools provides an easy way to extend palettes.
+> Material Tools for AngularJS Material provides an easy way to extend palettes.
 
 ```js
 {
@@ -196,27 +197,21 @@ Sometimes you want to create a custom palette which is based on another one.
 
 ### Development
 
-If you've cloned the repo, a quick way to explore NodeJS usages is to *directly* run TypeScript without precompiling processes. Developers can use [ts-node](https://github.com/TypeStrong/ts-node) which is installed with:
+If you've cloned the repo, a quick way to explore NodeJS usages is to *directly* run TypeScript without
+transpiling processes. Developers can use [ts-node](https://github.com/TypeStrong/ts-node) for this.
 
+Install a TypeScript compiler (requires `typescript` by default):
 ```bash
-# Install a TypeScript compiler (requires `typescript` by default).
 npm install -g ts-node typescript
 ```
 
 Then use the command-line to directly run the `debug.ts` sample from the project root:
-
 ```bash
 ts-node debug.ts
 ```
 
 which will generate the output:
-
 ```bash
 [13:37:00]: Successfully built list, core, animate, layout, gestures, theming, palette,
             datepicker, icon, virtualRepeat, showHide.
 ```
-
-
-## Authors
-* [Paul Gschwendtner](https://github.com/DevVersion)
-* [Kristiyan Kostadinov](https://github.com/crisbeto)
