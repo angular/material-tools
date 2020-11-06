@@ -171,11 +171,13 @@ export interface MaterialToolsData {
 export interface MaterialToolsOptions {
   destination?: string;
   modules?: string[];
+  excludeModules?: string[];
   version?: string;
   palettes?: MdPaletteDefinition;
   mainFilename?: string;
   cache?: string;
   destinationFilename?: string;
+  excludeMainModule?: boolean;
   /* Theming Options */
   theme?: MdTheme;
   themes?: MdTheme[];

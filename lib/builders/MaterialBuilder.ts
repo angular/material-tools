@@ -27,12 +27,25 @@ export class MaterialBuilder {
         // Update the resolved version, in case it was `node`.
         this._options.version = versionData.version;
 
+        let deps = DependencyResolver.resolve(
+          this._getModuleEntry(versionData),
+          this._options.modules
+        );
+
+        if (this._options.excludeModules) {
+            // Remove modules that were explicitly flagged to be excluded from the build
+            deps._flat = deps._flat.filter(dep => this._options.excludeModules.indexOf(dep) === -1);
+            deps._mainModule.dependencies = deps._mainModule.dependencies.filter(
+                dep => !this._options.excludeModules.some(
+                    // E.g. match 'animate' in 'material.core.animate'
+                    _module => dep.indexOf(_module) !== -1
+                )
+            );
+        }
+
         return {
           versionData: versionData,
-          dependencies: DependencyResolver.resolve(
-            this._getModuleEntry(versionData),
-            this._options.modules
-          )
+          dependencies: deps
         };
       })
       .then(data => {
@@ -52,7 +65,7 @@ export class MaterialBuilder {
    * Outputs the necessary JS, based on the options.
    */
   _buildJS(buildData: MaterialToolsData): MaterialToolsOutput {
-    return JSBuilder.build(buildData, `${this._outputBase}.min.js`);
+    return JSBuilder.build(buildData, `${this._outputBase}.min.js`, this._options);
   }
 
   /**

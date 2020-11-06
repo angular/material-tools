@@ -31,12 +31,14 @@ The build tools also include a CLI, which can be used by installing the tools gl
 | ----------------------- | ----------- | -------------------------------------------------------------------------- |
 | `destination` (*)       | `string`    | Target location for the Material build.                                    |
 | `modules`               | `string[]`  | Modules that should be part of the build.<br/> All modules will be built if nothing is specified.                                                                                                           |
-| `version`               | `string`    | Version of AngularJS Material.<br/> If set to `local`, it will take the local installed AngularJS Material version from the node modules. <br/> If set to `latest`, the latest version will be downloaded.                                                           |
+| `version`               | `string`    | Version of AngularJS Material.<br/> If set to `local`, it will take the local installed Angular Material version from the node modules. <br/> If set to `latest`, the latest version will be downloaded.                                                           |
 | `theme`                 | `MdTheme`   | Material Theme to be used to generate a static theme stylesheet.           |
 | `themes`                | `MdTheme[]` | Multiple Material Themes, which are used to generated a static stylesheet. |
 | `cache`                 | `string`    | Directory for caching the downloads                                        |
 | `mainFilename`          | `string`    | Name of the entry file that will be loaded to figure out the dependencies. |
 | `destinationFilename`   | `string`    | Name to be used as a base for the output files.                            |
+| `excludeModules`               | `string[]`  | Modules that should be excluded from the build.<br/> Use to exclude e.g. core modules when building a bundle that should get lazy-loaded.                                                                                                           |
+| `excludeMainModule`               | `boolean`  | Set to `true` to exclude the code for the Angular Material main module. Use when building a bundle that will get lazy-loaded and extend an already existing main module.                                                                 |
 
 > **Note:** The options can be set in a JSON file whose path can be passed to the CLI or API.
 

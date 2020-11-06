@@ -1,4 +1,4 @@
-import {MaterialToolsData} from '../MaterialTools';
+import {MaterialToolsData, MaterialToolsOptions} from '../MaterialTools';
 import {MaterialToolsOutput} from './MaterialBuilder';
 
 const fse = require('fs-extra');
@@ -8,9 +8,14 @@ export class JSBuilder {
   /**
    * Generates the minified and non-minified JS, as well as a source map, based on the options.
    */
-  static build(data: MaterialToolsData, filename: string): MaterialToolsOutput {
-
-    let mainModule = this._buildMainModule(data.dependencies._mainModule);
+  static build(
+    data: MaterialToolsData,
+    filename: string,
+    options: MaterialToolsOptions
+  ): MaterialToolsOutput {
+    let mainModule = !options.excludeMainModule ?
+      this._buildMainModule(data.dependencies._mainModule) :
+      '';
     let raw = data.files.js.map(path => fse.readFileSync(path).toString()).join('\n');
     let source = [mainModule, '', raw].join('\n');
     let compressed = uglify.minify(source, {
